@@ -74,7 +74,7 @@ class MyToDoListFragment : Fragment(), ToDoListAdapter.OnItemClickListener {
     }
 
     override fun onSwitchClick(item: ToDoListModel, isChecked: Boolean) {
-        viewModel.updateItem(item, isChecked)
+        viewModel.updateItem(item, item.copy(isDone = isChecked))
     }
 
 

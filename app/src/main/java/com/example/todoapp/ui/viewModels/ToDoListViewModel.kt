@@ -34,9 +34,10 @@ class ToDoListViewModel(private val repository: ToDoListRepository) : ViewModel(
     }
 
 
-    fun updateItem(selectItem: ToDoListModel, isDone: Boolean) {
-        repository.updateItem(selectItem, isDone)
+    fun updateItem(selectItem: ToDoListModel, newItem: ToDoListModel) {
+        repository.updateItem(selectItem, newItem)
     }
+
 
 }
 

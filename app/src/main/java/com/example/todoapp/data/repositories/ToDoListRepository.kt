@@ -40,11 +40,11 @@ class ToDoListRepository {
         items.value = currentItems
     }
 
-    fun updateItem(selectItem: ToDoListModel, isDone: Boolean) {
+    fun updateItem(selectItem: ToDoListModel, newItem: ToDoListModel) {
         val currentItems = items.value.toMutableList()
         val itemIndex = currentItems.indexOfFirst { it == selectItem }
         if (itemIndex != -1) {
-            currentItems[itemIndex] = selectItem.copy(isDone = isDone)
+            currentItems[itemIndex] = newItem
             items.value = currentItems
         }
     }

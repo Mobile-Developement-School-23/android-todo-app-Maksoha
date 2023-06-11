@@ -34,10 +34,9 @@ import java.util.Locale
 class ToDoItemFragment : Fragment() {
     private lateinit var binding : FragmentToDoItemBinding
     private lateinit var datePicker : MaterialDatePicker<Long>
-    private val viewModel: ToDoListViewModel by viewModels {
-        ToDoListViewModelFactory((requireContext().applicationContext as ToDoListApplication).repository)
+    private val viewModel: ToDoItemViewModel by viewModels {
+        ToDoItemViewModel.ToDoItemViewModelFactory((requireContext().applicationContext as ToDoListApplication).repository)
     }
-    private val view
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -77,8 +76,8 @@ class ToDoItemFragment : Fragment() {
     private fun setData() {
         var id = ""
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.getItemsFlow().collect { items ->
-                id = items.size.toString()
+            viewModel.getItemsSize().collect { size ->
+                id = "item_$size"
             }
         }
         val text = binding.text.editableText.toString()
