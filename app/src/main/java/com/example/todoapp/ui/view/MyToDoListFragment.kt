@@ -1,33 +1,30 @@
 package com.example.todoapp.ui.view
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todoapp.R
-import com.example.todoapp.ToDoListApplication
 import com.example.todoapp.data.models.ToDoListModel
 import com.example.todoapp.databinding.FragmentMyToDoListBinding
 import com.example.todoapp.ui.adapters.ToDoListAdapter
+import com.example.todoapp.ui.viewModels.ToDoItemViewModel
 import com.example.todoapp.ui.viewModels.ToDoListViewModel
-import com.example.todoapp.ui.viewModels.ToDoListViewModelFactory
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
 
 class MyToDoListFragment : Fragment(), ToDoListAdapter.OnItemClickListener {
     private lateinit var adapter: ToDoListAdapter
     private lateinit var binding : FragmentMyToDoListBinding
-    private val viewModel: ToDoListViewModel by viewModels {
-        ToDoListViewModelFactory((requireContext().applicationContext as ToDoListApplication).repository)
+    private val listViewModel: ToDoListViewModel by lazy {
+        (requireActivity() as MainActivity).listViewModel
     }
-
+    private val itemViewModel: ToDoItemViewModel by lazy {
+        (requireActivity() as MainActivity).itemViewModel
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -36,20 +33,29 @@ class MyToDoListFragment : Fragment(), ToDoListAdapter.OnItemClickListener {
         // Inflate the layout for this fragment
 
         setRecyclerView()
-        observeItems()
 
+
+        binding.btnAddItem.setOnClickListener {
+            itemViewModel.setItem(null)
+            findNavController().navigate(R.id.action_myToDoListFragment_to_addToDoItemFragment)
+        }
 
         return binding.root
     }
 
-    private fun observeItems() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.getItemsFlow().collect { items ->
-                adapter.submitList(items)
-                updateProgressIndicator(items)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-            }
+        observeItems()
+
+    }
+
+    private fun observeItems() {
+        listViewModel.getItems().observe(viewLifecycleOwner) { items ->
+            adapter.submitList(items)
+            updateProgressIndicator(items)
         }
+
     }
 
 
@@ -57,9 +63,7 @@ class MyToDoListFragment : Fragment(), ToDoListAdapter.OnItemClickListener {
         adapter = ToDoListAdapter(this)
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.btnAddItem.setOnClickListener {
-            findNavController().navigate(R.id.action_myToDoListFragment_to_addToDoItemFragment)
-        }
+        (binding.recyclerView.layoutManager as LinearLayoutManager).reverseLayout = true
     }
 
     private fun updateProgressIndicator(items: List<ToDoListModel>) {
@@ -70,11 +74,12 @@ class MyToDoListFragment : Fragment(), ToDoListAdapter.OnItemClickListener {
     }
 
     override fun onItemClick(item: ToDoListModel) {
+        itemViewModel.setItem(item)
         findNavController().navigate(R.id.action_myToDoListFragment_to_addToDoItemFragment)
     }
 
     override fun onSwitchClick(item: ToDoListModel, isChecked: Boolean) {
-        viewModel.updateItem(item, item.copy(isDone = isChecked))
+        listViewModel.updateItem(item, item.copy(isDone = isChecked))
     }
 
 

@@ -7,22 +7,19 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.todoapp.R
-import com.example.todoapp.ToDoListApplication
 import com.example.todoapp.data.models.ToDoListModel
 import com.example.todoapp.databinding.FragmentToDoItemBinding
 import com.example.todoapp.ui.viewModels.ToDoItemViewModel
 import com.example.todoapp.ui.viewModels.ToDoListViewModel
-import com.example.todoapp.ui.viewModels.ToDoListViewModelFactory
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -30,13 +27,14 @@ import java.util.Date
 import java.util.Locale
 
 
-
 class ToDoItemFragment : Fragment() {
+    private var cur_item : ToDoListModel? = null
     private lateinit var binding : FragmentToDoItemBinding
     private lateinit var datePicker : MaterialDatePicker<Long>
-    private val viewModel: ToDoItemViewModel by viewModels {
-        ToDoItemViewModel.ToDoItemViewModelFactory((requireContext().applicationContext as ToDoListApplication).repository)
-    }
+    private val viewModel: ToDoItemViewModel by activityViewModels()
+
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,51 +42,87 @@ class ToDoItemFragment : Fragment() {
     ): View {
 
         binding = FragmentToDoItemBinding.inflate(layoutInflater, container, false)
-
-        // Register context menu for TextView
+        subscribe()
         setImportanceAdapter();
         setDatePicker()
         binding.btnClose.setOnClickListener {
             closeFragment()
         }
         binding.btnSwitcher.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                datePicker.show(parentFragmentManager, datePicker.toString());
-            }
-            else {
-                binding.date.text = ""
-            }
+            updateDatePicker(isChecked)
+
         }
+
+
         binding.btnSave.setOnClickListener {
-            setData()
+            saveData()
             findNavController().navigate(R.id.action_addToDoItemFragment_to_myToDoListFragment)
             findNavController().popBackStack(findNavController().graph.startDestinationId, false);
 
         }
+
         binding.btnDelete.setOnClickListener {
+            if (cur_item != null) {
+                viewModel.remove(cur_item!!)
+            }
             closeFragment()
         }
+
+        setData()
 
         return binding.root
     }
 
+    private fun subscribe() {
+        viewModel.getItem().observe(viewLifecycleOwner) {item ->
+            cur_item = item
+        }
+    }
 
     private fun setData() {
-        var id = ""
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.getItemsSize().collect { size ->
-                id = "item_$size"
+        if (cur_item != null) {
+            binding.text.setText(cur_item!!.text)
+            binding.selectedImportance.setText(cur_item!!.importance)
+            binding.btnSwitcher.isChecked = true
+            binding.date.visibility = View.VISIBLE
+            binding.date.text = cur_item!!.deadline
+        }
+        else {
+            binding.btnDelete.isEnabled = false
+        }
+    }
+
+    private fun updateDatePicker(isChecked : Boolean) {
+
+        if (isChecked) {
+            if (cur_item == null) {
+                datePicker.show(parentFragmentManager, datePicker.toString())
             }
         }
+        else {
+            binding.date.text = ""
+        }
+
+    }
+
+
+    private fun saveData() {
+        val id = "item_${viewModel.getItemsSize() + 1}"
         val text = binding.text.editableText.toString()
         val importance = binding.selectedImportance.text.toString()
         val deadline = if (binding.date.visibility == View.GONE) null else binding.date.text
         val isDone = false
         val creationDate = getCurrentDate()
         val changeDate = getCurrentDate()
-        viewModel.addItem(ToDoListModel(
+        val addingItem = ToDoListModel(
             id, text, importance,
-            deadline as String?, isDone, creationDate, changeDate))
+            deadline as String?, isDone, creationDate, changeDate)
+        if (cur_item == null) {
+            viewModel.addItem(addingItem)
+        }
+        else {
+            viewModel.updateItem(cur_item!!, addingItem)
+        }
     }
 
     private fun setDatePicker() {
@@ -130,7 +164,6 @@ class ToDoItemFragment : Fragment() {
         binding.btnSwitcher.isChecked = false
         binding.date.text = ""
         binding.date.visibility = View.GONE
-
     }
 
     private fun setImportanceAdapter() {
@@ -141,7 +174,6 @@ class ToDoItemFragment : Fragment() {
     private fun closeFragment() {
         parentFragmentManager.popBackStack()
     }
-
 
 
 }

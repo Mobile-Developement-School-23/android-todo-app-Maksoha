@@ -50,7 +50,6 @@ class ToDoListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     fun bind(text: String?) {
         toDoListItem.text = text
-
     }
 
     companion object {
