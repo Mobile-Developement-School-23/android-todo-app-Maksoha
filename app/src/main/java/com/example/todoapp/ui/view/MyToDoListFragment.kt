@@ -5,11 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todoapp.R
-import com.example.todoapp.data.models.ToDoListModel
+import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.databinding.FragmentMyToDoListBinding
 import com.example.todoapp.ui.adapters.ToDoListAdapter
 import com.example.todoapp.ui.viewModels.ToDoItemViewModel
@@ -66,19 +65,19 @@ class MyToDoListFragment : Fragment(), ToDoListAdapter.OnItemClickListener {
         (binding.recyclerView.layoutManager as LinearLayoutManager).reverseLayout = true
     }
 
-    private fun updateProgressIndicator(items: List<ToDoListModel>) {
+    private fun updateProgressIndicator(items: List<ToDoItem>) {
         val completedItemsCount = items.count { it.isDone }
         binding.progressIndicator.max = items.size
         binding.progressIndicator.progress = completedItemsCount
         binding.stateProgressIndicator.text = "$completedItemsCount/${binding.progressIndicator.max}"
     }
 
-    override fun onItemClick(item: ToDoListModel) {
+    override fun onItemClick(item: ToDoItem) {
         itemViewModel.setItem(item)
         findNavController().navigate(R.id.action_myToDoListFragment_to_addToDoItemFragment)
     }
 
-    override fun onSwitchClick(item: ToDoListModel, isChecked: Boolean) {
+    override fun onSwitchClick(item: ToDoItem, isChecked: Boolean) {
         listViewModel.updateItem(item, item.copy(isDone = isChecked))
     }
 

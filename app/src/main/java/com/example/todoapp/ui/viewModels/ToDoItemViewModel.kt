@@ -5,15 +5,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.todoapp.data.models.ToDoListModel
-import com.example.todoapp.data.repositories.ToDoListRepository
+import com.example.todoapp.data.models.ToDoItem
+import com.example.todoapp.data.repositories.ToDoItemsRepository
 import kotlinx.coroutines.launch
 
-class ToDoItemViewModel (private val repository: ToDoListRepository) : ViewModel() {
-    private val item: MutableLiveData<ToDoListModel?> = MutableLiveData()
+class ToDoItemViewModel (private val repository: ToDoItemsRepository) : ViewModel() {
+    private val item: MutableLiveData<ToDoItem?> = MutableLiveData()
 
 
-    fun getItem() : LiveData<ToDoListModel?> {
+    fun getItem() : LiveData<ToDoItem?> {
         return item
     }
 
@@ -29,26 +29,26 @@ class ToDoItemViewModel (private val repository: ToDoListRepository) : ViewModel
     }
 
 
-    fun setItem(selectedItem: ToDoListModel?) {
+    fun setItem(selectedItem: ToDoItem?) {
         item.value = selectedItem
     }
 
-    fun addItem(item: ToDoListModel) {
+    fun addItem(item: ToDoItem) {
         repository.addItem(item)
 
     }
 
-    fun remove(item: ToDoListModel) {
+    fun remove(item: ToDoItem) {
         repository.removeItem(item)
     }
 
-     fun updateItem(selectItem: ToDoListModel, newItem: ToDoListModel) {
+     fun updateItem(selectItem: ToDoItem, newItem: ToDoItem) {
         repository.updateItem(selectItem, newItem)
      }
 
 
 }
-class ToDoItemViewModelFactory(private val repository: ToDoListRepository) : ViewModelProvider.Factory {
+class ToDoItemViewModelFactory(private val repository: ToDoItemsRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ToDoItemViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

@@ -9,11 +9,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todoapp.R
-import com.example.todoapp.data.models.ToDoListModel
+import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.databinding.ItemTodoListBinding
 import com.google.android.material.checkbox.MaterialCheckBox
 
-class ToDoListAdapter(private val itemClickListener: OnItemClickListener) : ListAdapter<ToDoListModel, ToDoListViewHolder>(ToDoListComparator()) {
+class ToDoListAdapter(private val itemClickListener: OnItemClickListener) : ListAdapter<ToDoItem, ToDoListViewHolder>(ToDoListComparator()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ToDoListViewHolder {
         return ToDoListViewHolder.create(parent)
@@ -38,8 +38,8 @@ class ToDoListAdapter(private val itemClickListener: OnItemClickListener) : List
     }
 
     interface OnItemClickListener {
-        fun onItemClick(item: ToDoListModel)
-        fun onSwitchClick(item: ToDoListModel, isChecked: Boolean)
+        fun onItemClick(item: ToDoItem)
+        fun onSwitchClick(item: ToDoItem, isChecked: Boolean)
     }
 
 }
@@ -63,12 +63,12 @@ class ToDoListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
 }
 
-class ToDoListComparator : DiffUtil.ItemCallback<ToDoListModel>() {
-    override fun areItemsTheSame(oldItem: ToDoListModel, newItem: ToDoListModel): Boolean {
+class ToDoListComparator : DiffUtil.ItemCallback<ToDoItem>() {
+    override fun areItemsTheSame(oldItem: ToDoItem, newItem: ToDoItem): Boolean {
         return oldItem == newItem
     }
 
-    override fun areContentsTheSame(oldItem: ToDoListModel, newItem: ToDoListModel): Boolean {
+    override fun areContentsTheSame(oldItem: ToDoItem, newItem: ToDoItem): Boolean {
         return oldItem == newItem
     }
 }

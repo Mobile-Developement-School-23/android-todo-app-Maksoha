@@ -1,20 +1,18 @@
 package com.example.todoapp.ui.viewModels
 
 
-import androidx.compose.runtime.MutableState
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.todoapp.data.models.ToDoListModel
-import com.example.todoapp.data.repositories.ToDoListRepository
-import kotlinx.coroutines.flow.StateFlow
+import com.example.todoapp.data.models.ToDoItem
+import com.example.todoapp.data.repositories.ToDoItemsRepository
 import kotlinx.coroutines.launch
 
 
-class ToDoListViewModel(private val repository: ToDoListRepository) : ViewModel() {
-    private var allItems: MutableLiveData<List<ToDoListModel>> = MutableLiveData()
+class ToDoListViewModel(private val repository: ToDoItemsRepository) : ViewModel() {
+    private var allItems: MutableLiveData<List<ToDoItem>> = MutableLiveData()
 
     init {
         viewModelScope.launch {
@@ -26,19 +24,19 @@ class ToDoListViewModel(private val repository: ToDoListRepository) : ViewModel(
 
 
 
-    fun getItems(): LiveData<List<ToDoListModel>> {
+    fun getItems(): LiveData<List<ToDoItem>> {
         return allItems
     }
 
 
-    fun updateItem(selectItem: ToDoListModel, newItem: ToDoListModel) {
+    fun updateItem(selectItem: ToDoItem, newItem: ToDoItem) {
         repository.updateItem(selectItem, newItem)
     }
 
 
 }
 
-class ToDoListViewModelFactory(private val repository: ToDoListRepository) : ViewModelProvider.Factory {
+class ToDoListViewModelFactory(private val repository: ToDoItemsRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ToDoListViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

@@ -59,7 +59,7 @@
             android:text="Мои дела"
             app:layout_constraintTop_toTopOf="parent"/>
         <com.google.android.material.progressindicator.LinearProgressIndicator
-            android:layout_width="292dp"
+            android:layout_width="288dp"
             android:layout_height="wrap_content"
             android:id="@+id/progressIndicator"
             android:layout_marginVertical="20dp"

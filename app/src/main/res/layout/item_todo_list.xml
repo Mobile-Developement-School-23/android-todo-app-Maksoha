@@ -7,7 +7,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/checkbox"
-        app:buttonTint="@color/checked_checkBox"
         style="@style/Widget.Material3.CompoundButton.CheckBox"
         app:layout_constraintTop_toTopOf="@id/text"
         app:layout_constraintLeft_toLeftOf="parent"

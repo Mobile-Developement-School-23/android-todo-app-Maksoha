@@ -3,10 +3,8 @@ package com.example.todoapp.ui.view
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.fragment.app.viewModels
 import com.example.todoapp.ToDoListApplication
-import com.example.todoapp.data.repositories.ToDoListRepository
+import com.example.todoapp.data.repositories.ToDoItemsRepository
 import com.example.todoapp.databinding.ActivityMainBinding
 import com.example.todoapp.ui.viewModels.ToDoItemViewModel
 import com.example.todoapp.ui.viewModels.ToDoItemViewModelFactory
@@ -16,7 +14,7 @@ import com.example.todoapp.ui.viewModels.ToDoListViewModelFactory
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityMainBinding
-    private val repository: ToDoListRepository by lazy {
+    private val repository: ToDoItemsRepository by lazy {
         (applicationContext as ToDoListApplication).repository
     }
     val listViewModel: ToDoListViewModel by viewModels {
