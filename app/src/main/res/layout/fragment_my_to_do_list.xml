@@ -6,45 +6,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/app_bar_layout">
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <TextView
-                    android:id="@+id/MyToDoList_text"
-                    style="@style/TextAppearance.Material3.HeadlineLarge"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="36dp"
-                    android:layout_marginTop="36dp"
-                    android:text="Мои дела"
-                    app:layout_constraintTop_toTopOf="parent" />
-                <com.google.android.material.progressindicator.LinearProgressIndicator
-                    android:layout_width="288dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginVertical="24dp"
-                    android:id="@+id/progressIndicator"
-                    style="@style/Widget.Material3.LinearProgressIndicator"
-                    app:layout_constraintTop_toBottomOf="@id/MyToDoList_text"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toLeftOf="@id/stateProgressIndicator"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintLeft_toRightOf="@id/progressIndicator"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/progressIndicator"
-                    app:layout_constraintBottom_toBottomOf="@id/progressIndicator"
-                    android:text="0/0"
-                    style="@style/TextAppearance.Material3.TitleMedium"
-                    android:id="@+id/stateProgressIndicator"/>
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+            android:layout_marginTop="120dp">
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardView"
                     style="@style/Widget.Material3.CardView.Elevated"
@@ -54,7 +29,7 @@
                     app:cardCornerRadius="12dp"
                     app:contentPadding="16dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/stateProgressIndicator">
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recyclerView"
@@ -66,6 +41,46 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.appbar.AppBarLayout>
     </androidx.core.widget.NestedScrollView>
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Widget.Material3.CardView.Outlined"
+        android:layout_marginTop="-10dp"
+        app:contentPaddingBottom="16dp">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/MyToDoList_text"
+            style="@style/TextAppearance.Material3.HeadlineLarge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="36dp"
+            android:text="Мои дела"
+            app:layout_constraintTop_toTopOf="parent"/>
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:layout_width="292dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressIndicator"
+            android:layout_marginVertical="20dp"
+            style="@style/Widget.Material3.LinearProgressIndicator"
+            app:layout_constraintTop_toBottomOf="@id/MyToDoList_text"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/stateProgressIndicator"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toRightOf="@id/progressIndicator"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/progressIndicator"
+            app:layout_constraintBottom_toBottomOf="@id/progressIndicator"
+            android:text="0/0"
+            style="@style/TextAppearance.Material3.TitleMedium"
+            android:id="@+id/stateProgressIndicator"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_add_item"
         style="@style/Widget.Material3.FloatingActionButton.Primary"
@@ -74,8 +89,5 @@
         android:layout_margin="36dp"
         android:src="@drawable/round_add_24"
         app:layout_anchor="@id/app_bar_layout"
-        app:layout_anchorGravity="bottom|end"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
+        app:layout_anchorGravity="bottom|right|end"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
