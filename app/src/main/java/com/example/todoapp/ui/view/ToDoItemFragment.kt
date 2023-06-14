@@ -55,7 +55,7 @@ class ToDoItemFragment : Fragment() {
         binding.btnDelete.setOnClickListener {
             itemViewModel.getItem().observe(viewLifecycleOwner) { item ->
                 if (item != null) {
-                    itemViewModel.remove(item)
+                    itemViewModel.deleteItem(item)
                     closeFragment()
                 }
             }
@@ -104,17 +104,21 @@ class ToDoItemFragment : Fragment() {
         val importance = binding.selectedImportance.text.toString()
         val deadline = if (binding.date.visibility == View.GONE) null else binding.date.text
         val isDone = false
-        val creationDate = getCurrentDate()
         val changeDate = getCurrentDate()
-        val addingItem = ToDoItem(
-            id, text, importance,
-            deadline as String?, isDone, creationDate, changeDate)
+
         itemViewModel.getItem().observe(viewLifecycleOwner) {item ->
+            val creationDate = getCurrentDate()
             if (item == null) {
+                val addingItem = ToDoItem(
+                    id, text, importance,
+                    deadline as String?, isDone, creationDate, changeDate)
                 itemViewModel.addItem(addingItem)
             }
             else {
-                itemViewModel.updateItem(item, addingItem)
+                val savingItem = ToDoItem(
+                    id, text, importance,
+                    deadline as String?, isDone, item.creation_date, changeDate)
+                itemViewModel.updateItem(item, savingItem)
             }
         }
 

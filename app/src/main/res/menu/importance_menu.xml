@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/low_importance"
-        android:title="Низкая" />
-    <item android:id="@+id/customary_importance"
-        android:title="Обычная" />
-    <item android:id="@+id/critical_importance"
-        android:title="Срочная" />
-</menu>

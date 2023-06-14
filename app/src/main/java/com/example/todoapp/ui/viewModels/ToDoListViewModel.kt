@@ -22,7 +22,9 @@ class ToDoListViewModel(private val repository: ToDoItemsRepository) : ViewModel
         }
     }
 
-
+    fun deleteItem(item: ToDoItem) {
+        repository.removeItem(item)
+    }
 
     fun getItems(): LiveData<List<ToDoItem>> {
         return allItems
