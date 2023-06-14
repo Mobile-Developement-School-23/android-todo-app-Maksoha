@@ -39,7 +39,7 @@ class ToDoItemViewModel (private val repository: ToDoItemsRepository) : ViewMode
     }
 
     fun deleteItem(item: ToDoItem) {
-        repository.removeItem(item)
+        repository.deleteItem(item)
     }
 
      fun updateItem(selectItem: ToDoItem, newItem: ToDoItem) {

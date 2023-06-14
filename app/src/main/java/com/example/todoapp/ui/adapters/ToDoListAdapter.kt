@@ -4,8 +4,6 @@ import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView.OnItemLongClickListener
-import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -16,7 +14,8 @@ import com.example.todoapp.databinding.ItemTodoListBinding
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
 
-class ToDoListAdapter(private val itemClickListener: OnItemClickListener) : ListAdapter<ToDoItem, ToDoListViewHolder>(ToDoListComparator()) {
+class ToDoListAdapter(private val itemClickListener: OnItemClickListener,
+) : ListAdapter<ToDoItem, ToDoListViewHolder>(ToDoListComparator()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ToDoListViewHolder {
         return ToDoListViewHolder.create(parent, itemClickListener)
@@ -31,15 +30,18 @@ class ToDoListAdapter(private val itemClickListener: OnItemClickListener) : List
         fun onItemClick(item: ToDoItem)
         fun onSwitchClick(item: ToDoItem, isChecked: Boolean)
         fun onItemLongClick(v: View?, item: ToDoItem)
-
         fun onButtonInfoClick(item: ToDoItem)
+        fun onItemSwipedLeft(item: ToDoItem)
     }
 
 
 }
 
 
-class ToDoListViewHolder(itemView: View, private val itemClickListener: ToDoListAdapter.OnItemClickListener) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
+class ToDoListViewHolder(
+    itemView: View,
+    private val itemClickListener: ToDoListAdapter.OnItemClickListener
+) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
     private val textView: TextView = itemView.findViewById(R.id.text)
     private val checkBox : MaterialCheckBox = itemView.findViewById(R.id.checkbox)
     private val btnInfo : MaterialButton = itemView.findViewById(R.id.btn_info)
@@ -72,7 +74,10 @@ class ToDoListViewHolder(itemView: View, private val itemClickListener: ToDoList
     }
 
     companion object {
-        fun create(parent: ViewGroup, itemClickListener: ToDoListAdapter.OnItemClickListener): ToDoListViewHolder {
+        fun create(
+            parent: ViewGroup,
+            itemClickListener: ToDoListAdapter.OnItemClickListener,
+        ): ToDoListViewHolder {
             val binding = ItemTodoListBinding
                 .inflate(LayoutInflater.from(parent.context), parent, false);
             val view: View = binding.root
@@ -89,8 +94,6 @@ class ToDoListViewHolder(itemView: View, private val itemClickListener: ToDoList
         return true
     }
 
-
-
 }
 
 class ToDoListComparator : DiffUtil.ItemCallback<ToDoItem>() {
@@ -102,5 +105,7 @@ class ToDoListComparator : DiffUtil.ItemCallback<ToDoItem>() {
         return oldItem == newItem
     }
 }
+
+
 
 

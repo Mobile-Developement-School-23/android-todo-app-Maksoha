@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.data.repositories.ToDoItemsRepository
 import kotlinx.coroutines.launch
+import java.text.FieldPosition
 
 
 class ToDoListViewModel(private val repository: ToDoItemsRepository) : ViewModel() {
@@ -23,11 +24,15 @@ class ToDoListViewModel(private val repository: ToDoItemsRepository) : ViewModel
     }
 
     fun deleteItem(item: ToDoItem) {
-        repository.removeItem(item)
+        repository.deleteItem(item)
     }
 
     fun getItems(): LiveData<List<ToDoItem>> {
         return allItems
+    }
+
+    fun deleteItemByPosition(position: Int) {
+        repository.deleteItemByPosition(position)
     }
 
 

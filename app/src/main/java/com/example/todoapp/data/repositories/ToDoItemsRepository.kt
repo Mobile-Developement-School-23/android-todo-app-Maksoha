@@ -1,5 +1,6 @@
 package com.example.todoapp.data.repositories
 
+import androidx.compose.material3.TabPosition
 import com.example.todoapp.data.models.ToDoItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,10 +37,18 @@ class ToDoItemsRepository {
         return items
     }
 
-    fun removeItem(selectItem: ToDoItem) {
+    fun deleteItem(selectItem: ToDoItem) {
         val currentList = items.value.toMutableList()
         currentList.removeIf { it == selectItem }
         items.value = currentList
+    }
+
+    fun deleteItemByPosition(position: Int) {
+        val currentItems = items.value.toMutableList()
+        if (position in 0 until currentItems.size) {
+            currentItems.removeAt(position)
+            items.value = currentItems
+        }
     }
 
     fun updateItem(selectItem: ToDoItem, newItem: ToDoItem) {

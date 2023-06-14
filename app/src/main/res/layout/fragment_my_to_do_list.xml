@@ -1,100 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/app_bar_layout">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-            android:layout_marginTop="120dp">
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardView"
-                    style="@style/Widget.Material3.CardView.Elevated"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
-                    app:cardCornerRadius="12dp"
-                    app:contentPadding="16dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/no_task_text"
-                            android:text="Нет задач"
-                            android:visibility="invisible"
-                            style="@style/TextAppearance.Material3.HeadlineSmall"
-                            android:gravity="center"
-                            app:layout_constraintTop_toTopOf="parent" />
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        tools:listitem="@layout/item_todo_list"
-                        app:layout_constraintTop_toTopOf="parent"/>
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-                </com.google.android.material.card.MaterialCardView>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.appbar.AppBarLayout>
-    </androidx.core.widget.NestedScrollView>
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/Widget.Material3.CardView.Outlined"
-        android:layout_marginTop="-10dp"
-        app:contentPaddingBottom="16dp">
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/MyToDoList_text"
-            style="@style/TextAppearance.Material3.HeadlineLarge"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="36dp"
-            android:text="Мои дела"
-            app:layout_constraintTop_toTopOf="parent"/>
-        <com.google.android.material.progressindicator.LinearProgressIndicator
-            android:layout_width="288dp"
+            style="@style/Widget.Material3.CardView.Outlined"
+            android:layout_marginTop="-10dp"
+            app:contentPaddingBottom="16dp">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/MyToDoList_text"
+                    style="@style/TextAppearance.Material3.HeadlineLarge"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="36dp"
+                    android:text="Мои дела"
+                    app:layout_constraintTop_toTopOf="parent"/>
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:layout_width="288dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/progressIndicator"
+                    android:layout_marginVertical="20dp"
+                    style="@style/Widget.Material3.LinearProgressIndicator"
+                    app:layout_constraintTop_toBottomOf="@id/MyToDoList_text"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/stateProgressIndicator"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintLeft_toRightOf="@id/progressIndicator"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/progressIndicator"
+                    app:layout_constraintBottom_toBottomOf="@id/progressIndicator"
+                    android:text="0/0"
+                    style="@style/TextAppearance.Material3.TitleMedium"
+                    android:id="@+id/stateProgressIndicator"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.appbar.AppBarLayout>
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="128dp">
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardView"
+            style="@style/Widget.Material3.CardView.Elevated"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/progressIndicator"
-            android:layout_marginVertical="20dp"
-            style="@style/Widget.Material3.LinearProgressIndicator"
-            app:layout_constraintTop_toBottomOf="@id/MyToDoList_text"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/stateProgressIndicator"
-            app:layout_constraintBottom_toBottomOf="parent"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintLeft_toRightOf="@id/progressIndicator"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/progressIndicator"
-            app:layout_constraintBottom_toBottomOf="@id/progressIndicator"
-            android:text="0/0"
-            style="@style/TextAppearance.Material3.TitleMedium"
-            android:id="@+id/stateProgressIndicator"/>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
-
+            android:layout_margin="16dp"
+            app:cardCornerRadius="12dp"
+            app:contentPadding="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/no_task_text"
+                    android:text="Нет задач"
+                    android:visibility="invisible"
+                    style="@style/TextAppearance.Material3.HeadlineSmall"
+                    android:gravity="center"
+                    app:layout_constraintTop_toTopOf="parent" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:listitem="@layout/item_todo_list"
+                    app:layout_constraintTop_toTopOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </androidx.core.widget.NestedScrollView>
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_add_item"
         style="@style/Widget.Material3.FloatingActionButton.Primary"
@@ -102,6 +91,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="36dp"
         android:src="@drawable/round_add_24"
-        app:layout_anchor="@id/app_bar_layout"
-        app:layout_anchorGravity="bottom|right|end"/>
+        app:layout_anchorGravity="bottom|end"
+        android:layout_gravity="bottom|end"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
