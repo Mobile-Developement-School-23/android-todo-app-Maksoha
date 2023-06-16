@@ -59,7 +59,6 @@ dependencies {
             because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
         }
     }
-
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'

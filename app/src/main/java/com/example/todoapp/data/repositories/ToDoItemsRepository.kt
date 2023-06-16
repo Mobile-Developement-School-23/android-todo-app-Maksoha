@@ -15,16 +15,99 @@ class ToDoItemsRepository {
     }
 
     private fun loadData() {
-        for (i in 1..10) {
-            val id = "item_$i"
-            val text = "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст"
-            val importance = "Срочная"
-            val deadline = "25 июня 2023"
-            val isDone = false
-            val creationDate = "21 июня 2023"
-            val changeDate = "21 июня 2023"
-            addItem(ToDoItem(id, text, importance, deadline, isDone, creationDate, changeDate))
-        }
+        addItem(ToDoItem(
+            "item_1",
+            "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
+            "Срочная",
+            "25 июня 2023",
+            false,
+            "21 июня 2023",
+            "21 июня 2023"
+        ))
+        addItem(ToDoItem(
+            "item_2",
+            "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
+            "Обычная",
+            "26 июня 2023",
+            true,
+            "22 июня 2023",
+            "22 июня 2023"
+        ))
+        addItem(ToDoItem(
+            "item_3",
+            "Бооооооольшооооооооооооой тексссссссссссссссссссссст",
+            "Низкая",
+            "27 июня 2023",
+            false,
+            "23 июня 2023",
+            "23 июня 2023"
+        ))
+        addItem(ToDoItem(
+            "item_4",
+            "Оооооооооооооооооооочееееееееенььььььььььььььь бооооооольшооооооооооооой тексссссссссссссссссссссст",
+            "Обычная",
+            "28 июня 2023",
+            false,
+            "24 июня 2023",
+            "24 июня 2023"
+        ))
+        addItem(ToDoItem(
+            "item_5",
+            "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
+            "Срочная",
+            "29 июня 2023",
+            true,
+            "25 июня 2023",
+            "25 июня 2023"
+        ))
+        addItem(ToDoItem(
+            "item_6",
+            "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
+            "Обычная",
+            "30 июня 2023",
+            false,
+            "26 июня 2023",
+            "26 июня 2023"
+        ))
+        addItem(ToDoItem(
+            "item_7",
+            "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
+            "Низкая",
+            "1 июля 2023",
+            false,
+            "27 июня 2023",
+            "27 июня 2023"
+        ))
+        addItem(ToDoItem(
+            "item_8",
+            "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
+            "Обычная",
+            "2 июля 2023",
+            true,
+            "28 июня 2023",
+            "28 июня 2023"
+        ))
+        addItem(ToDoItem(
+            "item_9",
+            "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
+            "Срочная",
+            "3 июля 2023",
+            false,
+            "29 июня 2023",
+            "29 июня 2023"
+        ))
+        addItem(ToDoItem(
+            "item_10",
+            "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
+            "Обычная",
+            "4 июля 2023",
+            true,
+            "30 июня 2023",
+            "30 июня 2023"
+        ))
+
+
+
     }
     fun addItem(newItem: ToDoItem) {
         val currentList = items.value.toMutableList()
@@ -55,6 +138,14 @@ class ToDoItemsRepository {
         val currentList = items.value.toMutableList()
         val updatedList = currentList.map { if (it == selectItem) newItem else it }
         items.value = updatedList
+    }
+
+    fun moveItem(fromIndex : Int, toIndex : Int) {
+            val itemList = items.value.toMutableList()
+            val item = itemList.removeAt(fromIndex)
+            itemList.add(toIndex, item)
+            items.value = itemList
+
     }
 
 

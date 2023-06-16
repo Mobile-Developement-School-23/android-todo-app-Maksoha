@@ -58,6 +58,10 @@ class ToDoListViewModel(private val repository: ToDoItemsRepository) : ViewModel
         return allItems.value!!.filter { !it.isDone }
     }
 
+    fun moveItem(fromIndex : Int, toIndex : Int) {
+        repository.moveItem(fromIndex, toIndex)
+    }
+
 
 }
 class ToDoListViewModelFactory(private val repository: ToDoItemsRepository) : ViewModelProvider.Factory {

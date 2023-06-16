@@ -33,22 +33,21 @@ class ToDoItemFragment : Fragment() {
     ): View {
 
         binding = FragmentToDoItemBinding.inflate(layoutInflater, container, false)
+
         setDatePicker()
+
         setData()
         binding.btnClose.setOnClickListener {
             closeFragment()
         }
-        binding.btnSwitcher.setOnCheckedChangeListener { _, isChecked ->
-            updateDatePicker(isChecked)
 
+        binding.btnSwitcher.setOnClickListener {
+            updateDatePicker(binding.btnSwitcher.isChecked)
         }
-
 
         binding.btnSave.setOnClickListener {
             saveData()
             closeFragment()
-
-
         }
 
 
@@ -61,6 +60,10 @@ class ToDoItemFragment : Fragment() {
             }
         }
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
     }
 
     private fun setData() {
@@ -84,12 +87,7 @@ class ToDoItemFragment : Fragment() {
     private fun updateDatePicker(isChecked : Boolean) {
 
         if (isChecked) {
-            itemViewModel.getItem().observe(viewLifecycleOwner) { item ->
-                if (item == null) {
-                    datePicker.show(parentFragmentManager, datePicker.toString())
-                }
-            }
-
+            datePicker.show(parentFragmentManager, datePicker.toString())
         }
         else {
             binding.date.text = ""
@@ -155,7 +153,7 @@ class ToDoItemFragment : Fragment() {
     private fun getCurrentDate() : String {
         val currentDate = Calendar.getInstance().time
 
-        val dateFormat = SimpleDateFormat("d MMMM", Locale.getDefault())
+        val dateFormat = SimpleDateFormat("dd MMMM yyyy", Locale("ru"))
 
         return dateFormat.format(currentDate)
     }
