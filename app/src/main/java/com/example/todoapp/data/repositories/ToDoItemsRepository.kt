@@ -3,7 +3,6 @@ package com.example.todoapp.data.repositories
 import androidx.compose.material3.TabPosition
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
-import com.example.todoapp.data.models.Importance
 import com.example.todoapp.data.models.ToDoItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +18,7 @@ class ToDoItemsRepository {
         addItem(ToDoItem(
             "item_1",
             "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
-            Importance.HIGH,
+            "Срочная",
             "25 июня 2023",
             false,
             "21 июня 2023",
@@ -28,7 +27,7 @@ class ToDoItemsRepository {
         addItem(ToDoItem(
             "item_2",
             "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
-            Importance.COMMON,
+            "Обычная",
             "26 июня 2023",
             true,
             "22 июня 2023",
@@ -37,7 +36,7 @@ class ToDoItemsRepository {
         addItem(ToDoItem(
             "item_3",
             "Бооооооольшооооооооооооой тексссссссссссссссссссссст",
-            Importance.LOW,
+            "Низкая",
             "27 июня 2023",
             false,
             "23 июня 2023",
@@ -46,8 +45,8 @@ class ToDoItemsRepository {
         addItem(ToDoItem(
             "item_4",
             "Оооооооооооооооооооочееееееееенььььььььььььььь бооооооольшооооооооооооой тексссссссссссссссссссссст",
-            Importance.COMMON,
-            null,
+            "Обычная",
+            "28 июня 2023",
             false,
             "24 июня 2023",
             "24 июня 2023"
@@ -55,7 +54,7 @@ class ToDoItemsRepository {
         addItem(ToDoItem(
             "item_5",
             "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
-            Importance.HIGH,
+            "Срочная",
             "29 июня 2023",
             true,
             "25 июня 2023",
@@ -64,7 +63,7 @@ class ToDoItemsRepository {
         addItem(ToDoItem(
             "item_6",
             "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
-            Importance.COMMON,
+            "Обычная",
             "30 июня 2023",
             false,
             "26 июня 2023",
@@ -73,8 +72,8 @@ class ToDoItemsRepository {
         addItem(ToDoItem(
             "item_7",
             "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
-            Importance.LOW,
-            null,
+            "Низкая",
+            "1 июля 2023",
             false,
             "27 июня 2023",
             "27 июня 2023"
@@ -82,7 +81,7 @@ class ToDoItemsRepository {
         addItem(ToDoItem(
             "item_8",
             "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
-            Importance.COMMON,
+            "Обычная",
             "2 июля 2023",
             true,
             "28 июня 2023",
@@ -91,7 +90,7 @@ class ToDoItemsRepository {
         addItem(ToDoItem(
             "item_9",
             "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
-            Importance.HIGH,
+            "Срочная",
             "3 июля 2023",
             false,
             "29 июня 2023",
@@ -99,8 +98,8 @@ class ToDoItemsRepository {
         ))
         addItem(ToDoItem(
             "item_10",
-            "Оооооооооооооооооооочееееееееееееееееееееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
-            Importance.COMMON,
+            "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
+            "Обычная",
             "4 июля 2023",
             true,
             "30 июня 2023",
