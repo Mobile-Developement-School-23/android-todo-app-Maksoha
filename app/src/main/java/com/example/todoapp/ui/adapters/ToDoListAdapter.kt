@@ -1,6 +1,7 @@
 package com.example.todoapp.ui.adapters
 
 import android.graphics.Paint
+import android.graphics.Rect
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todoapp.R
+import com.example.todoapp.data.models.Importance
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.databinding.ItemTodoListBinding
 import com.google.android.material.button.MaterialButton
@@ -72,7 +74,7 @@ class ToDoListViewHolder(
             date.visibility = View.VISIBLE
         }
         else date.visibility = View.GONE
-        if (item.importance == "Срочная") indicator.setBackgroundResource(R.color.md_theme_light_error)
+        if (item.importance == Importance.HIGH) indicator.setBackgroundResource(R.color.md_theme_light_error)
 
         if (checkBox.isChecked) {
             val paint: Paint = text.paint
@@ -115,7 +117,6 @@ class ToDoListComparator : DiffUtil.ItemCallback<ToDoItem>() {
         return oldItem == newItem
     }
 }
-
 
 
 

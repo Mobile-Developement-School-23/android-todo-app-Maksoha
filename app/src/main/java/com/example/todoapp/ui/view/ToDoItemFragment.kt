@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import androidx.fragment.app.Fragment
 import com.example.todoapp.R
+import com.example.todoapp.data.models.Importance
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.databinding.FragmentToDoItemBinding
 import com.example.todoapp.ui.viewModels.ToDoItemViewModel
@@ -70,7 +71,13 @@ class ToDoItemFragment : Fragment() {
         itemViewModel.getItem().observe(viewLifecycleOwner) { item ->
             if (item != null) {
                 binding.text.setText(item.text)
-                binding.selectedImportance.setText(item.importance)
+                binding.selectedImportance.setText(
+                    when (item.importance) {
+                        Importance.LOW -> "Низкая"
+                        Importance.COMMON -> "Обычная"
+                        Importance.HIGH -> "Срочная"
+                    }
+                )
                 binding.date.visibility = View.VISIBLE
                 binding.btnSwitcher.isChecked = !item.deadline.isNullOrEmpty()
                 binding.date.text = item.deadline
@@ -99,7 +106,12 @@ class ToDoItemFragment : Fragment() {
     private fun saveData() {
         val id = "item_${itemViewModel.getItemsSize() + 1}"
         val text = binding.text.editableText.toString()
-        val importance = binding.selectedImportance.text.toString()
+        val importance =  when (binding.selectedImportance.text.toString()) {
+            "Низкая" -> Importance.LOW
+            "Обычная" -> Importance.COMMON
+            "Срочная" -> Importance.HIGH
+            else -> Importance.COMMON
+        }
         val deadline = if (binding.date.visibility == View.GONE) null else binding.date.text
         val isDone = false
         val changeDate = getCurrentDate()
@@ -109,13 +121,13 @@ class ToDoItemFragment : Fragment() {
             if (item == null) {
                 val addingItem = ToDoItem(
                     id, text, importance,
-                    deadline as String?, isDone, creationDate, changeDate)
+                    deadline as String?, isDone, creationDate, null)
                 itemViewModel.addItem(addingItem)
             }
             else {
                 val savingItem = ToDoItem(
                     id, text, importance,
-                    deadline as String?, isDone, item.creation_date, changeDate)
+                    deadline as String?, isDone, item.creationDate, changeDate)
                 itemViewModel.updateItem(item, savingItem)
             }
         }
@@ -164,9 +176,16 @@ class ToDoItemFragment : Fragment() {
     }
 
     private fun setImportanceAdapter() {
-        val items = listOf("Низкая", "Обычная", "Срочная")
+        val items = Importance.values().map { importance ->
+            when (importance) {
+                Importance.LOW -> "Низкая"
+                Importance.COMMON -> "Обычная"
+                Importance.HIGH -> "Срочная"
+            }
+        }
         val adapter = ArrayAdapter(requireContext(), R.layout.list_item, items)
-        (binding.importance.editText as? AutoCompleteTextView)?.setAdapter(adapter)    }
+        (binding.importance.editText as? AutoCompleteTextView)?.setAdapter(adapter)
+    }
 
     private fun closeFragment() {
         parentFragmentManager.popBackStack()
