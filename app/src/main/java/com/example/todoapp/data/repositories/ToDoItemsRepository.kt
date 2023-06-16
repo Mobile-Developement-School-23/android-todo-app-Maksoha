@@ -1,6 +1,8 @@
 package com.example.todoapp.data.repositories
 
 import androidx.compose.material3.TabPosition
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.map
 import com.example.todoapp.data.models.ToDoItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,13 +18,11 @@ class ToDoItemsRepository {
         for (i in 1..10) {
             val id = "item_$i"
             val text = "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст"
-            val importance = "Обычная"
-            val deadline = null
+            val importance = "Срочная"
+            val deadline = "25 июня 2023"
             val isDone = false
-            val creationDate = "2023-05-17"
-            val changeDate = "2023-05-17"
-
-
+            val creationDate = "21 июня 2023"
+            val changeDate = "21 июня 2023"
             addItem(ToDoItem(id, text, importance, deadline, isDone, creationDate, changeDate))
         }
     }
@@ -56,5 +56,6 @@ class ToDoItemsRepository {
         val updatedList = currentList.map { if (it == selectItem) newItem else it }
         items.value = updatedList
     }
+
 
 }

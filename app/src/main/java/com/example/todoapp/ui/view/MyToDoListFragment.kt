@@ -48,6 +48,12 @@ class MyToDoListFragment : Fragment() {
             findNavController().navigate(R.id.action_myToDoListFragment_to_addToDoItemFragment)
         }
 
+        binding.btnVisibility.setOnClickListener {
+            listViewModel.changeStateVisibility()
+        }
+
+
+
         return binding.root
     }
 
@@ -60,16 +66,30 @@ class MyToDoListFragment : Fragment() {
 
     private fun observeItems() {
         listViewModel.getItems().observe(viewLifecycleOwner) { items ->
-            if (items.isNullOrEmpty()) {
-                binding.noTaskText.visibility = View.VISIBLE
+            listViewModel.getStateVisibility().observe(viewLifecycleOwner) { visibility ->
+                if (!visibility && items != null) {
+                    binding.btnVisibility.setIconResource(R.drawable.outline_visibility_off_24)
+                    adapter.submitList(listViewModel.hide())
+                    if (listViewModel.hide().isEmpty()) {
+                        binding.noTaskText.visibility = View.VISIBLE
+                    }
+                    else {
+                        binding.noTaskText.visibility = View.GONE
+                    }
+                }
+                else {
+                    binding.btnVisibility.setIconResource(R.drawable.outline_visibility_24)
+                    if (items.isNullOrEmpty()) {
+                        binding.noTaskText.visibility = View.VISIBLE
+                    }
+                    else {
+                        binding.noTaskText.visibility = View.GONE
+                    }
+                    adapter.submitList(items)
+                }
+                updateProgressIndicator(items)
             }
-            else {
-                binding.noTaskText.visibility = View.INVISIBLE
-            }
-            adapter.submitList(items)
-            updateProgressIndicator(items)
         }
-
     }
 
 

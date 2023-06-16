@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto">
+
+    <Transition
+        motion:constraintSetEnd="@+id/end"
+        motion:constraintSetStart="@id/start"
+        motion:duration="1000">
+        <OnSwipe
+            motion:touchAnchorId="@+id/nestedScrollView"
+            motion:touchAnchorSide="top" />
+    </Transition>
+
+    <ConstraintSet android:id="@+id/start">
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/end">
+        <Constraint
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/MyToDoList_text"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:scaleX="0.75"
+            android:scaleY="0.75"/>
+        <Constraint
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:id="@+id/progressIndicator"
+            motion:layout_constraintTop_toBottomOf="@id/MyToDoList_text"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintEnd_toStartOf="@id/stateProgressIndicator"
+            android:alpha="0"/>
+        <Constraint
+            android:id="@+id/stateProgressIndicator"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginEnd="36dp"
+            motion:layout_constraintTop_toTopOf="@id/MyToDoList_text"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintBottom_toBottomOf="@id/MyToDoList_text"
+            android:alpha="0"/>
+        <Constraint
+            android:id="@+id/cardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            motion:layout_constraintTop_toBottomOf="@id/MyToDoList_text"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintBottom_toBottomOf="parent"/>
+        <Constraint
+            android:id="@+id/nestedScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="12dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintTop_toBottomOf="@id/MyToDoList_text"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"/>
+    </ConstraintSet>
+</MotionScene>

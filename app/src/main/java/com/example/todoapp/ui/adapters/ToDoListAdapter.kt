@@ -42,9 +42,11 @@ class ToDoListViewHolder(
     itemView: View,
     private val itemClickListener: ToDoListAdapter.OnItemClickListener
 ) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
-    private val textView: TextView = itemView.findViewById(R.id.text)
+    private val text: TextView = itemView.findViewById(R.id.text)
     private val checkBox : MaterialCheckBox = itemView.findViewById(R.id.checkbox)
     private val btnInfo : MaterialButton = itemView.findViewById(R.id.btn_info)
+    private val indicator : View = itemView.findViewById(R.id.indicator)
+    private val date : TextView = itemView.findViewById(R.id.date)
     private lateinit var currentItem: ToDoItem
 
 
@@ -58,17 +60,25 @@ class ToDoListViewHolder(
             itemClickListener.onButtonInfoClick(currentItem)
         }
 
+
     }
 
     fun bind(item: ToDoItem) {
         currentItem = item
-        textView.text = item.text
+        text.text = item.text
         checkBox.isChecked = item.isDone
+        if (item.deadline != null) {
+            date.text = item.deadline
+            date.visibility = View.VISIBLE
+        }
+        else date.visibility = View.GONE
+        if (item.importance == "Срочная") indicator.setBackgroundResource(R.color.md_theme_light_error)
+
         if (checkBox.isChecked) {
-            val paint: Paint = textView.paint
+            val paint: Paint = text.paint
             paint.flags = paint.flags or Paint.STRIKE_THRU_TEXT_FLAG
         } else {
-            val paint: Paint = textView.paint
+            val paint: Paint = text.paint
             paint.flags = paint.flags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
         }
     }

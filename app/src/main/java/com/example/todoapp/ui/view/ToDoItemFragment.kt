@@ -137,7 +137,7 @@ class ToDoItemFragment : Fragment() {
 
         datePicker.addOnPositiveButtonClickListener { selection ->
             val date = Date(selection)
-            val dateFormat = SimpleDateFormat("EEEE, d MMMM", Locale("ru"))
+            val dateFormat = SimpleDateFormat("dd MMMM yyyy", Locale("ru"))
             val formattedDate: String = dateFormat.format(date)
             binding.date.text = formattedDate
             binding.date.visibility = View.VISIBLE
