@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todoapp.R
+import com.example.todoapp.data.models.Importance
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.databinding.FragmentMyToDoListBinding
 import com.example.todoapp.ui.adapters.ToDoListAdapter
@@ -101,7 +102,6 @@ class MyToDoListFragment : Fragment() {
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         (binding.recyclerView.layoutManager as LinearLayoutManager).reverseLayout = true
-
         setSwipe()
 
     }
@@ -136,7 +136,6 @@ class MyToDoListFragment : Fragment() {
 
                 val itemView = viewHolder.itemView
                 val itemHeight = itemView.height
-                val isSwipeLeft = dX < 0
 
                 background.setBounds(
                     itemView.right + dX.toInt(),
@@ -223,8 +222,17 @@ class MyToDoListFragment : Fragment() {
     private fun displayInformation(item: ToDoItem) {
         val deadline = if (item.deadline.isNullOrEmpty()) "Нет" else item.deadline
         val isDone = if (item.isDone) "Да" else "Нет"
-        val message = "Дело: ${item.text}\nВажность: ${item.importance}\nДедлайн: $deadline\n" +
-                "Выполнено: $isDone\nДата создания: ${item.creation_date}\nДата изменения: ${item.change_date}"
+        val changeDate = item.changeDate ?: "-"
+        val message =   "Дело: ${item.text}\n" +
+                        "Важность: ${when (item.importance) {
+                        Importance.LOW -> "Низкая"
+                        Importance.COMMON -> "Обычная"
+                        Importance.HIGH -> "Срочная"
+                        }}\n" +
+                        "Дедлайн: $deadline\n" +
+                        "Выполнено: $isDone\n" +
+                        "Дата создания: ${item.creationDate}\n" +
+                        "Дата изменения: $changeDate"
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Информация")
             .setMessage(message)
