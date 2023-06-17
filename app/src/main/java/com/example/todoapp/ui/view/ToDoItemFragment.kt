@@ -47,8 +47,13 @@ class ToDoItemFragment : Fragment() {
         }
 
         binding.btnSave.setOnClickListener {
-            saveData()
-            closeFragment()
+            if (!binding.text.text.isNullOrEmpty()) {
+                saveData()
+                closeFragment()
+            }
+            else {
+                binding.text.error = "Введите задачу"
+            }
         }
 
 

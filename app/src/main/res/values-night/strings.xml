@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="my_tasks_text">Мои дела</string>
+    <string name="no_tasks_text">Нет задач</string>
+    <string name="task_text">Что надо сделать...</string>
+</resources>

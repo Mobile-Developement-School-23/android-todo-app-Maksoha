@@ -19,7 +19,7 @@
             android:layout_margin="40dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:text="Мои дела" />
+            android:text="@string/my_tasks_text" />
         <com.google.android.material.button.MaterialButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -81,7 +81,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="Нет задач"
+                    android:text="@string/no_tasks_text"
                     android:visibility="gone"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -105,5 +105,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="36dp"
         android:src="@drawable/round_add_24"
-        android:layout_gravity="bottom|end"/>
+        android:layout_gravity="bottom|end"
+        android:contentDescription="@string/adding_tasks_text" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

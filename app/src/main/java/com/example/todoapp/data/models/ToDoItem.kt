@@ -1,11 +1,5 @@
 package com.example.todoapp.data.models
 
-enum class Importance {
-    LOW,
-    COMMON,
-    HIGH
-}
-
 data class ToDoItem(
     val id: String,
     val text: String,
@@ -15,3 +9,8 @@ data class ToDoItem(
     val creationDate: String,
     val changeDate: String?
 )
+enum class Importance {
+    LOW,
+    COMMON,
+    HIGH
+}
