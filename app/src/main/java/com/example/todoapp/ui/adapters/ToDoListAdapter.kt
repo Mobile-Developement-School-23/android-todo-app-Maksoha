@@ -75,7 +75,7 @@ class ToDoListViewHolder(
         }
         else date.visibility = View.GONE
         if (item.importance == Importance.HIGH) indicator.setBackgroundResource(R.color.md_theme_light_error)
-
+        else indicator.setBackgroundResource(0x00)
         if (checkBox.isChecked) {
             val paint: Paint = text.paint
             paint.flags = paint.flags or Paint.STRIKE_THRU_TEXT_FLAG
