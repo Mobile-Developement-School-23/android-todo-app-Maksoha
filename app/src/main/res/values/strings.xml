@@ -5,11 +5,19 @@
     <string name="my_tasks_text">Мои дела</string>
     <string name="no_tasks_text">Нет задач</string>
     <string name="adding_tasks_text">Adding tasks</string>
-    <string name="task_text">Что надо сделать...</string>
+    <string name="task_text">Что надо сделать…</string>
     <string name="importance_text">Важность</string>
-    <string name="common_text">Обычная</string>
     <string name="deadline_text">Сделать до</string>
     <string name="delete_text">Удалить</string>
     <string name="save_text">Сохранить</string>
     <string name="date_text">Дата</string>
+    <string name="low_text">Низкая</string>
+    <string name="common_text">Обычная</string>
+    <string name="high_text">Высокая</string>
+    <string name="item_details">%1$s\nВажность: %2$s\nДедлайн: %3$s\nВыполнено: %4$s\nДата создания: %5$s\nДата изменения: %6$s</string>
+    <string name="yes_text">Да</string>
+    <string name="no_text">Нет</string>
+    <string name="information_text">Информация</string>
+    <string name="error_input_task_text">Введите задачу</string>
+    <string name="select_date_text">Выберите дату</string>
 </resources>

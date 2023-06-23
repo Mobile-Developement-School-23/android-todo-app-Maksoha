@@ -1,18 +1,22 @@
 package com.example.todoapp.data.repositories
 
-import androidx.compose.material3.TabPosition
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.map
 import com.example.todoapp.data.models.Importance
 import com.example.todoapp.data.models.ToDoItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import java.util.Date
 
 class ToDoItemsRepository {
     private val items: MutableStateFlow<List<ToDoItem>> = MutableStateFlow(emptyList())
 
     init {
-        loadData()
+        CoroutineScope(Dispatchers.IO).launch {
+            loadData()
+        }
     }
 
     private fun loadData() {
@@ -20,28 +24,28 @@ class ToDoItemsRepository {
             "item_1",
             "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
             Importance.HIGH,
-            "25 июня 2023",
+            Date(1677084800000),
             false,
-            "21 июня 2023",
-            "21 июня 2023"
+            Date(1672483200000),
+            Date(1672483200000)
         ))
         addItem(ToDoItem(
             "item_2",
             "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
             Importance.COMMON,
-            "26 июня 2023",
+            Date(1677084800000),
             true,
-            "22 июня 2023",
-            "22 июня 2023"
+            Date(1672483200000),
+            Date(1672483200000)
         ))
         addItem(ToDoItem(
             "item_3",
             "Бооооооольшооооооооооооой тексссссссссссссссссссссст",
             Importance.LOW,
-            "27 июня 2023",
+            Date(1677084800000),
             false,
-            "23 июня 2023",
-            "23 июня 2023"
+            Date(1672483200000),
+            Date(1672483200000)
         ))
         addItem(ToDoItem(
             "item_4",
@@ -49,26 +53,26 @@ class ToDoItemsRepository {
             Importance.COMMON,
             null,
             false,
-            "24 июня 2023",
-            "24 июня 2023"
+            Date(1672483200000),
+            Date(1672483200000)
         ))
         addItem(ToDoItem(
             "item_5",
             "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
             Importance.HIGH,
-            "29 июня 2023",
+            Date(1677084800000),
             true,
-            "25 июня 2023",
-            "25 июня 2023"
+            Date(1672483200000),
+            Date(1672483200000)
         ))
         addItem(ToDoItem(
             "item_6",
             "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
             Importance.COMMON,
-            "30 июня 2023",
+            Date(1677084800000),
             false,
-            "26 июня 2023",
-            "26 июня 2023"
+            Date(1672483200000),
+            Date(1672483200000)
         ))
         addItem(ToDoItem(
             "item_7",
@@ -76,38 +80,36 @@ class ToDoItemsRepository {
             Importance.LOW,
             null,
             false,
-            "27 июня 2023",
-            "27 июня 2023"
+            Date(1672483200000),
+            Date(1672483200000)
         ))
         addItem(ToDoItem(
             "item_8",
             "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
             Importance.COMMON,
-            "2 июля 2023",
+            Date(1677084800000),
             true,
-            "28 июня 2023",
-            "28 июня 2023"
+            Date(1672483200000),
+            Date(1672483200000)
         ))
         addItem(ToDoItem(
             "item_9",
             "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
             Importance.HIGH,
-            "3 июля 2023",
+            Date(1677084800000),
             false,
-            "29 июня 2023",
-            "29 июня 2023"
+            Date(1672483200000),
+            Date(1672483200000)
         ))
         addItem(ToDoItem(
             "item_10",
             "Оооооооооооооооооооочееееееееееееееееееееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
             Importance.COMMON,
-            "4 июля 2023",
+            Date(1677084800000),
             true,
-            "30 июня 2023",
-            "30 июня 2023"
+            Date(1672483200000),
+            Date(1672483200000)
         ))
-
-
 
     }
     fun addItem(newItem: ToDoItem) {

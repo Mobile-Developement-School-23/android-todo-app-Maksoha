@@ -2,7 +2,6 @@ package com.example.todoapp.ui.view
 
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,9 +11,12 @@ import android.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
+import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todoapp.R
 import com.example.todoapp.data.models.Importance
@@ -24,6 +26,12 @@ import com.example.todoapp.ui.adapters.ToDoListAdapter
 import com.example.todoapp.ui.viewModels.ToDoItemViewModel
 import com.example.todoapp.ui.viewModels.ToDoListViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 class MyToDoListFragment : Fragment() {
@@ -69,24 +77,23 @@ class MyToDoListFragment : Fragment() {
 
 
     private fun observeItems() {
-        listViewModel.getItems().observe(viewLifecycleOwner) { items ->
-            listViewModel.getStateVisibility().observe(viewLifecycleOwner) { visibility ->
-                if (!visibility && items != null) {
+        lifecycleScope.launch {
+            listViewModel.getItems().combine(listViewModel.getStateVisibility()) { items, visibility ->
+                Pair(items, visibility)
+            }.collect { (items, visibility) ->
+                if (!visibility && items.isNotEmpty()) {
                     binding.btnVisibility.setIconResource(R.drawable.outline_visibility_off_24)
                     adapter.submitList(listViewModel.hide())
                     if (listViewModel.hide().isEmpty()) {
                         binding.noTaskText.visibility = View.VISIBLE
-                    }
-                    else {
+                    } else {
                         binding.noTaskText.visibility = View.GONE
                     }
-                }
-                else {
+                } else {
                     binding.btnVisibility.setIconResource(R.drawable.outline_visibility_24)
-                    if (items.isNullOrEmpty()) {
+                    if (items.isEmpty()) {
                         binding.noTaskText.visibility = View.VISIBLE
-                    }
-                    else {
+                    } else {
                         binding.noTaskText.visibility = View.GONE
                     }
                     adapter.submitList(items)
@@ -94,6 +101,7 @@ class MyToDoListFragment : Fragment() {
                 updateProgressIndicator(items)
             }
         }
+
     }
 
 
@@ -182,7 +190,7 @@ class MyToDoListFragment : Fragment() {
     }
 
 
-        private fun updateProgressIndicator(items: List<ToDoItem>) {
+    private fun updateProgressIndicator(items: List<ToDoItem>) {
         val completedItemsCount = items.count { it.isDone }
         binding.progressIndicator.max = items.size
         binding.progressIndicator.progress = completedItemsCount
@@ -220,23 +228,27 @@ class MyToDoListFragment : Fragment() {
     }
 
     private fun displayInformation(item: ToDoItem) {
-        val deadline = if (item.deadline.isNullOrEmpty()) "Нет" else item.deadline
-        val isDone = if (item.isDone) "Да" else "Нет"
+        val deadline = if (item.deadline == null) getString(R.string.no_text) else convertDateToString(item.deadline)
+        val isDone = if (item.isDone) getString(R.string.yes_text) else getString(R.string.no_text)
         val changeDate = item.changeDate ?: "-"
-        val message =   "Дело: ${item.text}\n" +
-                        "Важность: ${when (item.importance) {
-                        Importance.LOW -> "Низкая"
-                        Importance.COMMON -> "Обычная"
-                        Importance.HIGH -> "Срочная"
-                        }}\n" +
-                        "Дедлайн: $deadline\n" +
-                        "Выполнено: $isDone\n" +
-                        "Дата создания: ${item.creationDate}\n" +
-                        "Дата изменения: $changeDate"
+        val itemDetails = getString(R.string.item_details, item.text, getImportanceText(item.importance), deadline, isDone, item.creationDate, changeDate)
+
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Информация")
-            .setMessage(message)
+            .setTitle(getString(R.string.information_text))
+            .setMessage(itemDetails)
             .show()
+    }
+
+    private fun getImportanceText(importance: Importance): String {
+        return when (importance) {
+            Importance.LOW -> getString(R.string.low_text)
+            Importance.COMMON -> getString(R.string.common_text)
+            Importance.HIGH -> getString(R.string.high_text)
+        }
+    }
+    private fun convertDateToString(date: Date): String {
+        val sdf = SimpleDateFormat("d MMMM yyyy", Locale("ru"))
+        return sdf.format(date)
     }
     private fun displayMenu(view: View?, item: ToDoItem) {
         val popupMenu = PopupMenu(view?.context, view)

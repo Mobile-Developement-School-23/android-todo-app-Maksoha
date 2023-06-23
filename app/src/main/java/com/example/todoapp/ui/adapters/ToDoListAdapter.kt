@@ -1,7 +1,6 @@
 package com.example.todoapp.ui.adapters
 
 import android.graphics.Paint
-import android.graphics.Rect
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,8 +14,12 @@ import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.databinding.ItemTodoListBinding
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
-class ToDoListAdapter(private val itemClickListener: OnItemClickListener,
+class ToDoListAdapter(
+    private val itemClickListener: OnItemClickListener,
 ) : ListAdapter<ToDoItem, ToDoListViewHolder>(ToDoListComparator()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ToDoListViewHolder {
@@ -70,7 +73,7 @@ class ToDoListViewHolder(
         text.text = item.text
         checkBox.isChecked = item.isDone
         if (item.deadline != null) {
-            date.text = item.deadline
+            date.text = convertDateToString(item.deadline)
             date.visibility = View.VISIBLE
         }
         else date.visibility = View.GONE
@@ -104,6 +107,11 @@ class ToDoListViewHolder(
     override fun onLongClick(v: View?): Boolean {
         itemClickListener.onItemLongClick(v, currentItem)
         return true
+    }
+
+    private fun convertDateToString(date: Date): String {
+        val sdf = SimpleDateFormat("d MMMM yyyy", Locale("ru"))
+        return sdf.format(date)
     }
 
 }

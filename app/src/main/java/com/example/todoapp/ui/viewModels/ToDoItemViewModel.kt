@@ -7,13 +7,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.data.repositories.ToDoItemsRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.Date
 
 class ToDoItemViewModel (private val repository: ToDoItemsRepository) : ViewModel() {
-    private val item: MutableLiveData<ToDoItem?> = MutableLiveData()
+    private val item: MutableStateFlow<ToDoItem?> = MutableStateFlow(null)
 
-
-    fun getItem() : LiveData<ToDoItem?> {
+    fun getItem() : StateFlow<ToDoItem?> {
         return item
     }
 
@@ -45,6 +47,7 @@ class ToDoItemViewModel (private val repository: ToDoItemsRepository) : ViewMode
      fun updateItem(selectItem: ToDoItem, newItem: ToDoItem) {
         repository.updateItem(selectItem, newItem)
      }
+
 
 
 }
