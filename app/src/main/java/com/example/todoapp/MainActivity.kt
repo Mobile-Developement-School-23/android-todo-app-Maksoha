@@ -1,11 +1,11 @@
-package com.example.todoapp.ui.view
+package com.example.todoapp
 
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.example.todoapp.ToDoListApplication
 import com.example.todoapp.data.repositories.ToDoItemsRepository
 import com.example.todoapp.databinding.ActivityMainBinding
+import com.example.todoapp.networks.RetrofitInstance
 import com.example.todoapp.ui.viewModels.ToDoItemViewModel
 import com.example.todoapp.ui.viewModels.ToDoItemViewModelFactory
 import com.example.todoapp.ui.viewModels.ToDoListViewModel
@@ -29,5 +29,14 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
+
+//        fetchTasks()
     }
+
+//    private fun fetchTasks() {
+//        try {
+//            val tasks = apiManager.apiService.getItems().execute().body()
+//        } catch (e: Exception) {
+//        }
+//    }
 }

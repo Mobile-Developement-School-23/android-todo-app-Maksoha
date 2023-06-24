@@ -13,12 +13,11 @@ import kotlinx.coroutines.launch
 import java.util.Date
 
 class ToDoItemViewModel (private val repository: ToDoItemsRepository) : ViewModel() {
-    private val item: MutableStateFlow<ToDoItem?> = MutableStateFlow(null)
+    private val selectedItem: MutableStateFlow<ToDoItem?> = MutableStateFlow(null)
 
-    fun getItem() : StateFlow<ToDoItem?> {
-        return item
+    fun getSelectedItem() : StateFlow<ToDoItem?> {
+        return selectedItem
     }
-
 
     fun getItemsSize() : Int {
         var itemSize = 0
@@ -32,12 +31,13 @@ class ToDoItemViewModel (private val repository: ToDoItemsRepository) : ViewMode
 
 
     fun setItem(selectedItem: ToDoItem?) {
-        item.value = selectedItem
+        this.selectedItem.value = selectedItem
     }
 
-    fun addItem(item: ToDoItem) {
-        repository.addItem(item)
-
+    fun addItem(revision: Int, request: ToDoItem) {
+        viewModelScope.launch {
+            repository.addItem(revision, request)
+        }
     }
 
     fun deleteItem(item: ToDoItem) {

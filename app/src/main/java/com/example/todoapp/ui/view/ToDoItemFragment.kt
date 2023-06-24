@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.example.todoapp.MainActivity
 import com.example.todoapp.R
 import com.example.todoapp.data.models.Importance
 import com.example.todoapp.data.models.ToDoItem
@@ -17,7 +18,6 @@ import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.launch
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -62,7 +62,7 @@ class ToDoItemFragment : Fragment() {
 
         binding.btnDelete.setOnClickListener {
             lifecycleScope.launch {
-                itemViewModel.getItem().collect { item->
+                itemViewModel.getSelectedItem().collect { item->
                     if (item != null) {
                         itemViewModel.deleteItem(item)
                         closeFragment()
@@ -79,7 +79,7 @@ class ToDoItemFragment : Fragment() {
 
     private fun setData() {
         lifecycleScope.launch {
-            itemViewModel.getItem().collect { item ->
+            itemViewModel.getSelectedItem().collect { item ->
                 if (item != null) {
                     binding.text.setText(item.text)
                     binding.selectedImportance.setText(
@@ -132,13 +132,13 @@ class ToDoItemFragment : Fragment() {
         val changeDate = getCurrentDate()
 
         lifecycleScope.launch {
-            itemViewModel.getItem().collect {item ->
+            itemViewModel.getSelectedItem().collect {item ->
                 val creationDate = getCurrentDate()
                 if (item == null) {
                     val addingItem = ToDoItem(
                         id, text, importance,
                         deadline, isDone, creationDate, null)
-                    itemViewModel.addItem(addingItem)
+                    itemViewModel.addItem(-1, addingItem)
                 }
                 else {
                     val savingItem = ToDoItem(
