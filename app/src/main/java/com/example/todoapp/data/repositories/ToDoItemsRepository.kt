@@ -25,17 +25,24 @@ class ToDoItemsRepository {
             lastKnownRevision = response.body()?.revision ?: lastKnownRevision
             if (response.isSuccessful) {
                 return response.body()?.element
-            }
+            } else displayError(response.code())
+
         } catch (e: Exception) {
             // Обработка ошибки при выполнении запроса
         }
         return null
     }
 
+
     suspend fun addItem(request: ToDoItem) {
         val response = api.addItem(lastKnownRevision, ToDoItemRequest("ok", request))
         lastKnownRevision = response.body()?.revision ?: lastKnownRevision
+
+        if (!response.isSuccessful) {
+            displayError(response.code())
+        }
     }
+
 
 
     suspend fun updateItems(request: List<ToDoItem>): Response<ToDoListResponse> {
@@ -44,16 +51,11 @@ class ToDoItemsRepository {
             if (response.isSuccessful) {
                 lastKnownRevision = response.body()?.revision ?: lastKnownRevision
             } else {
-                // Вывод ошибки в журнал логов
-                Log.e(
-                    "check",
-                    "Ошибка при обновлении элементов списка. Код ошибки: ${response.code()}"
-                )
+                displayError(response.code())
+
             }
             return response
         } catch (e: Exception) {
-            // Вывод ошибки в журнал логов
-            Log.e("check", "Ошибка при выполнении запроса на обновление элементов списка", e)
             throw e
         }
     }
@@ -67,7 +69,8 @@ class ToDoItemsRepository {
             trySend(itemList)
             close()
         } else {
-            close(CancellationException("Failed to get items: ${response.code()}"))
+            displayError(response.code())
+
         }
     }.flowOn(Dispatchers.IO)
 
@@ -76,9 +79,9 @@ class ToDoItemsRepository {
             val response = api.updateItem(lastKnownRevision, item.id, ToDoItemRequest("ok", item))
             if (response.isSuccessful) {
                 lastKnownRevision = response.body()?.revision ?: lastKnownRevision
-            } else {
-                throw Exception("Error updating item: ${response.code()}")
             }
+            else displayError(response.code())
+
         } catch (e: Exception) {
             throw e
         }
@@ -88,8 +91,17 @@ class ToDoItemsRepository {
         try {
             val response = api.deleteItem(lastKnownRevision, id)
             lastKnownRevision = response.body()?.revision ?: lastKnownRevision
+            if (!response.isSuccessful) {
+                displayError(response.code())
+            }
         } catch (e: Exception) {
             // Обработка ошибки при выполнении запроса
+        }
+    }
+
+    private fun displayError (error: Int) {
+        when (error) {
+
         }
     }
 
