@@ -33,7 +33,7 @@ class ToDoListAdapter(
 
     interface OnItemClickListener {
         fun onItemClick(item: ToDoItem)
-        fun onSwitchClick(item: ToDoItem, isChecked: Boolean)
+        fun onCheckboxClick(item: ToDoItem, isChecked: Boolean)
         fun onItemLongClick(v: View?, item: ToDoItem)
         fun onButtonInfoClick(item: ToDoItem)
         fun onItemSwipedLeft(item: ToDoItem)
@@ -59,7 +59,7 @@ class ToDoListViewHolder(
         itemView.setOnClickListener(this)
         itemView.setOnLongClickListener(this)
         checkBox.setOnCheckedChangeListener { _, isChecked ->
-            itemClickListener.onSwitchClick(currentItem, isChecked)
+            itemClickListener.onCheckboxClick(currentItem, isChecked)
         }
         btnInfo.setOnClickListener {
             itemClickListener.onButtonInfoClick(currentItem)
@@ -71,9 +71,9 @@ class ToDoListViewHolder(
     fun bind(item: ToDoItem) {
         currentItem = item
         text.text = item.text
-        checkBox.isChecked = item.isDone
+        checkBox.isChecked = item.done
         if (item.deadline != null) {
-            date.text = convertDateToString(item.deadline)
+            date.text = convertLongToStringDate(item.deadline)
             date.visibility = View.VISIBLE
         }
         else date.visibility = View.GONE
@@ -109,9 +109,10 @@ class ToDoListViewHolder(
         return true
     }
 
-    private fun convertDateToString(date: Date): String {
-        val sdf = SimpleDateFormat("d MMMM yyyy", Locale("ru"))
-        return sdf.format(date)
+    private fun convertLongToStringDate(timestamp: Long): String {
+        val date = Date(timestamp)
+        val format = SimpleDateFormat("dd MMMM yyyy", Locale("ru"))
+        return format.format(date)
     }
 
 }

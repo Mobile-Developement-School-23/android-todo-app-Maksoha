@@ -1,53 +1,158 @@
 package com.example.todoapp.data.repositories
 
+import android.util.Log
 import com.example.todoapp.data.models.ToDoItem
-import com.example.todoapp.data.models.ToDoItemResponse
+import com.example.todoapp.data.models.ToDoItemRequest
+import com.example.todoapp.data.models.ToDoListResponse
 import com.example.todoapp.networks.RetrofitInstance
 import com.example.todoapp.networks.ToDoApi
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flowOn
 import retrofit2.Response
+import java.io.IOException
 
 class ToDoItemsRepository {
     private val api: ToDoApi = RetrofitInstance.api
     private var lastKnownRevision: Int = 0
 
 
-//    init {
-//        CoroutineScope(Dispatchers.IO).launch {
-//            loadData()
-//        }
-//    }
+    suspend fun getItem(id: String): ToDoItem? {
+        try {
+            val response = api.getItem(id)
+            lastKnownRevision = response.body()?.revision ?: lastKnownRevision
+            if (response.isSuccessful) {
+                return response.body()?.element
+            }
+        } catch (e: Exception) {
+            // Обработка ошибки при выполнении запроса
+        }
+        return null
+    }
 
-    private fun loadData() {
+    suspend fun addItem(request: ToDoItem) {
+        val response = api.addItem(lastKnownRevision, ToDoItemRequest("ok", request))
+        lastKnownRevision = response.body()?.revision ?: lastKnownRevision
+    }
+
+
+    suspend fun updateItems(request: List<ToDoItem>): Response<ToDoListResponse> {
+        try {
+            val response = api.updateItems(lastKnownRevision, request)
+            if (response.isSuccessful) {
+                lastKnownRevision = response.body()?.revision ?: lastKnownRevision
+            } else {
+                // Вывод ошибки в журнал логов
+                Log.e(
+                    "check",
+                    "Ошибка при обновлении элементов списка. Код ошибки: ${response.code()}"
+                )
+            }
+            return response
+        } catch (e: Exception) {
+            // Вывод ошибки в журнал логов
+            Log.e("check", "Ошибка при выполнении запроса на обновление элементов списка", e)
+            throw e
+        }
+    }
+
+
+    fun getItems(): Flow<List<ToDoItem>> = callbackFlow {
+        val response = api.getItems()
+        lastKnownRevision = response.body()?.revision ?: lastKnownRevision
+        if (response.isSuccessful) {
+            val itemList = response.body()?.list ?: emptyList()
+            trySend(itemList)
+            close()
+        } else {
+            close(CancellationException("Failed to get items: ${response.code()}"))
+        }
+    }.flowOn(Dispatchers.IO)
+
+    suspend fun updateItem(item: ToDoItem) {
+        try {
+            val response = api.updateItem(lastKnownRevision, item.id, ToDoItemRequest("ok", item))
+            if (response.isSuccessful) {
+                lastKnownRevision = response.body()?.revision ?: lastKnownRevision
+            } else {
+                throw Exception("Error updating item: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    suspend fun deleteItem(id: String) {
+        try {
+            val response = api.deleteItem(lastKnownRevision, id)
+            lastKnownRevision = response.body()?.revision ?: lastKnownRevision
+        } catch (e: Exception) {
+            // Обработка ошибки при выполнении запроса
+        }
+    }
+
+
+//    fun getCompletedItems(): Flow<List<ToDoItem>> = callbackFlow {
+//        val response = api.getCompletedItems(done = true)
+//        lastKnownRevision = response.body()?.revision ?: lastKnownRevision
+//        if (response.isSuccessful) {
+//            val itemList = response.body()?.list ?: emptyList()
+//            trySend(itemList)
+//            close()
+//        } else {
+//            close(CancellationException("Failed to get items: ${response.code()}"))
+//        }
+//    }.flowOn(Dispatchers.IO)
+
+
+
+
+
+
+    //
+//    private suspend fun loadData() {
+//        val response = api.getItems()
+//        if (response.isSuccessful) {
+//            val listResponse = response.body()
+//            if (listResponse != null) {
+//                lastKnownRevision = listResponse.revision
+//            }
+//        }
+//
 //        addItem(ToDoItem(
 //            "item_1",
 //            "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
 //            Importance.HIGH,
-//            Date(1677084800000),
+//            1677084800000,
 //            false,
-//            Date(1672483200000),
-//            Date(1672483200000)
+//            null,
+//            1672483200000,
+//            1672483200000,
+//            ""
 //        ))
 //        addItem(ToDoItem(
 //            "item_2",
 //            "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
 //            Importance.COMMON,
-//            Date(1677084800000),
+//            167708480000,
 //            true,
-//            Date(1672483200000),
-//            Date(1672483200000)
+//            null,
+//            1672483200000,
+//            1672483200000,
+//            ""
 //        ))
 //        addItem(ToDoItem(
 //            "item_3",
 //            "Бооооооольшооооооооооооой тексссссссссссссссссссссст",
 //            Importance.LOW,
-//            Date(1677084800000),
+//            1677084800000,
 //            false,
-//            Date(1672483200000),
-//            Date(1672483200000)
+//            null,
+//            1672483200000,
+//            1672483200000,
+//            ""
 //        ))
 //        addItem(ToDoItem(
 //            "item_4",
@@ -55,26 +160,32 @@ class ToDoItemsRepository {
 //            Importance.COMMON,
 //            null,
 //            false,
-//            Date(1672483200000),
-//            Date(1672483200000)
+//            null,
+//            1672483200000,
+//            1672483200000,
+//            ""
 //        ))
 //        addItem(ToDoItem(
 //            "item_5",
 //            "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
 //            Importance.HIGH,
-//            Date(1677084800000),
+//            1677084800000,
 //            true,
-//            Date(1672483200000),
-//            Date(1672483200000)
+//            null,
+//            1672483200000,
+//            1672483200000,
+//            ""
 //        ))
 //        addItem(ToDoItem(
 //            "item_6",
 //            "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
 //            Importance.COMMON,
-//            Date(1677084800000),
+//            1677084800000,
 //            false,
-//            Date(1672483200000),
-//            Date(1672483200000)
+//            null,
+//            1672483200000,
+//            1672483200000,
+//            ""
 //        ))
 //        addItem(ToDoItem(
 //            "item_7",
@@ -82,95 +193,45 @@ class ToDoItemsRepository {
 //            Importance.LOW,
 //            null,
 //            false,
-//            Date(1672483200000),
-//            Date(1672483200000)
+//            null,
+//            1672483200000,
+//            1672483200000,
+//            ""
 //        ))
 //        addItem(ToDoItem(
 //            "item_8",
 //            "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
 //            Importance.COMMON,
-//            Date(1677084800000),
+//            1677084800000,
 //            true,
-//            Date(1672483200000),
-//            Date(1672483200000)
+//            null,
+//            1672483200000,
+//            1672483200000,
+//            ""
 //        ))
 //        addItem(ToDoItem(
 //            "item_9",
 //            "Оооооооооооооооооооочееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
 //            Importance.HIGH,
-//            Date(1677084800000),
+//            1677084800000,
 //            false,
-//            Date(1672483200000),
-//            Date(1672483200000)
+//            null,
+//            1672483200000,
+//            1672483200000,
+//            ""
 //        ))
 //        addItem(ToDoItem(
 //            "item_10",
 //            "Оооооооооооооооооооочееееееееееееееееееееееееееень бооооооольшооооооооооооой тексссссссссссссссссссссст",
 //            Importance.COMMON,
-//            Date(1677084800000),
+//            1677084800000,
 //            true,
-//            Date(1672483200000),
-//            Date(1672483200000)
+//            null,
+//            1672483200000,
+//            1672483200000,
+//            ""
 //        ))
-
-
-    }
-
-    suspend fun getItem(id: String): Response<ToDoItemResponse> {
-        return api.getItem(id)
-    }
-
-    suspend fun addItem(revision: Int, request: ToDoItem): Response<ToDoItemResponse> {
-        return api.addItem(revision, request)
-    }
-
-
-    suspend fun getItems(): Flow<List<ToDoItem>> {
-        return flow {
-            withContext(Dispatchers.IO) {
-                val response = api.getItems()
-                if (response.isSuccessful) {
-                    val listResponse = response.body()
-                    if (listResponse != null) {
-                        listResponse.revision
-                        emit(listResponse.list)
-                    }
-                }
-            }
-        }
-    }
-
-
-
-    fun deleteItem(selectItem: ToDoItem) {
-//        val currentList = items.value.toMutableList()
-//        currentList.removeIf { it == selectItem }
-//        items.value = currentList
-        }
-
-        fun deleteItemByPosition(position: Int) {
-//        val currentItems = items.value.toMutableList()
-//        if (position in 0 until currentItems.size) {
-//            currentItems.removeAt(position)
-//            items.value = currentItems
-//        }
-        }
-
-        fun updateItem(selectItem: ToDoItem, newItem: ToDoItem) {
-//        val currentList = items.value.toMutableList()
-//        val updatedList = currentList.map { if (it == selectItem) newItem else it }
-//        items.value = updatedList
-        }
-
-
-        fun moveItem(fromIndex: Int, toIndex: Int) {
-//            val itemList = items.value.toMutableList()
-//            val item = itemList.removeAt(fromIndex)
-//            itemList.add(toIndex, item)
-//            items.value = itemList
-
-        }
-
+//    }
 }
 
 

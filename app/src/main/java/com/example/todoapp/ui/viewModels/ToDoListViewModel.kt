@@ -1,46 +1,55 @@
 package com.example.todoapp.ui.viewModels
 
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.data.repositories.ToDoItemsRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 
 class ToDoListViewModel(private val repository: ToDoItemsRepository) : ViewModel() {
-    private var allItems: MutableStateFlow<List<ToDoItem>> = MutableStateFlow(emptyList())
+    private val _items: MutableStateFlow<List<ToDoItem>> = MutableStateFlow(emptyList())
+    val items: StateFlow<List<ToDoItem>> = _items
+    private val _unCompletedItems: MutableStateFlow<List<ToDoItem>> = MutableStateFlow(emptyList())
+    val unCompletedItems: StateFlow<List<ToDoItem>> = _unCompletedItems
     private var visibility : MutableStateFlow<Boolean> = MutableStateFlow(true)
 
     init {
+        refreshItems()
+    }
+    fun refreshItems() {
         viewModelScope.launch {
+            delay(10)
             repository.getItems().collect { items ->
-                allItems.value = items
+                _items.value = items
+                _unCompletedItems.value = items.filter {!it.done}
             }
         }
     }
 
 
     fun deleteItem(item: ToDoItem) {
-        repository.deleteItem(item)
+        viewModelScope.launch {
+            repository.deleteItem(item.id)
+        }
     }
 
-    fun getItems(): StateFlow<List<ToDoItem>> {
-        return allItems
+    fun deleteItemByPosition (position: Int) {
+        viewModelScope.launch {
+            repository.deleteItem(_items.value[position].id)
+        }
     }
 
-    fun deleteItemByPosition(position: Int) {
-        repository.deleteItemByPosition(position)
-    }
 
-
-    fun updateItem(selectItem: ToDoItem, newItem: ToDoItem) {
-        repository.updateItem(selectItem, newItem)
+    fun updateItem(editItem: ToDoItem) {
+        viewModelScope.launch {
+            repository.updateItem(editItem)
+        }
     }
 
     fun changeStateVisibility() {
@@ -51,13 +60,8 @@ class ToDoListViewModel(private val repository: ToDoItemsRepository) : ViewModel
         return visibility
     }
 
-    fun hide(): List<ToDoItem> {
-        return allItems.value.filter { !it.isDone }
-    }
 
-    fun moveItem(fromIndex : Int, toIndex : Int) {
-        repository.moveItem(fromIndex, toIndex)
-    }
+
 
 
 }

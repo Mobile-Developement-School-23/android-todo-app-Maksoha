@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.UUID
 
 
 class ToDoItemFragment : Fragment() {
@@ -89,9 +90,11 @@ class ToDoItemFragment : Fragment() {
                             Importance.HIGH -> getString(R.string.high_text)
                         }
                     )
-                    binding.date.visibility = View.VISIBLE
+                    if (item.deadline != null) binding.date.visibility = View.VISIBLE
+                    else binding.date.visibility = View.GONE
                     binding.btnSwitcher.isChecked = item.deadline != null
-                    binding.date.text = item.deadline?.let { convertDateToString(it) }
+                    binding.date.text = item.deadline?.let { convertLongToStringDate(it) }
+                    binding.btnDelete.isEnabled = true
                 }
                 else {
                     binding.btnDelete.isEnabled = false
@@ -101,9 +104,10 @@ class ToDoItemFragment : Fragment() {
         }
     }
 
-    private fun convertDateToString(date: Date): String {
-        val sdf = SimpleDateFormat("d MMMM yyyy", Locale("ru"))
-        return sdf.format(date)
+    private fun convertLongToStringDate(timestamp: Long): String {
+        val date = Date(timestamp)
+        val format = SimpleDateFormat("dd MMMM yyyy", Locale("ru"))
+        return format.format(date)
     }
 
     private fun updateDatePicker(isChecked : Boolean) {
@@ -119,7 +123,6 @@ class ToDoItemFragment : Fragment() {
 
 
     private fun saveData() {
-        val id = "item_${itemViewModel.getItemsSize() + 1}"
         val text = binding.text.editableText.toString()
         val importance = when (binding.selectedImportance.text.toString()) {
             getString(R.string.low_text) -> Importance.LOW
@@ -127,33 +130,37 @@ class ToDoItemFragment : Fragment() {
             getString(R.string.high_text) -> Importance.HIGH
             else -> Importance.COMMON
         }
-        val deadline = if (binding.date.visibility == View.GONE) null else convertStringToDate(binding.date.text.toString())
+        val deadline = if (binding.date.visibility == View.GONE) null else convertStringToLongDate(binding.date.text.toString())
         val isDone = false
-        val changeDate = getCurrentDate()
+        val changeDate = System.currentTimeMillis()
 
         lifecycleScope.launch {
             itemViewModel.getSelectedItem().collect {item ->
-                val creationDate = getCurrentDate()
+                val creationDate = System.currentTimeMillis()
                 if (item == null) {
+                    val id = UUID.randomUUID().toString()
                     val addingItem = ToDoItem(
                         id, text, importance,
-                        deadline, isDone, creationDate, null)
-                    itemViewModel.addItem(-1, addingItem)
+                        deadline, isDone, "00FF00", creationDate, creationDate, "f")
+                    itemViewModel.addItem(addingItem)
                 }
                 else {
+                    val id = item.id
                     val savingItem = ToDoItem(
                         id, text, importance,
-                        deadline, isDone, item.creationDate, changeDate)
-                    itemViewModel.updateItem(item, savingItem)
+                        deadline, isDone, "00FF00", item.createdAt, changeDate, "f")
+                    itemViewModel.updateItem(savingItem)
                 }
             }
         }
     }
 
-    private fun convertStringToDate(date : String) : Date? {
-        val sdf = SimpleDateFormat("d MMMM yyyy", Locale("ru"))
-        return sdf.parse(date)
+    private fun convertStringToLongDate(dateString: String): Long {
+        val format = SimpleDateFormat("dd MMMM yyyy", Locale("ru"))
+        val date = format.parse(dateString)
+        return date?.time ?: 0L
     }
+
 
     private fun setDatePicker() {
         datePicker = MaterialDatePicker.Builder.datePicker()
@@ -183,9 +190,6 @@ class ToDoItemFragment : Fragment() {
 
     }
 
-    private fun getCurrentDate(): Date {
-        return Calendar.getInstance().time
-    }
     private fun resetDate() {
         binding.btnSwitcher.isChecked = false
         binding.date.text = ""

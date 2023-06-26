@@ -25,6 +25,7 @@ import com.example.todoapp.ui.adapters.ToDoListAdapter
 import com.example.todoapp.ui.viewModels.ToDoItemViewModel
 import com.example.todoapp.ui.viewModels.ToDoListViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -50,15 +51,17 @@ class MyToDoListFragment : Fragment() {
         // Inflate the layout for this fragment
         itemClickListener = createItemClickListener()
         setRecyclerView()
+        listViewModel.refreshItems()
 
 
         binding.btnAddItem.setOnClickListener {
-            itemViewModel.setItem(null)
+            itemViewModel.selectItem(null)
             findNavController().navigate(R.id.action_myToDoListFragment_to_addToDoItemFragment)
         }
 
         binding.btnVisibility.setOnClickListener {
             listViewModel.changeStateVisibility()
+            listViewModel.refreshItems()
         }
 
 
@@ -69,20 +72,33 @@ class MyToDoListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        observeItems()
+        updateVisibility()
+        updateProgressIndicator()
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            listViewModel.refreshItems()
+            updateProgressIndicator()
+            lifecycleScope.launch {
+                binding.swipeRefreshLayout.isRefreshing = false
+            }
+
+        }
 
     }
 
 
-    private fun observeItems() {
+    private fun updateVisibility() {
         lifecycleScope.launch {
-            listViewModel.getItems().combine(listViewModel.getStateVisibility()) { items, visibility ->
+            listViewModel.items.combine(listViewModel.getStateVisibility()) { items, visibility ->
                 Pair(items, visibility)
-            }.collect { (items, visibility) ->
+            }.combine(listViewModel.unCompletedItems) { pair, unCompletedItems ->
+                Triple(pair.first, pair.second, unCompletedItems)
+            }.collect { (items, visibility, unCompletedItems) ->
+                // Access the combined values here
                 if (!visibility && items.isNotEmpty()) {
                     binding.btnVisibility.setIconResource(R.drawable.outline_visibility_off_24)
-                    adapter.submitList(listViewModel.hide())
-                    if (listViewModel.hide().isEmpty()) {
+                    adapter.submitList(unCompletedItems)
+                    if (unCompletedItems.isEmpty()) {
                         binding.noTaskText.visibility = View.VISIBLE
                     } else {
                         binding.noTaskText.visibility = View.GONE
@@ -96,7 +112,6 @@ class MyToDoListFragment : Fragment() {
                     }
                     adapter.submitList(items)
                 }
-                updateProgressIndicator(items)
             }
         }
 
@@ -124,7 +139,7 @@ class MyToDoListFragment : Fragment() {
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder
             ): Int {
-                val dragFlags = ItemTouchHelper.UP or ItemTouchHelper.DOWN
+                val dragFlags = 0
                 val swipeFlags = ItemTouchHelper.LEFT
                 return makeMovementFlags(dragFlags, swipeFlags)
             }
@@ -166,12 +181,12 @@ class MyToDoListFragment : Fragment() {
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-                val fromIndex = viewHolder.adapterPosition
-                val toIndex = target.adapterPosition
+//                val fromIndex = viewHolder.adapterPosition
+//                val toIndex = target.adapterPosition
+//
+//                listViewModel.moveItem(fromIndex, toIndex)
 
-                listViewModel.moveItem(fromIndex, toIndex)
-
-                return true
+                return false
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -188,11 +203,17 @@ class MyToDoListFragment : Fragment() {
     }
 
 
-    private fun updateProgressIndicator(items: List<ToDoItem>) {
-        val completedItemsCount = items.count { it.isDone }
-        binding.progressIndicator.max = items.size
-        binding.progressIndicator.progress = completedItemsCount
-        binding.stateProgressIndicator.text = "$completedItemsCount/${binding.progressIndicator.max}"
+    private fun updateProgressIndicator() {
+        lifecycleScope.launch {
+            listViewModel.items.combine(listViewModel.unCompletedItems) { items, unCompletedItems ->
+                Pair(items, unCompletedItems)
+            }.collect { (items, unCompletedItems) ->
+                binding.progressIndicator.max = items.size
+                val completedItemsCount = items.size - unCompletedItems.size
+                binding.progressIndicator.progress = completedItemsCount
+                binding.stateProgressIndicator.text = "$completedItemsCount/${binding.progressIndicator.max}"
+            }
+        }
     }
 
     private fun createItemClickListener(): ToDoListAdapter.OnItemClickListener {
@@ -201,8 +222,9 @@ class MyToDoListFragment : Fragment() {
                 editTask(item)
             }
 
-            override fun onSwitchClick(item: ToDoItem, isChecked: Boolean) {
-                listViewModel.updateItem(item, item.copy(isDone = isChecked))
+            override fun onCheckboxClick(item: ToDoItem, isChecked: Boolean) {
+                listViewModel.updateItem(item.copy(done = isChecked))
+                listViewModel.refreshItems()
             }
 
             override fun onButtonInfoClick(item: ToDoItem) {
@@ -221,15 +243,14 @@ class MyToDoListFragment : Fragment() {
     }
 
     private fun editTask(item: ToDoItem) {
-        itemViewModel.setItem(item)
+        itemViewModel.selectItem(item.id)
         findNavController().navigate(R.id.action_myToDoListFragment_to_addToDoItemFragment)
     }
 
     private fun displayInformation(item: ToDoItem) {
-        val deadline = if (item.deadline == null) getString(R.string.no_text) else convertDateToString(item.deadline)
-        val isDone = if (item.isDone) getString(R.string.yes_text) else getString(R.string.no_text)
-        val changeDate = item.changeDate ?: "-"
-        val itemDetails = getString(R.string.item_details, item.text, getImportanceText(item.importance), deadline, isDone, item.creationDate, changeDate)
+        val deadline = if (item.deadline == null) getString(R.string.no_text) else convertLongToStringDate(item.deadline)
+        val isDone = if (item.done) getString(R.string.yes_text) else getString(R.string.no_text)
+        val itemDetails = getString(R.string.item_details, item.text, getImportanceText(item.importance), deadline, isDone, convertLongToStringDate(item.createdAt), convertLongToStringDate(item.changedAt))
 
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.information_text))
@@ -244,9 +265,10 @@ class MyToDoListFragment : Fragment() {
             Importance.HIGH -> getString(R.string.high_text)
         }
     }
-    private fun convertDateToString(date: Date): String {
-        val sdf = SimpleDateFormat("d MMMM yyyy", Locale("ru"))
-        return sdf.format(date)
+    private fun convertLongToStringDate(timestamp: Long): String {
+        val date = Date(timestamp)
+        val format = SimpleDateFormat("dd MMMM yyyy", Locale("ru"))
+        return format.format(date)
     }
     private fun displayMenu(view: View?, item: ToDoItem) {
         val popupMenu = PopupMenu(view?.context, view)
@@ -258,7 +280,6 @@ class MyToDoListFragment : Fragment() {
                     displayInformation(item)
                     true
                 }
-
                 R.id.action_edit -> {
                     editTask(item)
                     true
@@ -273,6 +294,5 @@ class MyToDoListFragment : Fragment() {
 
         popupMenu.show()
     }
-
 
 }

@@ -5,7 +5,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <androidx.constraintlayout.motion.widget.MotionLayout
         android:id="@+id/motionLayout"
         android:layout_width="match_parent"
@@ -63,6 +66,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardView"
                 style="@style/Widget.Material3.CardView.Elevated"
@@ -94,10 +98,12 @@
                     />
 
             </com.google.android.material.card.MaterialCardView>
-            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </androidx.core.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
+
     </androidx.constraintlayout.motion.widget.MotionLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_add_item"
         style="@style/Widget.Material3.FloatingActionButton.Primary"
@@ -107,4 +113,5 @@
         android:src="@drawable/round_add_24"
         android:layout_gravity="bottom|end"
         android:contentDescription="@string/adding_tasks_text" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

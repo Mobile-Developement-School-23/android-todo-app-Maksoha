@@ -20,9 +20,9 @@ object RetrofitInstance {
 
     private val retrofit by lazy {
         Retrofit.Builder()
+            .client(httpClient)
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
-            .client(httpClient)
             .build()
 
     }
