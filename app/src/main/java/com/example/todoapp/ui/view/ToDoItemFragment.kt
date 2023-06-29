@@ -1,6 +1,8 @@
 package com.example.todoapp.ui.view
 
 import android.os.Bundle
+import android.provider.ContactsContract
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -64,7 +66,7 @@ class ToDoItemFragment : Fragment() {
 
 
         binding.btnDelete.setOnClickListener {
-            lifecycleScope.launch {
+            viewLifecycleOwner.lifecycleScope.launch {
                 itemViewModel.getSelectedItem().collect { item->
                     if (item != null) {
                         itemViewModel.deleteItem(item)
@@ -81,7 +83,7 @@ class ToDoItemFragment : Fragment() {
 
 
     private fun setData() {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             itemViewModel.getSelectedItem().collect { item ->
                 if (item != null) {
                     binding.text.setText(item.text)
@@ -136,25 +138,29 @@ class ToDoItemFragment : Fragment() {
         val isDone = false
         val changeDate = System.currentTimeMillis()
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             itemViewModel.getSelectedItem().collect { item ->
                 val creationDate = System.currentTimeMillis()
                 if (item == null) {
                     val id = UUID.randomUUID().toString()
                     val addingItem = ToDoItem(
                         id, text, importance,
-                        deadline, isDone, null, creationDate, creationDate, "f")
+                        deadline, isDone, null, creationDate, creationDate, getDeviceId())
                     itemViewModel.addItem(addingItem)
                 }
                 else {
                     val id = item.id
                     val savingItem = ToDoItem(
                         id, text, importance,
-                        deadline, isDone, null, item.createdAt, changeDate, "f")
+                        deadline, isDone, null, item.createdAt, changeDate, getDeviceId())
                     itemViewModel.updateItem(savingItem)
                 }
             }
         }
+    }
+
+    private fun getDeviceId() : String {
+        return Settings.Secure.getString(requireContext().contentResolver, Settings.Secure.ANDROID_ID)
     }
 
     private fun convertStringToLongDate(dateString: String): Long {

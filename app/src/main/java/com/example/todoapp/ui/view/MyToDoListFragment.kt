@@ -51,13 +51,13 @@ class MyToDoListFragment : Fragment() {
         // Inflate the layout for this fragment
         itemClickListener = createItemClickListener()
 
-        lifecycleScope.launch {
-            listViewModel.getItems().collect {
+        setRecyclerView()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            listViewModel.items.collect {
                 adapter.submitList(it)
             }
         }
-
-        setRecyclerView()
 
         binding.btnAddItem.setOnClickListener {
             itemViewModel.selectItem(null)
@@ -67,6 +67,7 @@ class MyToDoListFragment : Fragment() {
         binding.btnVisibility.setOnClickListener {
             listViewModel.changeStateVisibility()
             updateVisibility()
+
         }
 
         return binding.root
@@ -78,22 +79,23 @@ class MyToDoListFragment : Fragment() {
         updateProgressIndicator()
         binding.swipeRefreshLayout.setOnRefreshListener {
             updateProgressIndicator()
-            lifecycleScope.launch {
+            viewLifecycleOwner.lifecycleScope.launch {
                 listViewModel.refreshData()
             }
             binding.swipeRefreshLayout.isRefreshing = false
+
         }
 
     }
 
     private fun updateVisibility() {
-        lifecycleScope.launch {
-            listViewModel.getItems().combine(listViewModel.getUndoneItems()) { items, undoneItems ->
+        viewLifecycleOwner.lifecycleScope.launch {
+            listViewModel.items.combine(listViewModel.undoneItems) { items, undoneItems ->
                 Pair(items, undoneItems)
             }.combine(listViewModel.getStateVisibility()) { pair, stateVisibility ->
                 Triple(pair.first, pair.second, stateVisibility)
             }.collect { (items, undoneItems, stateVisibility) ->
-
+                // Access the combined values here
                 if (!stateVisibility && items.isNotEmpty()) {
                     binding.btnVisibility.setIconResource(R.drawable.outline_visibility_off_24)
                     adapter.submitList(undoneItems)
@@ -194,8 +196,8 @@ class MyToDoListFragment : Fragment() {
 
 
     private fun updateProgressIndicator() {
-        lifecycleScope.launch {
-            listViewModel.getItems().combine(listViewModel.getUndoneItems()) { items, undoneItems ->
+        viewLifecycleOwner.lifecycleScope.launch {
+            listViewModel.items.combine(listViewModel.undoneItems) { items, undoneItems ->
                 Pair(items, undoneItems)
             }.collect { (items, undoneItems) ->
                 binding.progressIndicator.max = items.size

@@ -3,12 +3,14 @@ package com.example.todoapp.data.repositories
 import android.util.Log
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.data.models.ToDoItemRequest
+import com.example.todoapp.data.models.ToDoItemResponse
 import com.example.todoapp.data.models.ToDoListRequest
 import com.example.todoapp.data.models.ToDoListResponse
 import com.example.todoapp.networks.RetrofitInstance
 import com.example.todoapp.networks.ToDoApi
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
@@ -26,7 +28,6 @@ class NetworkRepository {
             if (response.isSuccessful) {
                 return response.body()?.element
             } else {
-                displayError(response.code())
             }
         } catch (e: Exception) {
             // Обработка ошибки при выполнении запроса
@@ -41,7 +42,6 @@ class NetworkRepository {
             val response = api.addItem(lastKnownRevision, ToDoItemRequest(request))
             lastKnownRevision = response.body()?.revision ?: lastKnownRevision
             if (!response.isSuccessful) {
-                displayError(response.code())
             }
         } catch (e: Exception) {
             // Обработка ошибки при выполнении запроса
@@ -56,7 +56,6 @@ class NetworkRepository {
             if (response.isSuccessful) {
                 lastKnownRevision = response.body()?.revision ?: lastKnownRevision
             } else {
-                displayError(response.code())
             }
             response
         } catch (e: IOException) {
@@ -74,7 +73,6 @@ class NetworkRepository {
             if (response.isSuccessful) {
                 response.body()?.list ?: emptyList()
             } else {
-                displayError(response.code())
                 emptyList()
             }
         } catch (e: Exception) {
@@ -91,7 +89,6 @@ class NetworkRepository {
             if (response.isSuccessful) {
                 lastKnownRevision = response.body()?.revision ?: lastKnownRevision
             } else {
-                displayError(response.code())
             }
         } catch (e: Exception) {
             // Обработка ошибки при выполнении запроса
@@ -111,7 +108,6 @@ class NetworkRepository {
             val response = api.deleteItem(lastKnownRevision, id)
             lastKnownRevision = response.body()?.revision ?: lastKnownRevision
             if (!response.isSuccessful) {
-                displayError(response.code())
             }
         } catch (e: Exception) {
             // Обработка ошибки при выполнении запроса
@@ -120,12 +116,38 @@ class NetworkRepository {
         }
     }
 
+    private suspend fun <T> makeApiRequestWithRetry(apiRequest: suspend () -> Response<T>) {
+        val maxRetries = 3
+        val retryIntervalMs = 1000L
 
-    private fun displayError (error: Int) {
-        when (error) {
+        var currentRetry = 0
+        var success = false
+
+        while (currentRetry < maxRetries && !success) {
+            try {
+                val response = apiRequest()
+
+                if (response.isSuccessful) {
+                    success = true
+                } else {
+
+                    currentRetry++
+
+                    delay(retryIntervalMs)
+                }
+            } catch (e: Exception) {
+
+                currentRetry++
+
+                delay(retryIntervalMs)
+            }
+        }
+
+        if (!success) {
 
         }
     }
+
 
 }
 

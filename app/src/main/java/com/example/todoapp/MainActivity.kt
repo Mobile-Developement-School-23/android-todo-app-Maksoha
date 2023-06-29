@@ -37,10 +37,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-    }
-    override fun onResume() {
-        super.onResume()
-
         val contextView = findViewById<View>(R.id.activityMain)
         val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkCallback = object : ConnectivityManager.NetworkCallback() {
@@ -56,6 +52,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         connectivityManager.registerDefaultNetworkCallback(networkCallback)
+
     }
+
 
 }
