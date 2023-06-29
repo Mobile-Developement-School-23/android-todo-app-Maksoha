@@ -5,12 +5,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.todoapp.data.models.ToDoItem
-import com.example.todoapp.data.repositories.ToDoItemsRepository
+import com.example.todoapp.data.repositories.LocalRepository
+import com.example.todoapp.data.repositories.NetworkRepository
+import com.example.todoapp.data.repositories.ToDoRepositoryImpl
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.StateFlow as StateFlow
 
-class ToDoItemViewModel (private val repository: ToDoItemsRepository) : ViewModel() {
+class ToDoItemViewModel (private val repository: ToDoRepositoryImpl) : ViewModel() {
     private val selectedItem: MutableStateFlow<ToDoItem?> = MutableStateFlow(null)
     private val itemsSize : MutableStateFlow<Int> = MutableStateFlow(0)
 
@@ -21,14 +25,15 @@ class ToDoItemViewModel (private val repository: ToDoItemsRepository) : ViewMode
             }
         }
     }
-    fun selectItem(id : String?) {
+    fun selectItem(id: String?) {
         viewModelScope.launch {
             if (id == null) {
                 selectedItem.value = null
-            }
-            else {
-                selectedItem.value = repository.getItem(id)
-                Log.d("check", id)
+            } else {
+                val item = withContext(Dispatchers.IO) {
+                    repository.getItemById(id)
+                }
+                selectedItem.value = item
             }
         }
     }
@@ -38,9 +43,9 @@ class ToDoItemViewModel (private val repository: ToDoItemsRepository) : ViewMode
     }
 
 
-    fun addItem(request: ToDoItem) {
+    fun addItem(item: ToDoItem) {
         viewModelScope.launch {
-            repository.addItem(request)
+            repository.addItem(item)
         }
     }
 
@@ -59,7 +64,7 @@ class ToDoItemViewModel (private val repository: ToDoItemsRepository) : ViewMode
 
 
 }
-class ToDoItemViewModelFactory(private val repository: ToDoItemsRepository) : ViewModelProvider.Factory {
+class ToDoItemViewModelFactory(private val repository: ToDoRepositoryImpl) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ToDoItemViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

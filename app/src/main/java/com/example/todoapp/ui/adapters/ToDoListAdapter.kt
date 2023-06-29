@@ -22,6 +22,7 @@ class ToDoListAdapter(
     private val itemClickListener: OnItemClickListener,
 ) : ListAdapter<ToDoItem, ToDoListViewHolder>(ToDoListComparator()) {
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ToDoListViewHolder {
         return ToDoListViewHolder.create(parent, itemClickListener)
     }
@@ -36,7 +37,6 @@ class ToDoListAdapter(
         fun onCheckboxClick(item: ToDoItem, isChecked: Boolean)
         fun onItemLongClick(v: View?, item: ToDoItem)
         fun onButtonInfoClick(item: ToDoItem)
-        fun onItemSwipedLeft(item: ToDoItem)
     }
 
 
@@ -65,7 +65,6 @@ class ToDoListViewHolder(
             itemClickListener.onButtonInfoClick(currentItem)
         }
 
-
     }
 
     fun bind(item: ToDoItem) {
@@ -87,7 +86,6 @@ class ToDoListViewHolder(
             paint.flags = paint.flags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
         }
     }
-
     companion object {
         fun create(
             parent: ViewGroup,
@@ -123,7 +121,10 @@ class ToDoListComparator : DiffUtil.ItemCallback<ToDoItem>() {
     }
 
     override fun areContentsTheSame(oldItem: ToDoItem, newItem: ToDoItem): Boolean {
-        return oldItem == newItem
+        return oldItem.done == newItem.done &&
+                oldItem.text == newItem.text &&
+                oldItem.deadline == newItem.deadline &&
+                oldItem.importance == newItem.importance
     }
 }
 

@@ -19,7 +19,6 @@ import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
@@ -48,6 +47,9 @@ class ToDoItemFragment : Fragment() {
 
         binding.btnSwitcher.setOnClickListener {
             updateDatePicker(binding.btnSwitcher.isChecked)
+            if (!binding.btnSwitcher.isChecked) {
+                resetDate()
+            }
         }
 
         binding.btnSave.setOnClickListener {
@@ -135,20 +137,20 @@ class ToDoItemFragment : Fragment() {
         val changeDate = System.currentTimeMillis()
 
         lifecycleScope.launch {
-            itemViewModel.getSelectedItem().collect {item ->
+            itemViewModel.getSelectedItem().collect { item ->
                 val creationDate = System.currentTimeMillis()
                 if (item == null) {
                     val id = UUID.randomUUID().toString()
                     val addingItem = ToDoItem(
                         id, text, importance,
-                        deadline, isDone, "00FF00", creationDate, creationDate, "f")
+                        deadline, isDone, null, creationDate, creationDate, "f")
                     itemViewModel.addItem(addingItem)
                 }
                 else {
                     val id = item.id
                     val savingItem = ToDoItem(
                         id, text, importance,
-                        deadline, isDone, "00FF00", item.createdAt, changeDate, "f")
+                        deadline, isDone, null, item.createdAt, changeDate, "f")
                     itemViewModel.updateItem(savingItem)
                 }
             }

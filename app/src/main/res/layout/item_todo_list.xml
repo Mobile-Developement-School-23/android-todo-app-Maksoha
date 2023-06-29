@@ -35,7 +35,7 @@
         app:layout_constraintEnd_toStartOf="@id/btn_info"
         app:layout_constraintStart_toEndOf="@id/checkbox"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="11dp"/>
 
     <TextView
         android:id="@+id/date"

@@ -3,6 +3,7 @@ package com.example.todoapp.networks
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.data.models.ToDoItemRequest
 import com.example.todoapp.data.models.ToDoItemResponse
+import com.example.todoapp.data.models.ToDoListRequest
 import com.example.todoapp.data.models.ToDoListResponse
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
@@ -13,15 +14,10 @@ interface ToDoApi {
     @GET("list")
     suspend fun getItems(): Response<ToDoListResponse>
 
-//    @GET("list")
-//    suspend fun getCompletedItems(
-//        @Query("done") done: Boolean = true
-//    ): Response<ToDoListResponse>
-
     @PATCH("list")
     suspend fun updateItems(
         @Header("X-Last-Known-Revision") revision: Int,
-        @Body request: List<ToDoItem>
+        @Body request: ToDoListRequest
     ): Response<ToDoListResponse>
 
     @GET("list/{id}")

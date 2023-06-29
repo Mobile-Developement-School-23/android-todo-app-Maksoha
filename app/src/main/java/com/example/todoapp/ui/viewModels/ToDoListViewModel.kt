@@ -5,43 +5,33 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.todoapp.data.models.ToDoItem
-import com.example.todoapp.data.repositories.ToDoItemsRepository
+import com.example.todoapp.data.repositories.LocalRepository
+import com.example.todoapp.data.repositories.NetworkRepository
+import com.example.todoapp.data.repositories.ToDoRepositoryImpl
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 
-class ToDoListViewModel(private val repository: ToDoItemsRepository) : ViewModel() {
-    private val _items: MutableStateFlow<List<ToDoItem>> = MutableStateFlow(emptyList())
-    val items: StateFlow<List<ToDoItem>> = _items
-    private val _unCompletedItems: MutableStateFlow<List<ToDoItem>> = MutableStateFlow(emptyList())
-    val unCompletedItems: StateFlow<List<ToDoItem>> = _unCompletedItems
+class ToDoListViewModel(private val repository: ToDoRepositoryImpl) : ViewModel() {
     private var visibility : MutableStateFlow<Boolean> = MutableStateFlow(true)
 
-    init {
-        refreshItems()
-    }
-    fun refreshItems() {
+    fun getItems() : Flow<List<ToDoItem>> = repository.getItems()
+
+    suspend fun refreshData() {
         viewModelScope.launch {
-            delay(10)
-            repository.getItems().collect { items ->
-                _items.value = items
-                _unCompletedItems.value = items.filter {!it.done}
-            }
+            repository.refreshData()
         }
     }
 
+    fun getUndoneItems() : Flow<List<ToDoItem>> = repository.getUndoneItems()
 
     fun deleteItem(item: ToDoItem) {
         viewModelScope.launch {
             repository.deleteItem(item.id)
-        }
-    }
-
-    fun deleteItemByPosition (position: Int) {
-        viewModelScope.launch {
-            repository.deleteItem(_items.value[position].id)
         }
     }
 
@@ -64,8 +54,9 @@ class ToDoListViewModel(private val repository: ToDoItemsRepository) : ViewModel
 
 
 
+
 }
-class ToDoListViewModelFactory(private val repository: ToDoItemsRepository) : ViewModelProvider.Factory {
+class ToDoListViewModelFactory(private val repository: ToDoRepositoryImpl) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ToDoListViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
