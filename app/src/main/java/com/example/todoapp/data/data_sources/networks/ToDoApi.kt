@@ -1,4 +1,4 @@
-package com.example.todoapp.networks
+package com.example.todoapp.data.data_sources.networks
 
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.data.models.ToDoItemRequest

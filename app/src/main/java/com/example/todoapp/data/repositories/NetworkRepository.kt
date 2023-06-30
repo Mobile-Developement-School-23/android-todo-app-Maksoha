@@ -3,17 +3,11 @@ package com.example.todoapp.data.repositories
 import android.util.Log
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.data.models.ToDoItemRequest
-import com.example.todoapp.data.models.ToDoItemResponse
 import com.example.todoapp.data.models.ToDoListRequest
 import com.example.todoapp.data.models.ToDoListResponse
-import com.example.todoapp.networks.RetrofitInstance
-import com.example.todoapp.networks.ToDoApi
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
+import com.example.todoapp.data.data_sources.networks.RetrofitInstance
+import com.example.todoapp.data.data_sources.networks.ToDoApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flowOn
 import retrofit2.Response
 import java.io.IOException
 
@@ -22,130 +16,148 @@ class NetworkRepository {
     private var lastKnownRevision: Int = 0
 
     suspend fun getItem(id: String): ToDoItem? {
-        try {
-            val response = api.getItem(id)
-            lastKnownRevision = response.body()?.revision ?: lastKnownRevision
-            if (response.isSuccessful) {
-                return response.body()?.element
-            } else {
-            }
-        } catch (e: Exception) {
-            // Обработка ошибки при выполнении запроса
-            // Вывод ошибки в журнал логов
-            Log.e("check", "Ошибка при выполнении запроса на получение элемента", e)
+        val response = makeRequestWithRetry(3, 1000) {
+            api.getItem(id)
         }
-        return null
+        if (response.isSuccessful) {
+            lastKnownRevision = response.body()?.revision ?: lastKnownRevision
+            return response.body()?.element
+        } else {
+            // Handle server error
+            val errorCode = response.code()
+            // ...
+            return null
+        }
     }
 
     suspend fun addItem(request: ToDoItem) {
-        try {
-            val response = api.addItem(lastKnownRevision, ToDoItemRequest(request))
-            lastKnownRevision = response.body()?.revision ?: lastKnownRevision
-            if (!response.isSuccessful) {
-            }
-        } catch (e: Exception) {
-            // Обработка ошибки при выполнении запроса
-            // Вывод ошибки в журнал логов
-            Log.e("check", "Ошибка при выполнении запроса на добавление элемента", e)
+        val response = makeRequestWithRetry(3, 1000) {
+            api.addItem(lastKnownRevision, ToDoItemRequest(request))
+        }
+        if (!response.isSuccessful) {
+            // Handle server error
+            val errorCode = response.code()
+            // ...
         }
     }
 
     suspend fun updateItems(request: List<ToDoItem>): Response<ToDoListResponse>? {
         return try {
-            val response = api.updateItems(lastKnownRevision, ToDoListRequest(request))
+            val response = makeRequestWithRetry(3, 1000) {
+                api.updateItems(lastKnownRevision, ToDoListRequest(request))
+            }
             if (response.isSuccessful) {
                 lastKnownRevision = response.body()?.revision ?: lastKnownRevision
             } else {
+                // Handle server error
+                val errorCode = response.code()
+                // ...
             }
             response
         } catch (e: IOException) {
-            // Вывод ошибки в журнал логов
-            Log.e("check", "Ошибка при выполнении запроса на обновление элементов списка", e)
+            // Log the error here
+            Log.e("check", "IOException occurred while updating items", e)
             null
         }
     }
 
-
     suspend fun getItems(): List<ToDoItem> {
         return try {
-            val response = api.getItems()
-            lastKnownRevision = response.body()?.revision ?: lastKnownRevision
-            if (response.isSuccessful) {
-                response.body()?.list ?: emptyList()
-            } else {
-                emptyList()
+            val response = makeRequestWithRetry(3, 1000) {
+                api.getItems()
             }
+            if (response.isSuccessful) {
+                lastKnownRevision = response.body()?.revision ?: lastKnownRevision
+            }
+            response.body()?.list ?: emptyList()
         } catch (e: Exception) {
-            // Вывод ошибки в журнал логов
-            Log.e("check", "Ошибка при выполнении запроса на получение списка элементов", e)
+            // Log the error here
+            Log.e("check", "Exception occurred while getting items", e)
             emptyList()
         }
     }
 
-
     suspend fun updateItem(updatedItem: ToDoItem) {
         try {
-            val response = api.updateItem(lastKnownRevision, updatedItem.id, ToDoItemRequest(updatedItem))
+            val response = makeRequestWithRetry(3, 1000) {
+                api.updateItem(lastKnownRevision, updatedItem.id, ToDoItemRequest(updatedItem))
+            }
             if (response.isSuccessful) {
                 lastKnownRevision = response.body()?.revision ?: lastKnownRevision
             } else {
+                // Handle server error
+                val errorCode = response.code()
+                // ...
             }
         } catch (e: Exception) {
-            // Обработка ошибки при выполнении запроса
+            // Handle request execution error
             if (e is IOException) {
-                // Отсутствие интернета
+                // No internet connection
             } else {
-                // Вывод ошибки в журнал логов
-                Log.e("check", "Ошибка при выполнении запроса на обновление элемента", e)
+                // Log the error here
+                Log.e("check", "Exception occurred while updating item", e)
                 throw e
             }
         }
     }
 
-
     suspend fun deleteItem(id: String) {
         try {
-            val response = api.deleteItem(lastKnownRevision, id)
-            lastKnownRevision = response.body()?.revision ?: lastKnownRevision
-            if (!response.isSuccessful) {
+            val response = makeRequestWithRetry(3, 1000) {
+                api.deleteItem(lastKnownRevision, id)
             }
+            if (response.isSuccessful) {
+                lastKnownRevision = response.body()?.revision ?: lastKnownRevision
+            }
+
         } catch (e: Exception) {
-            // Обработка ошибки при выполнении запроса
-            // Вывод ошибки в журнал логов
-            Log.e("check", "Ошибка при выполнении запроса на удаление элемента", e)
+            // Handle request execution error
+            // Log the error here
+            Log.e("check", "Exception occurred while deleting item", e)
         }
     }
 
-    private suspend fun <T> makeApiRequestWithRetry(apiRequest: suspend () -> Response<T>) {
-        val maxRetries = 3
-        val retryIntervalMs = 1000L
 
-        var currentRetry = 0
-        var success = false
+    private suspend fun <T> makeRequestWithRetry(
+        maxRetries: Int,
+        retryIntervalMillis: Long,
+        request: suspend () -> Response<T>
+    ): Response<T> {
+        var retryCount = 0
+        var response: Response<T>? = null
 
-        while (currentRetry < maxRetries && !success) {
+        while (retryCount <= maxRetries) {
             try {
-                val response = apiRequest()
+                response = request.invoke()
 
                 if (response.isSuccessful) {
-                    success = true
+                    // Successful response from the server
+                    break
                 } else {
-
-                    currentRetry++
-
-                    delay(retryIntervalMs)
+                    // Error response from the server
+                    if (retryCount == maxRetries) {
+                        // Reached maximum retries, exit the loop
+                        break
+                    } else {
+                        // Pause before retrying
+                        delay(retryIntervalMillis)
+                    }
                 }
             } catch (e: Exception) {
-
-                currentRetry++
-
-                delay(retryIntervalMs)
+                // Exception occurred
+                if (retryCount == maxRetries) {
+                    // Reached maximum retries, exit the loop
+                    break
+                } else {
+                    // Pause before retrying
+                    delay(retryIntervalMillis)
+                }
             }
+
+            retryCount++
         }
 
-        if (!success) {
-
-        }
+        return response ?: throw IllegalStateException("Response is null")
     }
 
 

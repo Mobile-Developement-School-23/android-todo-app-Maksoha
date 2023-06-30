@@ -17,6 +17,7 @@ interface ToDoItemDao {
     @Query("SELECT * FROM ToDoItemEntity")
     fun getItems() : List<ToDoItemEntity>
 
+
     @Query("SELECT * FROM ToDoItemEntity")
     fun getFlowItems() : Flow<List<ToDoItemEntity>>
 
@@ -29,7 +30,7 @@ interface ToDoItemDao {
     @Query("SELECT * FROM ToDoItemEntity WHERE id = :itemId")
     fun getItemById(itemId: String): ToDoItemEntity
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addItem(newItem : ToDoItemEntity)
 
     @Update

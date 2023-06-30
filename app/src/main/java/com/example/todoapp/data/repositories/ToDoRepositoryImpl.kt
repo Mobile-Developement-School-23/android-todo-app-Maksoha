@@ -11,7 +11,7 @@ class ToDoRepositoryImpl(
     override fun getItems(): Flow<List<ToDoItem>> = localRepository.getFlowItems()
 
     override suspend fun refreshData() {
-//        localRepository.clearDatabase()
+        localRepository.clearDatabase()
         val newItems = networkRepository.getItems()
         localRepository.updateItems(newItems)
     }
@@ -34,6 +34,7 @@ class ToDoRepositoryImpl(
     override suspend fun updateItem(updatedItem: ToDoItem) {
         localRepository.updateItem(updatedItem)
         networkRepository.updateItem(updatedItem)
+        updateItems()
     }
 
     override suspend fun deleteItem(itemId: String) {

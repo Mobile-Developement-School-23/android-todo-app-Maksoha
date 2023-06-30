@@ -16,24 +16,12 @@ import kotlinx.coroutines.flow.StateFlow as StateFlow
 
 class ToDoItemViewModel (private val repository: ToDoRepositoryImpl) : ViewModel() {
     private val selectedItem: MutableStateFlow<ToDoItem?> = MutableStateFlow(null)
-    private val itemsSize : MutableStateFlow<Int> = MutableStateFlow(0)
-
-    init {
-        viewModelScope.launch {
-            repository.getItems().collect {
-                itemsSize.value = it.size
-            }
-        }
-    }
     fun selectItem(id: String?) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO){
             if (id == null) {
                 selectedItem.value = null
             } else {
-                val item = withContext(Dispatchers.IO) {
-                    repository.getItemById(id)
-                }
-                selectedItem.value = item
+                selectedItem.value = repository.getItemById(id)
             }
         }
     }
@@ -44,19 +32,19 @@ class ToDoItemViewModel (private val repository: ToDoRepositoryImpl) : ViewModel
 
 
     fun addItem(item: ToDoItem) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.addItem(item)
         }
     }
 
     fun deleteItem(item: ToDoItem) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.deleteItem(item.id)
         }
     }
 
      fun updateItem(editItem: ToDoItem) {
-         viewModelScope.launch {
+         viewModelScope.launch(Dispatchers.IO) {
              repository.updateItem(editItem)
          }
      }

@@ -12,6 +12,7 @@ import com.example.todoapp.R
 import com.example.todoapp.data.models.Importance
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.databinding.ItemTodoListBinding
+import com.example.todoapp.utils.Converters
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
 import java.text.SimpleDateFormat
@@ -72,7 +73,7 @@ class ToDoListViewHolder(
         text.text = item.text
         checkBox.isChecked = item.done
         if (item.deadline != null) {
-            date.text = convertLongToStringDate(item.deadline)
+            date.text = Converters.convertLongToStringDate(item.deadline)
             date.visibility = View.VISIBLE
         }
         else date.visibility = View.GONE
@@ -105,12 +106,6 @@ class ToDoListViewHolder(
     override fun onLongClick(v: View?): Boolean {
         itemClickListener.onItemLongClick(v, currentItem)
         return true
-    }
-
-    private fun convertLongToStringDate(timestamp: Long): String {
-        val date = Date(timestamp)
-        val format = SimpleDateFormat("dd MMMM yyyy", Locale("ru"))
-        return format.format(date)
     }
 
 }

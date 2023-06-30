@@ -1,7 +1,7 @@
-package com.example.todoapp.networks
+package com.example.todoapp.data.data_sources.networks
 
-import com.example.todoapp.Constants.Companion.BASE_URL
-import com.example.todoapp.Constants.Companion.TOKEN
+import com.example.todoapp.utils.Constants.Companion.BASE_URL
+import com.example.todoapp.utils.Constants.Companion.TOKEN
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

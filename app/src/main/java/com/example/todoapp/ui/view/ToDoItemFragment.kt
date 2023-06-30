@@ -16,6 +16,7 @@ import com.example.todoapp.data.models.Importance
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.databinding.FragmentToDoItemBinding
 import com.example.todoapp.ui.viewModels.ToDoItemViewModel
+import com.example.todoapp.utils.Converters
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -97,7 +98,7 @@ class ToDoItemFragment : Fragment() {
                     if (item.deadline != null) binding.date.visibility = View.VISIBLE
                     else binding.date.visibility = View.GONE
                     binding.btnSwitcher.isChecked = item.deadline != null
-                    binding.date.text = item.deadline?.let { convertLongToStringDate(it) }
+                    binding.date.text = item.deadline?.let { Converters.convertLongToStringDate(it) }
                     binding.btnDelete.isEnabled = true
                 }
                 else {
@@ -108,11 +109,6 @@ class ToDoItemFragment : Fragment() {
         }
     }
 
-    private fun convertLongToStringDate(timestamp: Long): String {
-        val date = Date(timestamp)
-        val format = SimpleDateFormat("dd MMMM yyyy", Locale("ru"))
-        return format.format(date)
-    }
 
     private fun updateDatePicker(isChecked : Boolean) {
 
@@ -134,7 +130,8 @@ class ToDoItemFragment : Fragment() {
             getString(R.string.high_text) -> Importance.HIGH
             else -> Importance.COMMON
         }
-        val deadline = if (binding.date.visibility == View.GONE) null else convertStringToLongDate(binding.date.text.toString())
+        val deadline = if (binding.date.visibility == View.GONE) null
+                        else Converters.convertStringToLongDate(binding.date.text.toString())
         val isDone = false
         val changeDate = System.currentTimeMillis()
 
@@ -161,12 +158,6 @@ class ToDoItemFragment : Fragment() {
 
     private fun getDeviceId() : String {
         return Settings.Secure.getString(requireContext().contentResolver, Settings.Secure.ANDROID_ID)
-    }
-
-    private fun convertStringToLongDate(dateString: String): Long {
-        val format = SimpleDateFormat("dd MMMM yyyy", Locale("ru"))
-        val date = format.parse(dateString)
-        return date?.time ?: 0L
     }
 
 

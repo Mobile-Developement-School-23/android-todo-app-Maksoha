@@ -8,7 +8,7 @@ import com.example.todoapp.data.models.ToDoItem
 
 @Entity
 data class ToDoItemEntity (
-    @PrimaryKey val id: String,
+    @PrimaryKey @ColumnInfo("id") val id: String,
     @ColumnInfo("text") val text: String,
     @ColumnInfo("importance") val importance: Importance,
     @ColumnInfo("deadline")  val deadline: Long? = null,

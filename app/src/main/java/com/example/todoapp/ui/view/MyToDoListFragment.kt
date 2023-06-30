@@ -24,13 +24,10 @@ import com.example.todoapp.databinding.FragmentMyToDoListBinding
 import com.example.todoapp.ui.adapters.ToDoListAdapter
 import com.example.todoapp.ui.viewModels.ToDoItemViewModel
 import com.example.todoapp.ui.viewModels.ToDoListViewModel
+import com.example.todoapp.utils.Converters
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 
 class MyToDoListFragment : Fragment() {
@@ -53,11 +50,8 @@ class MyToDoListFragment : Fragment() {
 
         setRecyclerView()
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            listViewModel.items.collect {
-                adapter.submitList(it)
-            }
-        }
+        updateVisibilityItems()
+
 
         binding.btnAddItem.setOnClickListener {
             itemViewModel.selectItem(null)
@@ -66,8 +60,6 @@ class MyToDoListFragment : Fragment() {
 
         binding.btnVisibility.setOnClickListener {
             listViewModel.changeStateVisibility()
-            updateVisibility()
-
         }
 
         return binding.root
@@ -76,9 +68,7 @@ class MyToDoListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        updateProgressIndicator()
         binding.swipeRefreshLayout.setOnRefreshListener {
-            updateProgressIndicator()
             viewLifecycleOwner.lifecycleScope.launch {
                 listViewModel.refreshData()
             }
@@ -88,7 +78,7 @@ class MyToDoListFragment : Fragment() {
 
     }
 
-    private fun updateVisibility() {
+    private fun updateVisibilityItems() {
         viewLifecycleOwner.lifecycleScope.launch {
             listViewModel.items.combine(listViewModel.undoneItems) { items, undoneItems ->
                 Pair(items, undoneItems)
@@ -96,25 +86,13 @@ class MyToDoListFragment : Fragment() {
                 Triple(pair.first, pair.second, stateVisibility)
             }.collect { (items, undoneItems, stateVisibility) ->
                 // Access the combined values here
-                if (!stateVisibility && items.isNotEmpty()) {
-                    binding.btnVisibility.setIconResource(R.drawable.outline_visibility_off_24)
-                    adapter.submitList(undoneItems)
-                    if (undoneItems.isEmpty()) {
-                        binding.noTaskText.visibility = View.VISIBLE
-                    } else {
-                        binding.noTaskText.visibility = View.GONE
-                    }
-                } else {
-                    binding.btnVisibility.setIconResource(R.drawable.outline_visibility_24)
-                    if (items.isEmpty()) {
-                        binding.noTaskText.visibility = View.VISIBLE
-                    } else {
-                        binding.noTaskText.visibility = View.GONE
-                    }
-                    adapter.submitList(items)
-                }
+                binding.btnVisibility.setIconResource(if (!stateVisibility) R.drawable.outline_visibility_off_24 else R.drawable.outline_visibility_24)
+                binding.noTaskText.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
+                adapter.submitList(if (!stateVisibility && items.isNotEmpty()) undoneItems else items)
+                updateProgressIndicator(items.size, undoneItems.size)
             }
         }
+
     }
 
 
@@ -195,17 +173,11 @@ class MyToDoListFragment : Fragment() {
     }
 
 
-    private fun updateProgressIndicator() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            listViewModel.items.combine(listViewModel.undoneItems) { items, undoneItems ->
-                Pair(items, undoneItems)
-            }.collect { (items, undoneItems) ->
-                binding.progressIndicator.max = items.size
-                val completedItemsCount = items.size - undoneItems.size
-                binding.progressIndicator.progress = completedItemsCount
-                binding.stateProgressIndicator.text = "$completedItemsCount/${binding.progressIndicator.max}"
-            }
-        }
+    private fun updateProgressIndicator(itemsSize : Int, undoneItemsSize : Int) {
+        binding.progressIndicator.max = itemsSize
+        val completedItemsCount = itemsSize - undoneItemsSize
+        binding.progressIndicator.progress = completedItemsCount
+        binding.stateProgressIndicator.text = "$completedItemsCount/${binding.progressIndicator.max}"
     }
 
     private fun createItemClickListener(): ToDoListAdapter.OnItemClickListener {
@@ -235,9 +207,12 @@ class MyToDoListFragment : Fragment() {
     }
 
     private fun displayInformation(item: ToDoItem) {
-        val deadline = if (item.deadline == null) getString(R.string.no_text) else convertLongToStringDate(item.deadline)
+        val deadline = if (item.deadline == null) getString(R.string.no_text) else Converters.convertLongToStringDate(item.deadline)
         val isDone = if (item.done) getString(R.string.yes_text) else getString(R.string.no_text)
-        val itemDetails = getString(R.string.item_details, item.text, getImportanceText(item.importance), deadline, isDone, convertLongToStringDate(item.createdAt), convertLongToStringDate(item.changedAt))
+        val itemDetails = getString(R.string.item_details,
+            item.text, getImportanceText(item.importance), deadline, isDone,
+            Converters.convertLongToStringDate(item.createdAt),
+            Converters.convertLongToStringDate(item.changedAt))
 
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.information_text))
@@ -251,11 +226,6 @@ class MyToDoListFragment : Fragment() {
             Importance.COMMON -> getString(R.string.common_text)
             Importance.HIGH -> getString(R.string.high_text)
         }
-    }
-    private fun convertLongToStringDate(timestamp: Long): String {
-        val date = Date(timestamp)
-        val format = SimpleDateFormat("dd MMMM yyyy", Locale("ru"))
-        return format.format(date)
     }
     private fun displayMenu(view: View?, item: ToDoItem) {
         val popupMenu = PopupMenu(view?.context, view)

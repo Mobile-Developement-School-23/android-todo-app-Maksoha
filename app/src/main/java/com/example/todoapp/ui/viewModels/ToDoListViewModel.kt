@@ -9,6 +9,7 @@ import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.data.repositories.LocalRepository
 import com.example.todoapp.data.repositories.NetworkRepository
 import com.example.todoapp.data.repositories.ToDoRepositoryImpl
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -29,7 +30,7 @@ class ToDoListViewModel(private val repository: ToDoRepositoryImpl) : ViewModel(
     val undoneItems: StateFlow<List<ToDoItem>> = _undoneItems
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             combine(repository.getItems(), repository.getUndoneItems()) { items, undoneItems ->
                 Pair(items, undoneItems)
             }.collect { (items, undoneItems) ->
@@ -40,21 +41,21 @@ class ToDoListViewModel(private val repository: ToDoRepositoryImpl) : ViewModel(
     }
 
     suspend fun refreshData() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.refreshData()
         }
     }
 
 
     fun deleteItem(item: ToDoItem) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.deleteItem(item.id)
         }
     }
 
 
     fun updateItem(editItem: ToDoItem) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.updateItem(editItem)
         }
     }
