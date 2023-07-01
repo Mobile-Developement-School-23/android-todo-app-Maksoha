@@ -16,17 +16,20 @@ class ToDoRepositoryImpl(
     override suspend fun refreshData() : Int {
         try {
             val response = remoteDataSource.getItems()
-            val bodyResponse = response.body()
-            val code = response.code()
-            if (bodyResponse != null) {
-                localDataSource.clearDatabase()
-                localDataSource.updateItems(bodyResponse.list)
+            if (response.isSuccess) {
+                val bodyResponse = response.getOrNull()?.body()
+                val code = response.getOrNull()?.code()
+                if (bodyResponse != null) {
+                    localDataSource.clearDatabase()
+                    localDataSource.updateItems(bodyResponse.list)
+                }
+                return code!!
             }
-            return code
+            return 200
 
         } catch (e: Exception) {
             Log.e("check", "Exception occurred while refreshing data", e)
-            throw e
+            return 200
         }
     }
 

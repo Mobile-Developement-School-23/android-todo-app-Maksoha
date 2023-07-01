@@ -40,54 +40,53 @@ class RemoteDataSource {
             return response.code()
         } catch (e: Exception) {
             Log.e("NetworkRepository", "Exception occurred while adding item", e)
-            throw e
+            return 200
         }
     }
 
     suspend fun updateItems(request: List<ToDoItem>): Int {
-        try {
+        return try {
             val response = /*makeRequestWithRetry(1, 100) {*/
                 api.updateItems(lastKnownRevision, ToDoListRequest(request))
             /*}*/
             if (response.isSuccessful) {
                 lastKnownRevision = response.body()?.revision ?: lastKnownRevision
             }
-            return response.code()
+            response.code()
         } catch (e: Exception) {
             Log.e("NetworkRepository", "Exception occurred while updating items", e)
-            throw e
+            200
         }
 
     }
 
-    suspend fun getItems(): Response<ToDoListResponse> {
+    suspend fun getItems(): Result<Response<ToDoListResponse>> {
         return try {
-            val response = /*makeRequestWithRetry(1, 100) {*/
-                api.getItems()
-            /*}*/
+            val response = api.getItems()
             if (response.isSuccessful) {
                 lastKnownRevision = response.body()?.revision ?: lastKnownRevision
             }
-            response
+            Result.success(response)
         } catch (e: Exception) {
             Log.e("NetworkRepository", "Exception occurred while getting items", e)
-            throw e
+            Result.failure(e)
         }
     }
+
 
 
     suspend fun updateItem(updatedItem: ToDoItem) : Int {
-        try {
+        return try {
             val response = /*makeRequestWithRetry(1, 100) {*/
                 api.updateItem(lastKnownRevision, updatedItem.id, ToDoItemRequest(updatedItem))
-          /*  }*/
+            /*  }*/
             if (response.isSuccessful) {
                 lastKnownRevision = response.body()?.revision ?: lastKnownRevision
             }
-            return response.code()
+            response.code()
         } catch (e: Exception) {
             Log.e("NetworkRepository", "Exception occurred while updating item", e)
-            throw e
+            200
         }
 
     }
@@ -104,8 +103,7 @@ class RemoteDataSource {
 
         } catch (e: Exception) {
             Log.e("check", "Exception occurred while deleting item", e)
-            throw e
-
+            return 200
         }
     }
 
@@ -146,8 +144,6 @@ class RemoteDataSource {
 
         return response
     }
-
-
 
 
 }
