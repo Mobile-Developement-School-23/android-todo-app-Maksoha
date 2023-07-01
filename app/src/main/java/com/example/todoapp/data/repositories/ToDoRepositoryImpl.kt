@@ -24,7 +24,8 @@ class ToDoRepositoryImpl(
 //                    localDataSource.clearDatabase()
                     localDataSource.updateItems(bodyResponse.list)
                 }
-                return code!!
+                if (code != null) return code
+                return Constants.SUCCESS_CODE
             }
             return Constants.SUCCESS_CODE
 
