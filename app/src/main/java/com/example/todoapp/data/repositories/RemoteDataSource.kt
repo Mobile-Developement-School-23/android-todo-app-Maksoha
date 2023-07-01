@@ -33,14 +33,14 @@ class RemoteDataSource {
     }
 
     suspend fun addItem(request: ToDoItem) : Int {
-        try {
+        return try {
             val response = /*makeRequestWithRetry(1, 100) {*/
                 api.addItem(lastKnownRevision, ToDoItemRequest(request))
             /*}*/
-            return response.code()
+            response.code()
         } catch (e: Exception) {
             Log.e("NetworkRepository", "Exception occurred while adding item", e)
-            return 200
+            200
         }
     }
 

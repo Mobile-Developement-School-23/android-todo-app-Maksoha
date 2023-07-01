@@ -20,7 +20,7 @@ class ToDoRepositoryImpl(
                 val bodyResponse = response.getOrNull()?.body()
                 val code = response.getOrNull()?.code()
                 if (bodyResponse != null) {
-                    localDataSource.clearDatabase()
+//                    localDataSource.clearDatabase()
                     localDataSource.updateItems(bodyResponse.list)
                 }
                 return code!!
