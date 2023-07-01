@@ -25,13 +25,13 @@ class ToDoRepositoryImpl(
                     localDataSource.updateItems(bodyResponse.list)
                 }
                 if (code != null) return code
-                return Constants.SUCCESS_CODE
+                return Constants.FAILED_CONNECTION_CODE
             }
-            return Constants.SUCCESS_CODE
+            return Constants.FAILED_CONNECTION_CODE
 
         } catch (e: Exception) {
             Log.e("check", "Exception occurred while refreshing data", e)
-            return Constants.SUCCESS_CODE
+            return Constants.FAILED_CONNECTION_CODE
         }
     }
 

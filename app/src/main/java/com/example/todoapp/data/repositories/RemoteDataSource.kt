@@ -41,7 +41,7 @@ class RemoteDataSource {
             response.code()
         } catch (e: Exception) {
             Log.e("NetworkRepository", "Exception occurred while adding item", e)
-            Constants.SUCCESS_CODE
+            Constants.FAILED_CONNECTION_CODE
         }
     }
 
@@ -56,7 +56,7 @@ class RemoteDataSource {
             response.code()
         } catch (e: Exception) {
             Log.e("NetworkRepository", "Exception occurred while updating items", e)
-            Constants.SUCCESS_CODE
+            Constants.FAILED_CONNECTION_CODE
         }
 
     }
@@ -87,7 +87,7 @@ class RemoteDataSource {
             response.code()
         } catch (e: Exception) {
             Log.e("NetworkRepository", "Exception occurred while updating item", e)
-            Constants.SUCCESS_CODE
+            Constants.FAILED_CONNECTION_CODE
         }
 
     }
@@ -104,7 +104,7 @@ class RemoteDataSource {
 
         } catch (e: Exception) {
             Log.e("check", "Exception occurred while deleting item", e)
-            return Constants.SUCCESS_CODE
+            return Constants.FAILED_CONNECTION_CODE
         }
     }
 
