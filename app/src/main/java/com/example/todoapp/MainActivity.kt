@@ -67,7 +67,6 @@ class MainActivity : AppCompatActivity() {
             repeatInterval = 8,
             repeatIntervalTimeUnit = TimeUnit.HOURS
         ).build()
-
         WorkManager.getInstance(this).enqueue(refreshRequest)
     }
 

@@ -7,17 +7,17 @@ import com.example.todoapp.data.models.Importance
 import com.example.todoapp.data.models.ToDoItem
 
 @Entity
-data class ToDoItemEntity (
+data class ToDoItemEntity(
     @PrimaryKey @ColumnInfo("id") val id: String,
     @ColumnInfo("text") val text: String,
     @ColumnInfo("importance") val importance: Importance,
-    @ColumnInfo("deadline")  val deadline: Long? = null,
-    @ColumnInfo("done")  var done: Boolean = false,
-    @ColumnInfo("color")  val color: String?,
-    @ColumnInfo("createdAt")  val createdAt: Long,
-    @ColumnInfo("changedAt")  val changedAt: Long,
-    @ColumnInfo("lastUpdatedBy")  val lastUpdatedBy : String
-    ) {
+    @ColumnInfo("deadline") val deadline: Long? = null,
+    @ColumnInfo("done") var done: Boolean = false,
+    @ColumnInfo("color") val color: String?,
+    @ColumnInfo("createdAt") val createdAt: Long,
+    @ColumnInfo("changedAt") val changedAt: Long,
+    @ColumnInfo("lastUpdatedBy") val lastUpdatedBy: String
+) {
     fun toDomainModel(): ToDoItem {
         return ToDoItem(
             id = id,

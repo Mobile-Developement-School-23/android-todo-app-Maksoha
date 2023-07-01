@@ -15,16 +15,16 @@ import kotlinx.coroutines.launch
 @Database(entities = [ToDoItemEntity::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
-    abstract fun toDoItemDao() : ToDoItemDao
+    abstract fun toDoItemDao(): ToDoItemDao
 
     companion object {
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
         fun getDatabase(
-            context : Context,
+            context: Context,
             scope: CoroutineScope
-        ) : AppDatabase {
+        ): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,

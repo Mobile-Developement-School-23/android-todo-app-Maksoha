@@ -18,24 +18,27 @@ class LocalRepository(private val toDoItemDao: ToDoItemDao) {
         toDoItemDao.getItems().map(ToDoItemEntity::toDomainModel)
     }
 
-    fun getFlowItems() : Flow<List<ToDoItem>> {
-        return toDoItemDao.getFlowItems().map{ it.map(ToDoItemEntity::toDomainModel) }
+    fun getFlowItems(): Flow<List<ToDoItem>> {
+        return toDoItemDao.getFlowItems().map { it.map(ToDoItemEntity::toDomainModel) }
     }
 
-    fun getUndoneItems() : Flow<List<ToDoItem>> {
-        return toDoItemDao.getUndoneItems().map {it.map(ToDoItemEntity::toDomainModel) }
+    fun getUndoneItems(): Flow<List<ToDoItem>> {
+        return toDoItemDao.getUndoneItems().map { it.map(ToDoItemEntity::toDomainModel) }
     }
 
     fun getItemById(itemId: String): ToDoItem {
         return toDoItemDao.getItemById(itemId).toDomainModel()
     }
 
+    fun getNumberOfItems(): Flow<Int> = toDoItemDao.getNumberOfItems()
 
-    suspend fun updateItems(newItems : List<ToDoItem>) {
+    fun getNumberOfDoneItems(): Flow<Int> = toDoItemDao.getNumberOfDoneItems()
+
+    suspend fun updateItems(newItems: List<ToDoItem>) {
         toDoItemDao.updateItems(newItems.map(ToDoItem::toEntity))
     }
 
-    suspend fun addItem(newItem : ToDoItem) {
+    suspend fun addItem(newItem: ToDoItem) {
         toDoItemDao.addItem(newItem.toEntity())
     }
 

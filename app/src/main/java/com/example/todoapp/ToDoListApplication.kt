@@ -10,11 +10,10 @@ import kotlinx.coroutines.SupervisorJob
 
 class ToDoListApplication : Application() {
     private val applicationScope = CoroutineScope(SupervisorJob())
-    private val database by lazy {AppDatabase.getDatabase(this, applicationScope)  }
+    private val database by lazy { AppDatabase.getDatabase(this, applicationScope) }
+    private val networkRepository by lazy { NetworkRepository() }
+    private val localRepository by lazy { LocalRepository(database.toDoItemDao()) }
 
-    private val networkRepository by lazy {NetworkRepository()  }
-    private val localRepository by lazy {LocalRepository(database.toDoItemDao())}
-
-    val toDoRepository by lazy {ToDoRepositoryImpl(localRepository, networkRepository) }
+    val toDoRepository by lazy { ToDoRepositoryImpl(localRepository, networkRepository) }
 
 }

@@ -15,23 +15,28 @@ interface ToDoItemDao {
     suspend fun deleteAllItems()
 
     @Query("SELECT * FROM ToDoItemEntity")
-    fun getItems() : List<ToDoItemEntity>
+    fun getItems(): List<ToDoItemEntity>
 
+    @Query("SELECT COUNT(*) FROM ToDoItemEntity")
+    fun getNumberOfItems(): Flow<Int>
+
+    @Query("SELECT COUNT(*) FROM ToDoItemEntity WHERE done = 1")
+    fun getNumberOfDoneItems(): Flow<Int>
 
     @Query("SELECT * FROM ToDoItemEntity")
-    fun getFlowItems() : Flow<List<ToDoItemEntity>>
+    fun getFlowItems(): Flow<List<ToDoItemEntity>>
 
     @Query("SELECT * FROM ToDoItemEntity WHERE done = 0")
     fun getUndoneItems(): Flow<List<ToDoItemEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun updateItems(newItems : List<ToDoItemEntity>)
+    suspend fun updateItems(newItems: List<ToDoItemEntity>)
 
     @Query("SELECT * FROM ToDoItemEntity WHERE id = :itemId")
     fun getItemById(itemId: String): ToDoItemEntity
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addItem(newItem : ToDoItemEntity)
+    suspend fun addItem(newItem: ToDoItemEntity)
 
     @Update
     suspend fun updateItem(newItem: ToDoItemEntity)

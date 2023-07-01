@@ -25,6 +25,7 @@ import com.example.todoapp.ui.adapters.ToDoListAdapter
 import com.example.todoapp.ui.viewModels.ToDoItemViewModel
 import com.example.todoapp.ui.viewModels.ToDoListViewModel
 import com.example.todoapp.utils.Converters
+import com.example.todoapp.utils.SnackbarHelper
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -32,7 +33,7 @@ import kotlinx.coroutines.launch
 
 class MyToDoListFragment : Fragment() {
     private lateinit var adapter: ToDoListAdapter
-    private lateinit var binding : FragmentMyToDoListBinding
+    private lateinit var binding: FragmentMyToDoListBinding
     private lateinit var itemClickListener: ToDoListAdapter.OnItemClickListener
     private val listViewModel: ToDoListViewModel by lazy {
         (requireActivity() as MainActivity).listViewModel
@@ -40,6 +41,7 @@ class MyToDoListFragment : Fragment() {
     private val itemViewModel: ToDoItemViewModel by lazy {
         (requireActivity() as MainActivity).itemViewModel
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -48,10 +50,14 @@ class MyToDoListFragment : Fragment() {
         // Inflate the layout for this fragment
         itemClickListener = createItemClickListener()
 
+        binding.recyclerView.itemAnimator = null
+
         setRecyclerView()
+        observeData()
+        changeVisibility()
+        updateProgressIndicator()
 
-        updateVisibilityItems()
-
+        displaySnackbar()
 
         binding.btnAddItem.setOnClickListener {
             itemViewModel.selectItem(null)
@@ -63,6 +69,14 @@ class MyToDoListFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    private fun displaySnackbar() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            listViewModel.getErrorState().collect { errorState ->
+                SnackbarHelper(requireActivity().findViewById(R.id.activityMain), errorState, listViewModel.refreshData()).showSnackbarWithAction()
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -78,21 +92,22 @@ class MyToDoListFragment : Fragment() {
 
     }
 
-    private fun updateVisibilityItems() {
+    private fun observeData() {
         viewLifecycleOwner.lifecycleScope.launch {
-            listViewModel.items.combine(listViewModel.undoneItems) { items, undoneItems ->
-                Pair(items, undoneItems)
-            }.combine(listViewModel.getStateVisibility()) { pair, stateVisibility ->
-                Triple(pair.first, pair.second, stateVisibility)
-            }.collect { (items, undoneItems, stateVisibility) ->
-                // Access the combined values here
-                binding.btnVisibility.setIconResource(if (!stateVisibility) R.drawable.outline_visibility_off_24 else R.drawable.outline_visibility_24)
+            listViewModel.items.collect { items ->
+                adapter.submitList(items)
                 binding.noTaskText.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
-                adapter.submitList(if (!stateVisibility && items.isNotEmpty()) undoneItems else items)
-                updateProgressIndicator(items.size, undoneItems.size)
             }
         }
 
+    }
+
+    private fun changeVisibility() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            listViewModel.visibility.collect { visibility ->
+                binding.btnVisibility.setIconResource(if (!visibility) R.drawable.outline_visibility_off_24 else R.drawable.outline_visibility_24)
+            }
+        }
     }
 
 
@@ -108,10 +123,11 @@ class MyToDoListFragment : Fragment() {
     private fun setSwipe() {
         val itemTouchCallback = object : ItemTouchHelper.Callback() {
             private val background = ColorDrawable(Color.RED)
-            private val icon = ContextCompat.getDrawable(requireContext(), R.drawable.round_delete_24)?.let {
-                DrawableCompat.setTint(it, Color.WHITE)
-                it
-            }
+            private val icon =
+                ContextCompat.getDrawable(requireContext(), R.drawable.round_delete_24)?.let {
+                    DrawableCompat.setTint(it, Color.WHITE)
+                    it
+                }
 
             override fun getMovementFlags(
                 recyclerView: RecyclerView,
@@ -131,7 +147,15 @@ class MyToDoListFragment : Fragment() {
                 actionState: Int,
                 isCurrentlyActive: Boolean
             ) {
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                super.onChildDraw(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
 
                 val itemView = viewHolder.itemView
                 val itemHeight = itemView.height
@@ -173,11 +197,19 @@ class MyToDoListFragment : Fragment() {
     }
 
 
-    private fun updateProgressIndicator(itemsSize : Int, undoneItemsSize : Int) {
-        binding.progressIndicator.max = itemsSize
-        val completedItemsCount = itemsSize - undoneItemsSize
-        binding.progressIndicator.progress = completedItemsCount
-        binding.stateProgressIndicator.text = "$completedItemsCount/${binding.progressIndicator.max}"
+    private fun updateProgressIndicator() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            combine(
+                listViewModel.itemsSize,
+                listViewModel.doneItemsSize
+            ) { itemsSize, doneItemsSize ->
+                Pair(itemsSize, doneItemsSize)
+            }.collect { (itemsSize, doneItemsSize) ->
+                binding.progressIndicator.max = itemsSize
+                binding.progressIndicator.progress = doneItemsSize
+                binding.stateProgressIndicator.text = "$doneItemsSize/$itemsSize"
+            }
+        }
     }
 
     private fun createItemClickListener(): ToDoListAdapter.OnItemClickListener {
@@ -207,12 +239,17 @@ class MyToDoListFragment : Fragment() {
     }
 
     private fun displayInformation(item: ToDoItem) {
-        val deadline = if (item.deadline == null) getString(R.string.no_text) else Converters.convertLongToStringDate(item.deadline)
+        val deadline =
+            if (item.deadline == null) getString(R.string.no_text) else Converters.convertLongToStringDate(
+                item.deadline
+            )
         val isDone = if (item.done) getString(R.string.yes_text) else getString(R.string.no_text)
-        val itemDetails = getString(R.string.item_details,
+        val itemDetails = getString(
+            R.string.item_details,
             item.text, getImportanceText(item.importance), deadline, isDone,
             Converters.convertLongToStringDate(item.createdAt),
-            Converters.convertLongToStringDate(item.changedAt))
+            Converters.convertLongToStringDate(item.changedAt)
+        )
 
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(getString(R.string.information_text))
@@ -227,6 +264,7 @@ class MyToDoListFragment : Fragment() {
             Importance.HIGH -> getString(R.string.high_text)
         }
     }
+
     private fun displayMenu(view: View?, item: ToDoItem) {
         val popupMenu = PopupMenu(view?.context, view)
         popupMenu.inflate(R.menu.item_action)
@@ -236,14 +274,17 @@ class MyToDoListFragment : Fragment() {
                     displayInformation(item)
                     true
                 }
+
                 R.id.action_edit -> {
                     editTask(item)
                     true
                 }
+
                 R.id.action_delete -> {
                     listViewModel.deleteItem(item)
                     true
                 }
+
                 else -> false
             }
         }

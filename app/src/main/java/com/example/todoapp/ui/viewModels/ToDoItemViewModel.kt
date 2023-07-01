@@ -14,10 +14,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.StateFlow as StateFlow
 
-class ToDoItemViewModel (private val repository: ToDoRepositoryImpl) : ViewModel() {
+class ToDoItemViewModel(private val repository: ToDoRepositoryImpl) : ViewModel() {
+
     private val selectedItem: MutableStateFlow<ToDoItem?> = MutableStateFlow(null)
+
+    private val errorState : MutableStateFlow<Int> = MutableStateFlow(200)
+
     fun selectItem(id: String?) {
-        viewModelScope.launch(Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             if (id == null) {
                 selectedItem.value = null
             } else {
@@ -26,33 +30,37 @@ class ToDoItemViewModel (private val repository: ToDoRepositoryImpl) : ViewModel
         }
     }
 
-    fun getSelectedItem() : StateFlow<ToDoItem?> {
+    fun getSelectedItem(): StateFlow<ToDoItem?> {
         return selectedItem
     }
 
 
     fun addItem(item: ToDoItem) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.addItem(item)
+            errorState.value = repository.addItem(item)
         }
     }
 
     fun deleteItem(item: ToDoItem) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.deleteItem(item.id)
+            errorState.value = repository.deleteItem(item.id)
         }
     }
 
-     fun updateItem(editItem: ToDoItem) {
-         viewModelScope.launch(Dispatchers.IO) {
-             repository.updateItem(editItem)
-         }
-     }
+    fun updateItem(editItem: ToDoItem) {
+        viewModelScope.launch(Dispatchers.IO) {
+            errorState.value = repository.updateItem(editItem)
+        }
+    }
+
+    fun getErrorState() : StateFlow<Int> = errorState
 
 
 
 }
-class ToDoItemViewModelFactory(private val repository: ToDoRepositoryImpl) : ViewModelProvider.Factory {
+
+class ToDoItemViewModelFactory(private val repository: ToDoRepositoryImpl) :
+    ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ToDoItemViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

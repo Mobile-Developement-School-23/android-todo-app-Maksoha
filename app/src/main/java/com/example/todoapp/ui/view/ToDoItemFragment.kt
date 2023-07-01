@@ -16,7 +16,9 @@ import com.example.todoapp.data.models.Importance
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.databinding.FragmentToDoItemBinding
 import com.example.todoapp.ui.viewModels.ToDoItemViewModel
+import com.example.todoapp.ui.viewModels.ToDoListViewModel
 import com.example.todoapp.utils.Converters
+import com.example.todoapp.utils.SnackbarHelper
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -28,10 +30,13 @@ import java.util.UUID
 
 
 class ToDoItemFragment : Fragment() {
-    private lateinit var binding : FragmentToDoItemBinding
-    private lateinit var datePicker : MaterialDatePicker<Long>
+    private lateinit var binding: FragmentToDoItemBinding
+    private lateinit var datePicker: MaterialDatePicker<Long>
     private val itemViewModel: ToDoItemViewModel by lazy {
         (requireActivity() as MainActivity).itemViewModel
+    }
+    private val listViewModel: ToDoListViewModel by lazy {
+        (requireActivity() as MainActivity).listViewModel
     }
 
     override fun onCreateView(
@@ -42,6 +47,9 @@ class ToDoItemFragment : Fragment() {
         binding = FragmentToDoItemBinding.inflate(layoutInflater, container, false)
 
         setDatePicker()
+
+        displaySnackbar()
+
 
         setData()
         binding.btnClose.setOnClickListener {
@@ -59,8 +67,7 @@ class ToDoItemFragment : Fragment() {
             if (!binding.text.text.isNullOrEmpty()) {
                 saveData()
                 closeFragment()
-            }
-            else {
+            } else {
                 binding.text.error = getString(R.string.error_input_task_text)
             }
         }
@@ -68,7 +75,7 @@ class ToDoItemFragment : Fragment() {
 
         binding.btnDelete.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
-                itemViewModel.getSelectedItem().collect { item->
+                itemViewModel.getSelectedItem().collect { item ->
                     if (item != null) {
                         itemViewModel.deleteItem(item)
                         closeFragment()
@@ -77,10 +84,8 @@ class ToDoItemFragment : Fragment() {
             }
         }
 
-
         return binding.root
     }
-
 
 
     private fun setData() {
@@ -98,10 +103,10 @@ class ToDoItemFragment : Fragment() {
                     if (item.deadline != null) binding.date.visibility = View.VISIBLE
                     else binding.date.visibility = View.GONE
                     binding.btnSwitcher.isChecked = item.deadline != null
-                    binding.date.text = item.deadline?.let { Converters.convertLongToStringDate(it) }
+                    binding.date.text =
+                        item.deadline?.let { Converters.convertLongToStringDate(it) }
                     binding.btnDelete.isEnabled = true
-                }
-                else {
+                } else {
                     binding.btnDelete.isEnabled = false
                 }
                 setImportanceAdapter()
@@ -109,13 +114,20 @@ class ToDoItemFragment : Fragment() {
         }
     }
 
+    private fun displaySnackbar() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            itemViewModel.getErrorState().collect { errorState ->
+                SnackbarHelper(requireActivity().findViewById(R.id.activityMain), errorState, listViewModel.refreshData()).showSnackbarWithAction()
+            }
+        }
+    }
 
-    private fun updateDatePicker(isChecked : Boolean) {
+
+    private fun updateDatePicker(isChecked: Boolean) {
 
         if (isChecked) {
             datePicker.show(parentFragmentManager, datePicker.toString())
-        }
-        else {
+        } else {
             binding.date.text = ""
         }
 
@@ -131,7 +143,7 @@ class ToDoItemFragment : Fragment() {
             else -> Importance.COMMON
         }
         val deadline = if (binding.date.visibility == View.GONE) null
-                        else Converters.convertStringToLongDate(binding.date.text.toString())
+        else Converters.convertStringToLongDate(binding.date.text.toString())
         val isDone = false
         val changeDate = System.currentTimeMillis()
 
@@ -142,22 +154,26 @@ class ToDoItemFragment : Fragment() {
                     val id = UUID.randomUUID().toString()
                     val addingItem = ToDoItem(
                         id, text, importance,
-                        deadline, isDone, null, creationDate, creationDate, getDeviceId())
+                        deadline, isDone, null, creationDate, creationDate, getDeviceId()
+                    )
                     itemViewModel.addItem(addingItem)
-                }
-                else {
+                } else {
                     val id = item.id
                     val savingItem = ToDoItem(
                         id, text, importance,
-                        deadline, isDone, null, item.createdAt, changeDate, getDeviceId())
+                        deadline, isDone, null, item.createdAt, changeDate, getDeviceId()
+                    )
                     itemViewModel.updateItem(savingItem)
                 }
             }
         }
     }
 
-    private fun getDeviceId() : String {
-        return Settings.Secure.getString(requireContext().contentResolver, Settings.Secure.ANDROID_ID)
+    private fun getDeviceId(): String {
+        return Settings.Secure.getString(
+            requireContext().contentResolver,
+            Settings.Secure.ANDROID_ID
+        )
     }
 
 
