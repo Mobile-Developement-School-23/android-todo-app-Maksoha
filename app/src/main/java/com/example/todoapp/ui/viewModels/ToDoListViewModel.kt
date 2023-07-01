@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.todoapp.data.models.ToDoItem
+import com.example.todoapp.data.repositories.ToDoRepository
 import com.example.todoapp.data.repositories.ToDoRepositoryImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +14,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 
-class ToDoListViewModel(private val repository: ToDoRepositoryImpl) : ViewModel() {
+class ToDoListViewModel(private val repository: ToDoRepository) : ViewModel() {
     private val _visibility: MutableStateFlow<Boolean> = MutableStateFlow(true)
     val visibility: StateFlow<Boolean> = _visibility
 
@@ -90,7 +91,7 @@ class ToDoListViewModel(private val repository: ToDoRepositoryImpl) : ViewModel(
 }
 
 
-class ToDoListViewModelFactory(private val repository: ToDoRepositoryImpl) :
+class ToDoListViewModelFactory(private val repository: ToDoRepository) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ToDoListViewModel::class.java)) {

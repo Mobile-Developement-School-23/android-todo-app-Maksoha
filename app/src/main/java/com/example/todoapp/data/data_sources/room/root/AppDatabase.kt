@@ -56,8 +56,7 @@ abstract class AppDatabase : RoomDatabase() {
         }
 
         suspend fun populateDatabase(toDoItemDao: ToDoItemDao) {
-            // Start the app with a clean database every time.
-            // Not needed if you only populate on creation.
+
 
         }
 

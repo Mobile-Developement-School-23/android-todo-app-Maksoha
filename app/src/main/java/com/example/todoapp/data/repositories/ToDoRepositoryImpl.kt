@@ -5,22 +5,22 @@ import com.example.todoapp.data.models.ToDoItem
 import kotlinx.coroutines.flow.Flow
 
 class ToDoRepositoryImpl(
-    private val localRepository: LocalRepository,
-    private val networkRepository: NetworkRepository
+    private val localDataSource: LocalDataSource,
+    private val remoteDataSource: RemoteDataSource
 ) : ToDoRepository {
 
     override fun getItems(): Flow<List<ToDoItem>> {
-        return localRepository.getFlowItems()
+        return localDataSource.getFlowItems()
     }
 
     override suspend fun refreshData() : Int {
         try {
-            val response = networkRepository.getItems()
+            val response = remoteDataSource.getItems()
             val bodyResponse = response.body()
             val code = response.code()
             if (bodyResponse != null) {
-                localRepository.clearDatabase()
-                localRepository.updateItems(bodyResponse.list)
+                localDataSource.clearDatabase()
+                localDataSource.updateItems(bodyResponse.list)
             }
             return code
 
@@ -31,15 +31,15 @@ class ToDoRepositoryImpl(
     }
 
 
-    override fun getUndoneItems(): Flow<List<ToDoItem>> = localRepository.getUndoneItems()
+    override fun getUndoneItems(): Flow<List<ToDoItem>> = localDataSource.getUndoneItems()
 
-    override fun getItemById(itemId: String): ToDoItem = localRepository.getItemById(itemId)
+    override fun getItemById(itemId: String): ToDoItem = localDataSource.getItemById(itemId)
 
 
     override suspend fun updateItems() : Int {
         try {
-            val updateItems = localRepository.getItems()
-            return networkRepository.updateItems(updateItems)
+            val updateItems = localDataSource.getItems()
+            return remoteDataSource.updateItems(updateItems)
         } catch (e: Exception) {
             Log.e("check", "Exception occurred while updating items", e)
             throw e
@@ -49,8 +49,8 @@ class ToDoRepositoryImpl(
 
     override suspend fun addItem(newItem: ToDoItem) : Int {
         try {
-            localRepository.addItem(newItem)
-            return networkRepository.addItem(newItem)
+            localDataSource.addItem(newItem)
+            return remoteDataSource.addItem(newItem)
         } catch (e: Exception) {
             Log.e("check", "Exception occurred while adding item", e)
 
@@ -61,10 +61,8 @@ class ToDoRepositoryImpl(
 
     override suspend fun updateItem(updatedItem: ToDoItem) : Int {
         try {
-            localRepository.updateItem(updatedItem)
-            val code = networkRepository.updateItem(updatedItem)
-            updateItems()
-            return code
+            localDataSource.updateItem(updatedItem)
+            return remoteDataSource.updateItem(updatedItem)
         } catch (e: Exception) {
             Log.e("check", "Exception occurred while updating item", e)
             throw e
@@ -73,8 +71,8 @@ class ToDoRepositoryImpl(
 
     override suspend fun deleteItem(itemId: String) : Int {
         try {
-            localRepository.deleteItem(itemId)
-            return networkRepository.deleteItem(itemId)
+            localDataSource.deleteItem(itemId)
+            return remoteDataSource.deleteItem(itemId)
         } catch (e: Exception) {
             Log.e("check", "Exception occurred while deleting item", e)
             throw e
@@ -82,12 +80,9 @@ class ToDoRepositoryImpl(
 
     }
 
-    override suspend fun getNumberOfItems(): Flow<Int> = localRepository.getNumberOfItems()
-    override suspend fun getNumberOfDoneItems(): Flow<Int> = localRepository.getNumberOfDoneItems()
+    override suspend fun getNumberOfItems(): Flow<Int> = localDataSource.getNumberOfItems()
+    override suspend fun getNumberOfDoneItems(): Flow<Int> = localDataSource.getNumberOfDoneItems()
 
-    fun displayErrorCode(code : Int) {
-
-    }
 
 }
 

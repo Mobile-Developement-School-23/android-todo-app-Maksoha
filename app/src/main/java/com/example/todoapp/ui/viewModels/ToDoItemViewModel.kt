@@ -1,20 +1,16 @@
 package com.example.todoapp.ui.viewModels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.todoapp.data.models.ToDoItem
-import com.example.todoapp.data.repositories.LocalRepository
-import com.example.todoapp.data.repositories.NetworkRepository
-import com.example.todoapp.data.repositories.ToDoRepositoryImpl
+import com.example.todoapp.data.repositories.ToDoRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.StateFlow as StateFlow
 
-class ToDoItemViewModel(private val repository: ToDoRepositoryImpl) : ViewModel() {
+class ToDoItemViewModel(private val repository: ToDoRepository) : ViewModel() {
 
     private val selectedItem: MutableStateFlow<ToDoItem?> = MutableStateFlow(null)
 
@@ -59,7 +55,7 @@ class ToDoItemViewModel(private val repository: ToDoRepositoryImpl) : ViewModel(
 
 }
 
-class ToDoItemViewModelFactory(private val repository: ToDoRepositoryImpl) :
+class ToDoItemViewModelFactory(private val repository: ToDoRepository) :
     ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ToDoItemViewModel::class.java)) {

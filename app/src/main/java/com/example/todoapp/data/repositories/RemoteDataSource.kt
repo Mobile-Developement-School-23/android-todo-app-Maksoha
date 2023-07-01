@@ -1,6 +1,5 @@
 package com.example.todoapp.data.repositories
 
-import android.content.Context
 import android.util.Log
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.data.models.ToDoItemRequest
@@ -9,21 +8,20 @@ import com.example.todoapp.data.models.ToDoListResponse
 import com.example.todoapp.data.data_sources.networks.RetrofitInstance
 import com.example.todoapp.data.data_sources.networks.ToDoApi
 import com.example.todoapp.data.models.ToDoItemResponse
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
-import java.io.IOException
 
-class NetworkRepository {
+class RemoteDataSource {
     private val api: ToDoApi = RetrofitInstance.api
     private var lastKnownRevision: Int = 0
 
     suspend fun getItem(id: String): Response<ToDoItemResponse> {
         return try {
-            val response = makeRequestWithRetry(3, 1000) {
+            val response = /*makeRequestWithRetry(1, 100) {*/
                 api.getItem(id)
+/*
             }
+*/
             if (response.isSuccessful) {
                 lastKnownRevision = response.body()?.revision ?: lastKnownRevision
             }
@@ -36,9 +34,9 @@ class NetworkRepository {
 
     suspend fun addItem(request: ToDoItem) : Int {
         try {
-            val response = makeRequestWithRetry(3, 1000) {
+            val response = /*makeRequestWithRetry(1, 100) {*/
                 api.addItem(lastKnownRevision, ToDoItemRequest(request))
-            }
+            /*}*/
             return response.code()
         } catch (e: Exception) {
             Log.e("NetworkRepository", "Exception occurred while adding item", e)
@@ -48,9 +46,9 @@ class NetworkRepository {
 
     suspend fun updateItems(request: List<ToDoItem>): Int {
         try {
-            val response = makeRequestWithRetry(3, 1000) {
+            val response = /*makeRequestWithRetry(1, 100) {*/
                 api.updateItems(lastKnownRevision, ToDoListRequest(request))
-            }
+            /*}*/
             if (response.isSuccessful) {
                 lastKnownRevision = response.body()?.revision ?: lastKnownRevision
             }
@@ -64,9 +62,9 @@ class NetworkRepository {
 
     suspend fun getItems(): Response<ToDoListResponse> {
         return try {
-            val response = makeRequestWithRetry(3, 1000) {
+            val response = /*makeRequestWithRetry(1, 100) {*/
                 api.getItems()
-            }
+            /*}*/
             if (response.isSuccessful) {
                 lastKnownRevision = response.body()?.revision ?: lastKnownRevision
             }
@@ -80,9 +78,9 @@ class NetworkRepository {
 
     suspend fun updateItem(updatedItem: ToDoItem) : Int {
         try {
-            val response = makeRequestWithRetry(3, 1000) {
+            val response = /*makeRequestWithRetry(1, 100) {*/
                 api.updateItem(lastKnownRevision, updatedItem.id, ToDoItemRequest(updatedItem))
-            }
+          /*  }*/
             if (response.isSuccessful) {
                 lastKnownRevision = response.body()?.revision ?: lastKnownRevision
             }
@@ -96,9 +94,9 @@ class NetworkRepository {
 
     suspend fun deleteItem(id: String) : Int {
         try {
-            val response = makeRequestWithRetry(3, 1000) {
+            val response = /*makeRequestWithRetry(1, 100) {*/
                 api.deleteItem(lastKnownRevision, id)
-            }
+            /*}*/
             if (response.isSuccessful) {
                 lastKnownRevision = response.body()?.revision ?: lastKnownRevision
             }

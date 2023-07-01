@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
-class LocalRepository(private val toDoItemDao: ToDoItemDao) {
+class LocalDataSource(private val toDoItemDao: ToDoItemDao) {
 
     suspend fun clearDatabase() {
         toDoItemDao.deleteAllItems()

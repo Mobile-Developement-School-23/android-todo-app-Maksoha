@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.todoapp.data.data_sources.networks.DataRefreshWorker
+import com.example.todoapp.data.repositories.ToDoRepository
 import com.example.todoapp.data.repositories.ToDoRepositoryImpl
 import com.example.todoapp.databinding.ActivityMainBinding
 import com.example.todoapp.ui.viewModels.ToDoItemViewModel
@@ -26,7 +27,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var connectivityManager : ConnectivityManager
     private lateinit var networkCallback : ConnectivityManager.NetworkCallback
     private lateinit var binding : ActivityMainBinding
-    private val repository: ToDoRepositoryImpl by lazy {
+    private val repository: ToDoRepository by lazy {
         (applicationContext as ToDoListApplication).toDoRepository
     }
     val listViewModel: ToDoListViewModel by viewModels {
