@@ -8,6 +8,7 @@ import com.example.todoapp.data.models.ToDoListResponse
 import com.example.todoapp.data.data_sources.networks.RetrofitInstance
 import com.example.todoapp.data.data_sources.networks.ToDoApi
 import com.example.todoapp.data.models.ToDoItemResponse
+import com.example.todoapp.utils.Constants
 import kotlinx.coroutines.delay
 import retrofit2.Response
 
@@ -40,7 +41,7 @@ class RemoteDataSource {
             response.code()
         } catch (e: Exception) {
             Log.e("NetworkRepository", "Exception occurred while adding item", e)
-            200
+            Constants.SUCCESS_CODE
         }
     }
 
@@ -55,7 +56,7 @@ class RemoteDataSource {
             response.code()
         } catch (e: Exception) {
             Log.e("NetworkRepository", "Exception occurred while updating items", e)
-            200
+            Constants.SUCCESS_CODE
         }
 
     }
@@ -86,7 +87,7 @@ class RemoteDataSource {
             response.code()
         } catch (e: Exception) {
             Log.e("NetworkRepository", "Exception occurred while updating item", e)
-            200
+            Constants.SUCCESS_CODE
         }
 
     }
@@ -103,7 +104,7 @@ class RemoteDataSource {
 
         } catch (e: Exception) {
             Log.e("check", "Exception occurred while deleting item", e)
-            return 200
+            return Constants.SUCCESS_CODE
         }
     }
 

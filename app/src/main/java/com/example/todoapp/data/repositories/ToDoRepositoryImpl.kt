@@ -2,6 +2,7 @@ package com.example.todoapp.data.repositories
 
 import android.util.Log
 import com.example.todoapp.data.models.ToDoItem
+import com.example.todoapp.utils.Constants
 import kotlinx.coroutines.flow.Flow
 
 class ToDoRepositoryImpl(
@@ -25,11 +26,11 @@ class ToDoRepositoryImpl(
                 }
                 return code!!
             }
-            return 200
+            return Constants.SUCCESS_CODE
 
         } catch (e: Exception) {
             Log.e("check", "Exception occurred while refreshing data", e)
-            return 200
+            return Constants.SUCCESS_CODE
         }
     }
 
