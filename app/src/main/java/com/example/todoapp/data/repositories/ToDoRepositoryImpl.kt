@@ -23,6 +23,8 @@ class ToDoRepositoryImpl(
                 if (bodyResponse != null) {
 //                    localDataSource.clearDatabase()
                     localDataSource.updateItems(bodyResponse.list)
+                    val localData = localDataSource.getItems()
+                    remoteDataSource.updateItems(localData)
                 }
                 if (code != null) return code
                 return Constants.FAILED_CONNECTION_CODE
