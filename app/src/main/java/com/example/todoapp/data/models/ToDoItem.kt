@@ -10,7 +10,7 @@ data class ToDoItem(
     val text: String,
     val importance: Importance,
     val deadline: Long? = null,
-    var done: Boolean = false,
+    val done: Boolean = false,
     val color: String?,
     @SerializedName("created_at") val createdAt: Long,
     @SerializedName("changed_at") val changedAt: Long,
