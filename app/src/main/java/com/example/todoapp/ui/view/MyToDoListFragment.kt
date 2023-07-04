@@ -29,7 +29,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
-
 class MyToDoListFragment : Fragment() {
     private lateinit var adapter: ToDoListAdapter
     private lateinit var binding: FragmentMyToDoListBinding
@@ -46,9 +45,7 @@ class MyToDoListFragment : Fragment() {
     ): View {
         binding = FragmentMyToDoListBinding.inflate(layoutInflater, container, false)
         itemClickListener = createItemClickListener()
-
         binding.recyclerView.itemAnimator = null
-
         setRecyclerView()
         observeData()
         changeVisibility()
@@ -58,11 +55,9 @@ class MyToDoListFragment : Fragment() {
             itemViewModel.selectItem(null)
             findNavController().navigate(R.id.action_myToDoListFragment_to_addToDoItemFragment)
         }
-
         binding.btnVisibility.setOnClickListener {
             listViewModel.changeStateVisibility()
         }
-
         return binding.root
     }
 
@@ -80,15 +75,12 @@ class MyToDoListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.swipeRefreshLayout.setOnRefreshListener {
             viewLifecycleOwner.lifecycleScope.launch {
                 listViewModel.refreshData()
             }
             binding.swipeRefreshLayout.isRefreshing = false
-
         }
-
     }
 
     private fun observeData() {
@@ -117,8 +109,8 @@ class MyToDoListFragment : Fragment() {
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         (binding.recyclerView.layoutManager as LinearLayoutManager).reverseLayout = true
-        setSwipe()
 
+        setSwipe()
     }
 
     private fun setSwipe() {
@@ -139,7 +131,6 @@ class MyToDoListFragment : Fragment() {
     private fun onItemSwiped(position: Int) {
         listViewModel.deleteItem(adapter.currentList[position])
     }
-
 
     private fun updateProgressIndicator() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -180,19 +171,20 @@ class MyToDoListFragment : Fragment() {
     }
 
     private fun displayInformation(item: ToDoItem) {
-        val deadline =
-            if (item.deadline == null) getString(R.string.no_text) else Converters.convertLongToStringDate(
-                item.deadline
-            )
-        val isDone = if (item.done) getString(R.string.yes_text) else getString(R.string.no_text)
+        val deadline = item.deadline?.let { Converters.convertLongToStringDate(it) } ?: getString(R.string.no_text)
+        val isDone = getString(if (item.done) R.string.yes_text else R.string.no_text)
+        val createdAt = Converters.convertLongToStringDate(item.createdAt)
+        val changedAt = Converters.convertLongToStringDate(item.changedAt)
+
         val itemDetails = getString(
             R.string.item_details, item.text, getImportanceText(item.importance),
-            deadline, isDone, Converters.convertLongToStringDate(item.createdAt),
-            Converters.convertLongToStringDate(item.changedAt)
+            deadline, isDone, createdAt, changedAt
         )
 
-        MaterialAlertDialogBuilder(requireContext()).setTitle(getString(R.string.information_text))
-            .setMessage(itemDetails).show()
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.information_text))
+            .setMessage(itemDetails)
+            .show()
     }
 
     private fun getImportanceText(importance: Importance): String {
@@ -212,21 +204,17 @@ class MyToDoListFragment : Fragment() {
                     displayInformation(item)
                     true
                 }
-
                 R.id.action_edit -> {
                     editTask(item)
                     true
                 }
-
                 R.id.action_delete -> {
                     listViewModel.deleteItem(item)
                     true
                 }
-
                 else -> false
             }
         }
         popupMenu.show()
     }
-
 }
