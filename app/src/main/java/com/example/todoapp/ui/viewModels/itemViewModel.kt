@@ -5,16 +5,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.data.repositories.ToDoRepository
+import com.example.todoapp.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.StateFlow as StateFlow
 
 class ToDoItemViewModel(private val repository: ToDoRepository) : ViewModel() {
-
     private val selectedItem: MutableStateFlow<ToDoItem?> = MutableStateFlow(null)
-
-    private val errorState : MutableStateFlow<Int> = MutableStateFlow(200)
+    private val errorState: MutableStateFlow<Int> = MutableStateFlow(200)
 
     fun selectItem(id: String?) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -48,10 +47,7 @@ class ToDoItemViewModel(private val repository: ToDoRepository) : ViewModel() {
             errorState.value = repository.updateItem(editItem)
         }
     }
-
-    fun getErrorState() : StateFlow<Int> = errorState
-
-
+    fun getErrorState(): StateFlow<Int> = errorState
 
 }
 

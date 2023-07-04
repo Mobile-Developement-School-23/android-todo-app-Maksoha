@@ -1,7 +1,6 @@
 package com.example.todoapp.ui.view
 
 import android.os.Bundle
-import android.provider.ContactsContract
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +17,7 @@ import com.example.todoapp.databinding.FragmentToDoItemBinding
 import com.example.todoapp.ui.viewModels.ToDoItemViewModel
 import com.example.todoapp.ui.viewModels.ToDoListViewModel
 import com.example.todoapp.utils.Converters
+import com.example.todoapp.utils.MaterialDatePickerHelper
 import com.example.todoapp.utils.SnackbarHelper
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
@@ -29,7 +29,8 @@ import java.util.Locale
 import java.util.UUID
 
 
-class ToDoItemFragment : Fragment() {
+class ItemFragment : Fragment() {
+    private val converters = Converters()
     private lateinit var binding: FragmentToDoItemBinding
     private lateinit var datePicker: MaterialDatePicker<Long>
     private val itemViewModel: ToDoItemViewModel by lazy {
@@ -43,26 +44,19 @@ class ToDoItemFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         binding = FragmentToDoItemBinding.inflate(layoutInflater, container, false)
-
         setDatePicker()
-
         displaySnackbar()
-
-
-        setData()
+        initData()
         binding.btnClose.setOnClickListener {
             closeFragment()
         }
-
         binding.btnSwitcher.setOnClickListener {
             updateDatePicker(binding.btnSwitcher.isChecked)
             if (!binding.btnSwitcher.isChecked) {
                 resetDate()
             }
         }
-
         binding.btnSave.setOnClickListener {
             if (!binding.text.text.isNullOrEmpty()) {
                 saveData()
@@ -71,8 +65,6 @@ class ToDoItemFragment : Fragment() {
                 binding.text.error = getString(R.string.error_input_task_text)
             }
         }
-
-
         binding.btnDelete.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
                 itemViewModel.getSelectedItem().collect { item ->
@@ -83,67 +75,59 @@ class ToDoItemFragment : Fragment() {
                 }
             }
         }
-
         return binding.root
     }
 
 
-    private fun setData() {
+    private fun initData() {
         viewLifecycleOwner.lifecycleScope.launch {
             itemViewModel.getSelectedItem().collect { item ->
-                if (item != null) {
-                    binding.text.setText(item.text)
-                    binding.selectedImportance.setText(
-                        when (item.importance) {
-                            Importance.LOW -> getString(R.string.low_text)
-                            Importance.COMMON -> getString(R.string.common_text)
-                            Importance.HIGH -> getString(R.string.high_text)
-                        }
+                binding.apply {
+                    text.setText(item?.text)
+                    selectedImportance.setText(
+                        item?.importance?.let {
+                            converters.convertImportanceToString(it, requireContext())
+                        } ?: getString(R.string.common_text)
                     )
-                    if (item.deadline != null) binding.date.visibility = View.VISIBLE
-                    else binding.date.visibility = View.GONE
-                    binding.btnSwitcher.isChecked = item.deadline != null
-                    binding.date.text =
-                        item.deadline?.let { Converters.convertLongToStringDate(it) }
-                    binding.btnDelete.isEnabled = true
-                } else {
-                    binding.btnDelete.isEnabled = false
+                    date.visibility = if (item?.deadline != null) View.VISIBLE else View.GONE
+                    btnSwitcher.isChecked = item?.deadline != null
+                    date.text = item?.deadline?.let { converters.convertLongToStringDate(it) }
+                    btnDelete.isEnabled = item != null
+                    setImportanceAdapter()
                 }
-                setImportanceAdapter()
             }
         }
+
     }
 
     private fun displaySnackbar() {
         viewLifecycleOwner.lifecycleScope.launch {
             itemViewModel.getErrorState().collect { errorState ->
-                SnackbarHelper(requireActivity().findViewById(R.id.activityMain), errorState, listViewModel.refreshData()).showSnackbarWithAction()
+                SnackbarHelper(
+                    requireActivity().findViewById(R.id.activityMain),
+                    errorState,
+                    listViewModel.refreshData()
+                ).showSnackbarWithAction()
             }
         }
     }
 
-
     private fun updateDatePicker(isChecked: Boolean) {
-
         if (isChecked) {
             datePicker.show(parentFragmentManager, datePicker.toString())
         } else {
             binding.date.text = ""
         }
-
     }
-
 
     private fun saveData() {
         val text = binding.text.editableText.toString()
-        val importance = when (binding.selectedImportance.text.toString()) {
-            getString(R.string.low_text) -> Importance.LOW
-            getString(R.string.common_text) -> Importance.COMMON
-            getString(R.string.high_text) -> Importance.HIGH
-            else -> Importance.COMMON
-        }
+        val importance = converters.convertStringToImportance(
+            binding.selectedImportance.text.toString(),
+            requireContext()
+        )
         val deadline = if (binding.date.visibility == View.GONE) null
-        else Converters.convertStringToLongDate(binding.date.text.toString())
+        else converters.convertStringToLongDate(binding.date.text.toString())
         val isDone = false
         val changeDate = System.currentTimeMillis()
 
@@ -176,18 +160,8 @@ class ToDoItemFragment : Fragment() {
         )
     }
 
-
     private fun setDatePicker() {
-        datePicker = MaterialDatePicker.Builder.datePicker()
-            .setTitleText(getString(R.string.select_date_text))
-            .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
-            .setCalendarConstraints(
-                CalendarConstraints.Builder()
-                    .setValidator(DateValidatorPointForward.now())
-                    .build()
-            )
-            .build()
-
+        datePicker = MaterialDatePickerHelper.createDatePicker(requireContext(), getString(R.string.select_date_text) )
         datePicker.addOnPositiveButtonClickListener { selection ->
             val date = Date(selection)
             val dateFormat = SimpleDateFormat("dd MMMM yyyy", Locale("ru"))
@@ -195,14 +169,12 @@ class ToDoItemFragment : Fragment() {
             binding.date.text = formattedDate
             binding.date.visibility = View.VISIBLE
         }
-
         datePicker.addOnCancelListener {
             resetDate()
         }
         datePicker.addOnNegativeButtonClickListener {
             resetDate()
         }
-
     }
 
     private fun resetDate() {
@@ -213,11 +185,7 @@ class ToDoItemFragment : Fragment() {
 
     private fun setImportanceAdapter() {
         val items = Importance.values().map { importance ->
-            when (importance) {
-                Importance.LOW -> getString(R.string.low_text)
-                Importance.COMMON -> getString(R.string.common_text)
-                Importance.HIGH -> getString(R.string.high_text)
-            }
+            converters.convertImportanceToString(importance, requireContext())
         }
         val adapter = ArrayAdapter(requireContext(), R.layout.list_item, items)
         (binding.importance.editText as? AutoCompleteTextView)?.setAdapter(adapter)
@@ -226,6 +194,4 @@ class ToDoItemFragment : Fragment() {
     private fun closeFragment() {
         parentFragmentManager.popBackStack()
     }
-
-
 }

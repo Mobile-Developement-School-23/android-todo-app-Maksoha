@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:id="@+id/constraint"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.view.ToDoItemFragment">
+    tools:context=".ui.view.ItemFragment">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"

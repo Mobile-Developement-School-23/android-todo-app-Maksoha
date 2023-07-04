@@ -4,7 +4,6 @@ import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -13,16 +12,10 @@ import com.example.todoapp.data.models.Importance
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.databinding.ItemTodoListBinding
 import com.example.todoapp.utils.Converters
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.checkbox.MaterialCheckBox
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class ToDoListAdapter(
     private val itemClickListener: OnItemClickListener,
 ) : ListAdapter<ToDoItem, ToDoListViewHolder>(ToDoListComparator()) {
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ToDoListViewHolder {
         return ToDoListViewHolder.create(parent, itemClickListener)
@@ -39,63 +32,52 @@ class ToDoListAdapter(
         fun onItemLongClick(v: View?, item: ToDoItem)
         fun onButtonInfoClick(item: ToDoItem)
     }
-
-
 }
 
 
 class ToDoListViewHolder(
-    itemView: View,
+    private val binding: ItemTodoListBinding,
     private val itemClickListener: ToDoListAdapter.OnItemClickListener
-) : RecyclerView.ViewHolder(itemView), View.OnClickListener, View.OnLongClickListener {
-    private val text: TextView = itemView.findViewById(R.id.text)
-    private val checkBox: MaterialCheckBox = itemView.findViewById(R.id.checkbox)
-    private val btnInfo: MaterialButton = itemView.findViewById(R.id.btn_info)
-    private val indicator: View = itemView.findViewById(R.id.indicator)
-    private val date: TextView = itemView.findViewById(R.id.date)
-    private lateinit var currentItem: ToDoItem
+) : RecyclerView.ViewHolder(binding.root), View.OnClickListener, View.OnLongClickListener {
 
+    private lateinit var currentItem: ToDoItem
+    private val converter = Converters()
 
     init {
         itemView.setOnClickListener(this)
         itemView.setOnLongClickListener(this)
-        checkBox.setOnCheckedChangeListener { _, isChecked ->
+        binding.checkbox.setOnCheckedChangeListener { _, isChecked ->
             itemClickListener.onCheckboxClick(currentItem, isChecked)
         }
-        btnInfo.setOnClickListener {
+        binding.btnInfo.setOnClickListener {
             itemClickListener.onButtonInfoClick(currentItem)
         }
-
     }
 
     fun bind(item: ToDoItem) {
         currentItem = item
-        text.text = item.text
-        checkBox.isChecked = item.done
-        if (item.deadline != null) {
-            date.text = Converters.convertLongToStringDate(item.deadline)
-            date.visibility = View.VISIBLE
-        } else date.visibility = View.GONE
-        if (item.importance == Importance.HIGH) indicator.setBackgroundResource(R.color.md_theme_light_error)
-        else indicator.setBackgroundResource(0x00)
-        if (checkBox.isChecked) {
-            val paint: Paint = text.paint
-            paint.flags = paint.flags or Paint.STRIKE_THRU_TEXT_FLAG
-        } else {
-            val paint: Paint = text.paint
-            paint.flags = paint.flags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
-        }
+        binding.text.text = item.text
+        binding.checkbox.isChecked = item.done
+
+        binding.date.visibility = if (item.deadline != null) View.VISIBLE else View.GONE
+        binding.date.text = item.deadline?.let { converter.convertLongToStringDate(it) }
+
+        binding.indicator.setBackgroundResource(
+            if (item.importance == Importance.HIGH) R.color.md_theme_light_error
+            else 0x00
+        )
+
+        val paintFlags = if (binding.checkbox.isChecked) Paint.STRIKE_THRU_TEXT_FLAG else 0
+        binding.text.paint.flags = binding.text.paint.flags and Paint.STRIKE_THRU_TEXT_FLAG.inv() or paintFlags
     }
 
     companion object {
         fun create(
             parent: ViewGroup,
-            itemClickListener: ToDoListAdapter.OnItemClickListener,
+            itemClickListener: ToDoListAdapter.OnItemClickListener
         ): ToDoListViewHolder {
-            val binding = ItemTodoListBinding
-                .inflate(LayoutInflater.from(parent.context), parent, false);
-            val view: View = binding.root
-            return ToDoListViewHolder(view, itemClickListener)
+            val binding = ItemTodoListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            return ToDoListViewHolder(binding, itemClickListener)
         }
     }
 
@@ -107,7 +89,6 @@ class ToDoListViewHolder(
         itemClickListener.onItemLongClick(v, currentItem)
         return true
     }
-
 }
 
 class ToDoListComparator : DiffUtil.ItemCallback<ToDoItem>() {
@@ -116,12 +97,10 @@ class ToDoListComparator : DiffUtil.ItemCallback<ToDoItem>() {
     }
 
     override fun areContentsTheSame(oldItem: ToDoItem, newItem: ToDoItem): Boolean {
-        return oldItem.done == newItem.done &&
-                oldItem.text == newItem.text &&
-                oldItem.deadline == newItem.deadline &&
-                oldItem.importance == newItem.importance
+        return oldItem == newItem
     }
 }
+
 
 
 

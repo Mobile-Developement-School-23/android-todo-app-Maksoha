@@ -1,6 +1,5 @@
 package com.example.todoapp.ui.view
 
-import com.example.todoapp.utils.ItemTouchHelperCallback
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -17,20 +16,21 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todoapp.MainActivity
 import com.example.todoapp.R
-import com.example.todoapp.data.models.Importance
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.databinding.FragmentMyToDoListBinding
 import com.example.todoapp.ui.adapters.ToDoListAdapter
 import com.example.todoapp.ui.viewModels.ToDoItemViewModel
 import com.example.todoapp.ui.viewModels.ToDoListViewModel
 import com.example.todoapp.utils.Converters
+import com.example.todoapp.utils.ItemTouchHelperCallback
 import com.example.todoapp.utils.SnackbarHelper
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
-class MyToDoListFragment : Fragment() {
+class ListFragment : Fragment() {
     private lateinit var adapter: ToDoListAdapter
+    private val converters = Converters()
     private lateinit var binding: FragmentMyToDoListBinding
     private lateinit var itemClickListener: ToDoListAdapter.OnItemClickListener
     private val listViewModel: ToDoListViewModel by lazy {
@@ -90,7 +90,6 @@ class MyToDoListFragment : Fragment() {
                 binding.noTaskText.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
             }
         }
-
     }
 
     private fun changeVisibility() {
@@ -109,27 +108,21 @@ class MyToDoListFragment : Fragment() {
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         (binding.recyclerView.layoutManager as LinearLayoutManager).reverseLayout = true
-
-        setSwipe()
+        setSwipeToDelete()
     }
 
-    private fun setSwipe() {
+    private fun setSwipeToDelete() {
         val icon = ContextCompat.getDrawable(requireContext(), R.drawable.round_delete_24)?.let {
             DrawableCompat.setTint(it, Color.WHITE)
             it
         }
         val background = ColorDrawable(Color.RED)
-
         val itemTouchCallback = ItemTouchHelperCallback({ position ->
-            onItemSwiped(position)
+            listViewModel.deleteItem(adapter.currentList[position])
         }, icon, background)
 
         val itemTouchHelper = ItemTouchHelper(itemTouchCallback)
         itemTouchHelper.attachToRecyclerView(binding.recyclerView)
-    }
-
-    private fun onItemSwiped(position: Int) {
-        listViewModel.deleteItem(adapter.currentList[position])
     }
 
     private fun updateProgressIndicator() {
@@ -171,13 +164,14 @@ class MyToDoListFragment : Fragment() {
     }
 
     private fun displayInformation(item: ToDoItem) {
-        val deadline = item.deadline?.let { Converters.convertLongToStringDate(it) } ?: getString(R.string.no_text)
+        val deadline = item.deadline?.let { converters.convertLongToStringDate(it) } ?: getString(R.string.no_text)
         val isDone = getString(if (item.done) R.string.yes_text else R.string.no_text)
-        val createdAt = Converters.convertLongToStringDate(item.createdAt)
-        val changedAt = Converters.convertLongToStringDate(item.changedAt)
+        val createdAt = converters.convertLongToStringDate(item.createdAt)
+        val changedAt = converters.convertLongToStringDate(item.changedAt)
 
         val itemDetails = getString(
-            R.string.item_details, item.text, getImportanceText(item.importance),
+            R.string.item_details, item.text,
+            converters.convertImportanceToString(item.importance, requireContext()),
             deadline, isDone, createdAt, changedAt
         )
 
@@ -185,14 +179,6 @@ class MyToDoListFragment : Fragment() {
             .setTitle(getString(R.string.information_text))
             .setMessage(itemDetails)
             .show()
-    }
-
-    private fun getImportanceText(importance: Importance): String {
-        return when (importance) {
-            Importance.LOW -> getString(R.string.low_text)
-            Importance.COMMON -> getString(R.string.common_text)
-            Importance.HIGH -> getString(R.string.high_text)
-        }
     }
 
     private fun displayMenu(view: View?, item: ToDoItem) {
