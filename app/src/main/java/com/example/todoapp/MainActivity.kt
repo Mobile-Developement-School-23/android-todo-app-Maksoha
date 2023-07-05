@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var connectivityManager : ConnectivityManager
     private lateinit var networkCallback : ConnectivityManager.NetworkCallback
     private lateinit var binding : ActivityMainBinding
+
     private val repository: ToDoRepository by lazy {
         (applicationContext as ToDoListApplication).toDoRepository
     }

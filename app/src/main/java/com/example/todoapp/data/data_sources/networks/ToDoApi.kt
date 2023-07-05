@@ -1,11 +1,9 @@
 package com.example.todoapp.data.data_sources.networks
 
-import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.data.models.ToDoItemRequest
 import com.example.todoapp.data.models.ToDoItemResponse
 import com.example.todoapp.data.models.ToDoListRequest
 import com.example.todoapp.data.models.ToDoListResponse
-import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import retrofit2.http.*
 
