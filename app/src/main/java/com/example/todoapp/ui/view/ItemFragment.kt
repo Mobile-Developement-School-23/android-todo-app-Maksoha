@@ -8,42 +8,50 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.todoapp.MainActivity
 import com.example.todoapp.R
+import com.example.todoapp.ToDoListApplication
 import com.example.todoapp.data.models.Importance
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.databinding.FragmentToDoItemBinding
-import com.example.todoapp.ui.viewModels.ToDoItemViewModel
-import com.example.todoapp.ui.viewModels.ToDoListViewModel
+import com.example.todoapp.ui.viewModels.ItemViewModel
+import com.example.todoapp.ui.viewModels.ListViewModel
+import com.example.todoapp.ui.viewModels.ViewModelFactory
 import com.example.todoapp.utils.Converters
 import com.example.todoapp.utils.MaterialDatePickerHelper
 import com.example.todoapp.utils.SnackbarHelper
-import com.google.android.material.datepicker.CalendarConstraints
-import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
+import javax.inject.Inject
 
 
 class ItemFragment : Fragment() {
     private val converters = Converters()
     private lateinit var binding: FragmentToDoItemBinding
     private lateinit var datePicker: MaterialDatePicker<Long>
-    private val itemViewModel: ToDoItemViewModel by lazy {
-        (requireActivity() as MainActivity).itemViewModel
-    }
-    private val listViewModel: ToDoListViewModel by lazy {
-        (requireActivity() as MainActivity).listViewModel
-    }
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+
+    private val itemViewModel: ItemViewModel by activityViewModels{viewModelFactory}
+    private val listViewModel : ListViewModel by activityViewModels{viewModelFactory}
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
+        val appComponent = (requireActivity().application as ToDoListApplication).appComponent
+        appComponent.inject(this)
         binding = FragmentToDoItemBinding.inflate(layoutInflater, container, false)
         setDatePicker()
         displaySnackbar()

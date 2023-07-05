@@ -13,16 +13,12 @@ import retrofit2.Response
 import javax.inject.Inject
 
 class RemoteDataSource @Inject constructor(private val api: ToDoApi) {
-//    private val api: ToDoApi = RetrofitInstance.api
     private var lastKnownRevision: Int = 0
 
     suspend fun getItem(id: String): Response<ToDoItemResponse> {
         return try {
-            val response = /*makeRequestWithRetry(1, 100) {*/
-                api.getItem(id)
-/*
-            }
-*/
+            val response = api.getItem(id)
+
             if (response.isSuccessful) {
                 lastKnownRevision = response.body()?.revision ?: lastKnownRevision
             }
@@ -35,9 +31,7 @@ class RemoteDataSource @Inject constructor(private val api: ToDoApi) {
 
     suspend fun addItem(request: ToDoItem) : Int {
         return try {
-            val response = /*makeRequestWithRetry(1, 100) {*/
-                api.addItem(lastKnownRevision, ToDoItemRequest(request))
-            /*}*/
+            val response = api.addItem(lastKnownRevision, ToDoItemRequest(request))
             response.code()
         } catch (e: Exception) {
             Log.e("NetworkRepository", "Exception occurred while adding item", e)
@@ -47,9 +41,7 @@ class RemoteDataSource @Inject constructor(private val api: ToDoApi) {
 
     suspend fun updateItems(request: List<ToDoItem>): Int {
         return try {
-            val response = /*makeRequestWithRetry(1, 100) {*/
-                api.updateItems(lastKnownRevision, ToDoListRequest(request))
-            /*}*/
+            val response = api.updateItems(lastKnownRevision, ToDoListRequest(request))
             if (response.isSuccessful) {
                 lastKnownRevision = response.body()?.revision ?: lastKnownRevision
             }
@@ -78,9 +70,7 @@ class RemoteDataSource @Inject constructor(private val api: ToDoApi) {
 
     suspend fun updateItem(updatedItem: ToDoItem) : Int {
         return try {
-            val response = /*makeRequestWithRetry(1, 100) {*/
-                api.updateItem(lastKnownRevision, updatedItem.id, ToDoItemRequest(updatedItem))
-            /*  }*/
+            val response = api.updateItem(lastKnownRevision, updatedItem.id, ToDoItemRequest(updatedItem))
             if (response.isSuccessful) {
                 lastKnownRevision = response.body()?.revision ?: lastKnownRevision
             }
@@ -93,59 +83,18 @@ class RemoteDataSource @Inject constructor(private val api: ToDoApi) {
     }
 
     suspend fun deleteItem(id: String) : Int {
-        try {
-            val response = /*makeRequestWithRetry(1, 100) {*/
-                api.deleteItem(lastKnownRevision, id)
-            /*}*/
+        return try {
+            val response = api.deleteItem(lastKnownRevision, id)
             if (response.isSuccessful) {
                 lastKnownRevision = response.body()?.revision ?: lastKnownRevision
             }
-            return response.code()
+            response.code()
 
         } catch (e: Exception) {
             Log.e("check", "Exception occurred while deleting item", e)
-            return Constants.FAILED_CONNECTION_CODE
+            Constants.FAILED_CONNECTION_CODE
         }
     }
-
-
-
-    private suspend fun <T> makeRequestWithRetry(
-        maxRetries: Int,
-        retryIntervalMillis: Long,
-        request: suspend () -> Response<T>
-    ): Response<T> {
-        var retryCount = 0
-        var response: Response<T> = request()
-
-        while (retryCount <= maxRetries) {
-            try {
-                response = request.invoke()
-
-                if (response.isSuccessful) {
-                    break
-                } else {
-                    if (retryCount == maxRetries) {
-                        break
-                    } else {
-                        delay(retryIntervalMillis)
-                    }
-                }
-            } catch (e: Exception) {
-                // Handle the exception here, e.g., log it or do something else
-                // You can also choose to retry or not based on the exception type
-                if (retryCount == maxRetries) {
-                    throw e
-                } else {
-                    delay(retryIntervalMillis)
-                }
-            }
-            retryCount++
-        }
-
-        return response
-    }
-
 
 }
 

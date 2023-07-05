@@ -5,13 +5,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.data.repositories.ToDoRepository
-import com.example.todoapp.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlinx.coroutines.flow.StateFlow as StateFlow
 
-class ToDoItemViewModel(private val repository: ToDoRepository) : ViewModel() {
+class ItemViewModel @Inject constructor(private val repository: ToDoRepository) : ViewModel() {
     private val selectedItem: MutableStateFlow<ToDoItem?> = MutableStateFlow(null)
     private val errorState: MutableStateFlow<Int> = MutableStateFlow(200)
 
@@ -51,14 +51,4 @@ class ToDoItemViewModel(private val repository: ToDoRepository) : ViewModel() {
 
 }
 
-class ToDoItemViewModelFactory(private val repository: ToDoRepository) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(ToDoItemViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return ToDoItemViewModel(repository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
 

@@ -5,6 +5,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.todoapp.data.repositories.ToDoRepository
 import com.example.todoapp.data.repositories.ToDoRepositoryImpl
+import javax.inject.Inject
 
 class DataRefreshWorker(
     appContext: Context,
@@ -13,9 +14,7 @@ class DataRefreshWorker(
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
-
         repository.refreshData()
-        
         return Result.success()
     }
 }

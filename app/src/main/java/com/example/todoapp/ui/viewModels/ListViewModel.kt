@@ -11,9 +11,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
-class ToDoListViewModel(private val repository: ToDoRepository) : ViewModel() {
+class ListViewModel @Inject constructor(private val repository: ToDoRepository) : ViewModel() {
     private val _visibility: MutableStateFlow<Boolean> = MutableStateFlow(true)
     val visibility: StateFlow<Boolean> = _visibility
 
@@ -89,14 +90,3 @@ class ToDoListViewModel(private val repository: ToDoRepository) : ViewModel() {
     }
 }
 
-
-class ToDoListViewModelFactory(private val repository: ToDoRepository) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(ToDoListViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return ToDoListViewModel(repository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}

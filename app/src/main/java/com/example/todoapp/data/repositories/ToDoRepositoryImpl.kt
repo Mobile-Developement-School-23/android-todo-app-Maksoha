@@ -4,8 +4,9 @@ import android.util.Log
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.utils.Constants
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class ToDoRepositoryImpl(
+class ToDoRepositoryImpl @Inject constructor(
     private val localDataSource: LocalDataSource,
     private val remoteDataSource: RemoteDataSource
 ) : ToDoRepository {
@@ -21,7 +22,6 @@ class ToDoRepositoryImpl(
                 val bodyResponse = response.getOrNull()?.body()
                 val code = response.getOrNull()?.code()
                 if (bodyResponse != null) {
-//                    localDataSource.clearDatabase()
                     localDataSource.updateItems(bodyResponse.list)
                     val localData = localDataSource.getItems()
                     remoteDataSource.updateItems(localData)

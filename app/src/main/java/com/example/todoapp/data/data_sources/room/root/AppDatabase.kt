@@ -23,7 +23,6 @@ abstract class AppDatabase : RoomDatabase() {
 
         fun getDatabase(
             context: Context,
-            scope: CoroutineScope
         ): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -32,34 +31,10 @@ abstract class AppDatabase : RoomDatabase() {
                     "app_database"
                 )
                     .fallbackToDestructiveMigration()
-                    .addCallback(AppDatabaseCallback(scope))
                     .build()
                 INSTANCE = instance
-
                 instance
             }
         }
-
-        private class AppDatabaseCallback(
-            private val scope: CoroutineScope
-        ) : RoomDatabase.Callback() {
-
-            override fun onCreate(db: SupportSQLiteDatabase) {
-                super.onCreate(db)
-
-                INSTANCE?.let { database ->
-                    scope.launch(Dispatchers.IO) {
-                        populateDatabase(database.toDoItemDao())
-                    }
-                }
-            }
-        }
-
-        suspend fun populateDatabase(toDoItemDao: ToDoItemDao) {
-
-
-        }
-
-
     }
 }
