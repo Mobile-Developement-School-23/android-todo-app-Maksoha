@@ -15,11 +15,7 @@ import javax.inject.Inject
 
 class ToDoListApplication : Application() {
 
-//    @Inject
-//    lateinit var toDoRepository: ToDoRepository
-
     lateinit var appComponent: AppComponent
-        private set
 
     override fun onCreate() {
         super.onCreate()

@@ -38,11 +38,12 @@ class ItemFragment : Fragment() {
     private lateinit var binding: FragmentToDoItemBinding
     private lateinit var datePicker: MaterialDatePicker<Long>
 
-    @Inject
-    lateinit var viewModelFactory: ViewModelFactory
-
-    private val itemViewModel: ItemViewModel by activityViewModels{viewModelFactory}
-    private val listViewModel : ListViewModel by activityViewModels{viewModelFactory}
+    private val itemViewModel: ItemViewModel by activityViewModels {
+        (requireActivity() as MainActivity).viewModelFactory
+    }
+    private val listViewModel: ListViewModel by activityViewModels {
+        (requireActivity() as MainActivity).viewModelFactory
+    }
 
 
     override fun onCreateView(

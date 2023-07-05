@@ -40,12 +40,13 @@ class ListFragment : Fragment() {
     private val converters = Converters()
     private lateinit var binding: FragmentMyToDoListBinding
     private lateinit var itemClickListener: ToDoListAdapter.OnItemClickListener
-    @Inject
-    lateinit var viewModelFactory: ViewModelFactory
 
-    private val itemViewModel: ItemViewModel by activityViewModels{viewModelFactory}
-    private val listViewModel : ListViewModel by activityViewModels{viewModelFactory}
-
+    private val itemViewModel: ItemViewModel by activityViewModels {
+        (requireActivity() as MainActivity).viewModelFactory
+    }
+    private val listViewModel: ListViewModel by activityViewModels {
+        (requireActivity() as MainActivity).viewModelFactory
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?

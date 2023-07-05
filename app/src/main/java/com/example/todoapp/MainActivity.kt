@@ -29,6 +29,9 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var repository: ToDoRepository
 
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+
     private lateinit var connectivityManager : ConnectivityManager
     private lateinit var networkCallback : ConnectivityManager.NetworkCallback
     private lateinit var binding : ActivityMainBinding
