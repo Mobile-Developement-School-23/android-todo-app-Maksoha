@@ -1,7 +1,7 @@
 package com.example.todoapp.di
 
 import com.example.todoapp.data.data_sources.networks.ToDoApi
-import com.example.todoapp.data.repositories.RemoteDataSource
+import com.example.todoapp.data.data_sources.RemoteDataSource
 import com.example.todoapp.utils.Constants.Companion.BASE_URL
 import com.example.todoapp.utils.Constants.Companion.TOKEN
 import dagger.Module
@@ -37,7 +37,5 @@ class NetworkModule {
         return retrofit.create(ToDoApi::class.java)
     }
 
-    @Provides
-    fun provideRemoteDataSource(api : ToDoApi) : RemoteDataSource = RemoteDataSource(api)
 
 }

@@ -32,7 +32,6 @@ import java.util.Locale
 import java.util.UUID
 import javax.inject.Inject
 
-
 class ItemFragment : Fragment() {
     private val converters = Converters()
     private lateinit var binding: FragmentToDoItemBinding
@@ -44,7 +43,6 @@ class ItemFragment : Fragment() {
     private val listViewModel: ListViewModel by activityViewModels {
         (requireActivity() as MainActivity).viewModelFactory
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -87,7 +85,6 @@ class ItemFragment : Fragment() {
         return binding.root
     }
 
-
     private fun initData() {
         viewLifecycleOwner.lifecycleScope.launch {
             itemViewModel.getSelectedItem().collect { item ->
@@ -106,7 +103,6 @@ class ItemFragment : Fragment() {
                 }
             }
         }
-
     }
 
     private fun displaySnackbar() {

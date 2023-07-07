@@ -1,4 +1,4 @@
-package com.example.todoapp.data.repositories
+package com.example.todoapp.data.data_sources
 
 import com.example.todoapp.data.data_sources.room.dao.ToDoItemDao
 import com.example.todoapp.data.data_sources.room.entities.ToDoItemEntity

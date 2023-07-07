@@ -1,4 +1,4 @@
-package com.example.todoapp.data.repositories
+package com.example.todoapp.data.data_sources
 
 import android.util.Log
 import com.example.todoapp.data.models.ToDoItem
@@ -12,9 +12,8 @@ import kotlinx.coroutines.delay
 import retrofit2.Response
 import javax.inject.Inject
 
-class RemoteDataSource @Inject constructor(private val api: ToDoApi) {
+class RemoteDataSource @Inject constructor (private val api: ToDoApi) {
     private var lastKnownRevision: Int = 0
-
     suspend fun getItem(id: String): Response<ToDoItemResponse> {
         return try {
             val response = api.getItem(id)
@@ -29,7 +28,7 @@ class RemoteDataSource @Inject constructor(private val api: ToDoApi) {
         }
     }
 
-    suspend fun addItem(request: ToDoItem) : Int {
+    suspend fun addItem(request: ToDoItem): Int {
         return try {
             val response = api.addItem(lastKnownRevision, ToDoItemRequest(request))
             response.code()
@@ -67,10 +66,10 @@ class RemoteDataSource @Inject constructor(private val api: ToDoApi) {
     }
 
 
-
-    suspend fun updateItem(updatedItem: ToDoItem) : Int {
+    suspend fun updateItem(updatedItem: ToDoItem): Int {
         return try {
-            val response = api.updateItem(lastKnownRevision, updatedItem.id, ToDoItemRequest(updatedItem))
+            val response =
+                api.updateItem(lastKnownRevision, updatedItem.id, ToDoItemRequest(updatedItem))
             if (response.isSuccessful) {
                 lastKnownRevision = response.body()?.revision ?: lastKnownRevision
             }
@@ -82,7 +81,7 @@ class RemoteDataSource @Inject constructor(private val api: ToDoApi) {
 
     }
 
-    suspend fun deleteItem(id: String) : Int {
+    suspend fun deleteItem(id: String): Int {
         return try {
             val response = api.deleteItem(lastKnownRevision, id)
             if (response.isSuccessful) {

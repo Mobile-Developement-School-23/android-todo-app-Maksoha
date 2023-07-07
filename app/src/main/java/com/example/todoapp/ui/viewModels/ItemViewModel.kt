@@ -11,10 +11,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlinx.coroutines.flow.StateFlow as StateFlow
 
-class ItemViewModel @Inject constructor(private val repository: ToDoRepository) : ViewModel() {
+class ItemViewModel (private val repository: ToDoRepository) : ViewModel() {
     private val selectedItem: MutableStateFlow<ToDoItem?> = MutableStateFlow(null)
     private val errorState: MutableStateFlow<Int> = MutableStateFlow(200)
-
     fun selectItem(id: String?) {
         viewModelScope.launch(Dispatchers.IO) {
             if (id == null) {

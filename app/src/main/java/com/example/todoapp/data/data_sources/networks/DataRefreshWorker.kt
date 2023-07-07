@@ -7,7 +7,7 @@ import com.example.todoapp.data.repositories.ToDoRepository
 import com.example.todoapp.data.repositories.ToDoRepositoryImpl
 import javax.inject.Inject
 
-class DataRefreshWorker(
+class DataRefreshWorker @Inject constructor(
     appContext: Context,
     workerParams: WorkerParameters,
     private val repository: ToDoRepository

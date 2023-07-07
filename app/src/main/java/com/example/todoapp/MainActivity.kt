@@ -41,8 +41,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val appComponent = (application as ToDoListApplication).appComponent
-        appComponent.inject(this)
+       (applicationContext as ToDoListApplication).appComponent.inject(this)
 
         checkInternetConnection()
         regularUpdate()
