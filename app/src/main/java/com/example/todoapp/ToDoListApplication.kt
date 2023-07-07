@@ -17,8 +17,5 @@ class ToDoListApplication : Application() {
             .create(this)
 
         DataRefreshWorker.startRefresh(this)
-
     }
-
-
 }

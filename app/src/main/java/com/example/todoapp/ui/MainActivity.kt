@@ -5,7 +5,6 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.todoapp.R
 import com.example.todoapp.ToDoListApplication
@@ -34,10 +33,11 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        (applicationContext as ToDoListApplication)
+        val activityComponent = (applicationContext as ToDoListApplication)
             .appComponent
             .activityComponent()
-            .inject(this)
+            .create(this)
+        activityComponent.inject(this)
 
         checkInternetConnection()
     }

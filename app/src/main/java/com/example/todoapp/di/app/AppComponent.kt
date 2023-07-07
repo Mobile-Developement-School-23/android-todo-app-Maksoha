@@ -14,7 +14,6 @@ interface AppComponent {
     interface Factory {
         fun create(@BindsInstance context: Context): AppComponent
     }
-
-    fun activityComponent() : ActivityComponent
+    fun activityComponent(): ActivityComponent.Factory
 
 }

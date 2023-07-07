@@ -46,9 +46,11 @@ class ItemFragment : Fragment() {
     ): View {
 
        (requireActivity().application as ToDoListApplication)
-           .appComponent.activityComponent()
+           .appComponent
+           .activityComponent()
+           .create(requireActivity())
            .itemFragmentComponent()
-           .inject(this)
+           .create(this)
         binding = FragmentToDoItemBinding.inflate(layoutInflater, container, false)
         setDatePicker()
         displaySnackbar()

@@ -12,10 +12,10 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class DataRefreshWorker @Inject constructor(
-    appContext: Context,
+    context: Context,
     workerParams: WorkerParameters,
     private val repository: ToDoRepository
-) : CoroutineWorker(appContext, workerParams) {
+) : CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result {
         repository.refreshData()

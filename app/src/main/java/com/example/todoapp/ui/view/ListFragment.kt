@@ -55,9 +55,10 @@ class ListFragment : Fragment() {
 
         (requireActivity().application as ToDoListApplication)
             .appComponent
-            .activityComponent().
-            listFragmentComponent()
-            .inject(this)
+            .activityComponent()
+            .create(requireActivity())
+            .listFragmentComponent()
+            .create(this)
 
         setRecyclerView()
         observeData()
