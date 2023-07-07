@@ -1,7 +1,6 @@
-package com.example.todoapp.di
+package com.example.todoapp.di.app
 
 import com.example.todoapp.data.data_sources.networks.ToDoApi
-import com.example.todoapp.data.data_sources.RemoteDataSource
 import com.example.todoapp.utils.Constants.Companion.BASE_URL
 import com.example.todoapp.utils.Constants.Companion.TOKEN
 import dagger.Module

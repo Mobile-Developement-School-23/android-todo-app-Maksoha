@@ -9,10 +9,8 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.example.todoapp.MainActivity
+import com.example.todoapp.ui.MainActivity
 import com.example.todoapp.R
 import com.example.todoapp.ToDoListApplication
 import com.example.todoapp.data.models.Importance
@@ -20,7 +18,6 @@ import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.databinding.FragmentToDoItemBinding
 import com.example.todoapp.ui.viewModels.ItemViewModel
 import com.example.todoapp.ui.viewModels.ListViewModel
-import com.example.todoapp.ui.viewModels.ViewModelFactory
 import com.example.todoapp.utils.Converters
 import com.example.todoapp.utils.MaterialDatePickerHelper
 import com.example.todoapp.utils.SnackbarHelper
@@ -30,7 +27,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
-import javax.inject.Inject
 
 class ItemFragment : Fragment() {
     private val converters = Converters()
@@ -49,8 +45,10 @@ class ItemFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        val appComponent = (requireActivity().application as ToDoListApplication).appComponent
-        appComponent.inject(this)
+       (requireActivity().application as ToDoListApplication)
+           .appComponent.activityComponent()
+           .itemFragmentComponent()
+           .inject(this)
         binding = FragmentToDoItemBinding.inflate(layoutInflater, container, false)
         setDatePicker()
         displaySnackbar()

@@ -1,6 +1,7 @@
-package com.example.todoapp.di
+package com.example.todoapp.di.app
 
 import android.app.Application
+import android.content.Context
 import com.example.todoapp.data.data_sources.room.dao.ToDoItemDao
 import com.example.todoapp.data.data_sources.room.root.AppDatabase
 import dagger.Module
@@ -10,8 +11,8 @@ import dagger.Provides
 class DatabaseModule {
 
     @Provides
-    fun provideAppDatabase(application: Application): AppDatabase {
-        return AppDatabase.getDatabase(application)
+    fun provideAppDatabase(context: Context): AppDatabase {
+        return AppDatabase.getDatabase(context)
     }
 
     @Provides

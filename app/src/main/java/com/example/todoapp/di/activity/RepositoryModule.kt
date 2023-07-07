@@ -1,4 +1,4 @@
-package com.example.todoapp.di
+package com.example.todoapp.di.activity
 
 import com.example.todoapp.data.data_sources.LocalDataSource
 import com.example.todoapp.data.data_sources.RemoteDataSource
@@ -9,7 +9,6 @@ import dagger.Provides
 
 @Module
 class RepositoryModule {
-
     @Provides
     fun provideToDoRepository(
         localDataSource: LocalDataSource,
