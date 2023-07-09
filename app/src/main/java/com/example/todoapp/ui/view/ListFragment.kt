@@ -50,19 +50,36 @@ class ListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentListBinding.inflate(layoutInflater, container, false)
-        itemClickListener = createItemClickListener()
-        binding.recyclerView.itemAnimator = null
-
+        itemClickListener = object : ToDoListAdapter.OnItemClickListener {
+            override fun onItemClick(item: ToDoItem) {
+                itemViewModel.selectItem(item.id)
+                findNavController().navigate(R.id.action_myToDoListFragment_to_addToDoItemFragment)
+            }
+            override fun onCheckboxClick(item: ToDoItem, isChecked: Boolean) {
+                listViewModel.updateItem(item.copy(done = isChecked))
+            }
+            override fun onButtonInfoClick(item: ToDoItem) {
+                displayInformation(item)
+            }
+            override fun onItemLongClick(v: View?, item: ToDoItem) {
+                displayMenu(v, item)
+            }
+        }
         (activity as MainActivity)
             .activityComponent
             .listFragmentComponent()
             .create()
+        return binding.root
+    }
 
-        setRecyclerView()
-        observeData()
-        changeVisibility()
-        updateProgressIndicator()
-        displaySnackbar()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            viewLifecycleOwner.lifecycleScope.launch {
+                listViewModel.refreshData()
+            }
+            binding.swipeRefreshLayout.isRefreshing = false
+        }
         binding.btnAddItem.setOnClickListener {
             itemViewModel.selectItem(null)
             findNavController().navigate(R.id.action_myToDoListFragment_to_addToDoItemFragment)
@@ -70,7 +87,13 @@ class ListFragment : Fragment() {
         binding.btnVisibility.setOnClickListener {
             listViewModel.changeStateVisibility()
         }
-        return binding.root
+        binding.recyclerView.itemAnimator = null
+        changeVisibility()
+        updateProgressIndicator()
+        displaySnackbar()
+        setRecyclerView()
+        setSwipeToDelete()
+        observeData()
     }
 
     private fun displaySnackbar() {
@@ -82,16 +105,6 @@ class ListFragment : Fragment() {
                     listViewModel.refreshData()
                 ).showSnackbarWithAction()
             }
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            viewLifecycleOwner.lifecycleScope.launch {
-                listViewModel.refreshData()
-            }
-            binding.swipeRefreshLayout.isRefreshing = false
         }
     }
 
@@ -120,7 +133,6 @@ class ListFragment : Fragment() {
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         (binding.recyclerView.layoutManager as LinearLayoutManager).reverseLayout = true
-        setSwipeToDelete()
     }
 
     private fun setSwipeToDelete() {
@@ -148,31 +160,6 @@ class ListFragment : Fragment() {
                 binding.stateProgressIndicator.text = "$doneItemsSize/$itemsSize"
             }
         }
-    }
-
-    private fun createItemClickListener(): ToDoListAdapter.OnItemClickListener {
-        return object : ToDoListAdapter.OnItemClickListener {
-            override fun onItemClick(item: ToDoItem) {
-                editTask(item)
-            }
-
-            override fun onCheckboxClick(item: ToDoItem, isChecked: Boolean) {
-                listViewModel.updateItem(item.copy(done = isChecked))
-            }
-
-            override fun onButtonInfoClick(item: ToDoItem) {
-                displayInformation(item)
-            }
-
-            override fun onItemLongClick(v: View?, item: ToDoItem) {
-                displayMenu(v, item)
-            }
-        }
-    }
-
-    private fun editTask(item: ToDoItem) {
-        itemViewModel.selectItem(item.id)
-        findNavController().navigate(R.id.action_myToDoListFragment_to_addToDoItemFragment)
     }
 
     private fun displayInformation(item: ToDoItem) {
@@ -203,7 +190,8 @@ class ListFragment : Fragment() {
                     true
                 }
                 R.id.action_edit -> {
-                    editTask(item)
+                    itemViewModel.selectItem(item.id)
+                    findNavController().navigate(R.id.action_myToDoListFragment_to_addToDoItemFragment)
                     true
                 }
                 R.id.action_delete -> {

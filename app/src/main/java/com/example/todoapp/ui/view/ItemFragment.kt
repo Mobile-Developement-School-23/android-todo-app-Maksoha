@@ -53,14 +53,13 @@ class ItemFragment : Fragment() {
         setDatePicker()
         displaySnackbar()
         initData()
+        setImportanceAdapter()
         binding.btnClose.setOnClickListener {
-            closeFragment()
+            parentFragmentManager.popBackStack()
         }
-
         binding.btnDelete.setOnClickListener {
             deleteItem()
         }
-
         return binding.root
     }
 
@@ -70,7 +69,7 @@ class ItemFragment : Fragment() {
         binding.btnSave.setOnClickListener {
             if (!binding.text.text.isNullOrEmpty()) {
                 saveData()
-                closeFragment()
+                parentFragmentManager.popBackStack()
             } else {
                 binding.text.error = getString(R.string.error_input_task_text)
             }
@@ -79,8 +78,9 @@ class ItemFragment : Fragment() {
         binding.btnSwitcher.setOnClickListener {
             updateDatePicker(binding.btnSwitcher.isChecked)
             if (!binding.btnSwitcher.isChecked) {
-                resetDate()
-            }
+                binding.btnSwitcher.isChecked = false
+                binding.date.text = ""
+                binding.date.visibility = View.GONE            }
         }
     }
 
@@ -89,7 +89,7 @@ class ItemFragment : Fragment() {
             itemViewModel.getSelectedItem().collect { item ->
                 if (item != null) {
                     itemViewModel.deleteItem(item)
-                    closeFragment()
+                    parentFragmentManager.popBackStack()
                 }
             }
         }
@@ -109,7 +109,6 @@ class ItemFragment : Fragment() {
                     btnSwitcher.isChecked = item?.deadline != null
                     date.text = item?.deadline?.let { converters.convertLongToStringDate(it) }
                     btnDelete.isEnabled = item != null
-                    setImportanceAdapter()
                 }
             }
         }
@@ -179,18 +178,17 @@ class ItemFragment : Fragment() {
             binding.date.visibility = View.VISIBLE
         }
         datePicker.addOnCancelListener {
-            resetDate()
+            binding.btnSwitcher.isChecked = false
+            binding.date.text = ""
+            binding.date.visibility = View.GONE
         }
         datePicker.addOnNegativeButtonClickListener {
-            resetDate()
+            binding.btnSwitcher.isChecked = false
+            binding.date.text = ""
+            binding.date.visibility = View.GONE
         }
     }
 
-    private fun resetDate() {
-        binding.btnSwitcher.isChecked = false
-        binding.date.text = ""
-        binding.date.visibility = View.GONE
-    }
 
     private fun setImportanceAdapter() {
         val items = Importance.values().map { importance ->
@@ -200,7 +198,4 @@ class ItemFragment : Fragment() {
         (binding.importance.editText as? AutoCompleteTextView)?.setAdapter(adapter)
     }
 
-    private fun closeFragment() {
-        parentFragmentManager.popBackStack()
-    }
 }
