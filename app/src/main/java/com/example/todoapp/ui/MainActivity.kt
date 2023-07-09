@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
                 Snackbar.make(binding.activityMain, getString(R.string.internet_is_connected), Snackbar.LENGTH_LONG)
                     .show()
                 lifecycleScope.launch(Dispatchers.IO) {
-                    repository.updateItems()
+                    repository.refreshData()
                 }
             }
 

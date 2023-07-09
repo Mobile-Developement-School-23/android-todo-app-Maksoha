@@ -1,6 +1,5 @@
 package com.example.todoapp.ui.view
 
-import android.app.Activity
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -11,12 +10,11 @@ import android.widget.AutoCompleteTextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import com.example.todoapp.ui.MainActivity
 import com.example.todoapp.R
-import com.example.todoapp.ToDoListApplication
 import com.example.todoapp.data.models.Importance
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.databinding.FragmentItemBinding
+import com.example.todoapp.ui.MainActivity
 import com.example.todoapp.ui.viewModels.ItemViewModel
 import com.example.todoapp.ui.viewModels.ListViewModel
 import com.example.todoapp.utils.Converters
@@ -86,8 +84,6 @@ class ItemFragment : Fragment() {
         }
     }
 
-
-
     private fun deleteItem() {
         viewLifecycleOwner.lifecycleScope.launch {
             itemViewModel.getSelectedItem().collect { item ->
@@ -142,8 +138,7 @@ class ItemFragment : Fragment() {
     private fun saveData() {
         val text = binding.text.editableText.toString()
         val importance = converters.convertStringToImportance(
-            binding.selectedImportance.text.toString(),
-            requireContext()
+            binding.selectedImportance.text.toString(), requireContext()
         )
         val deadline = if (binding.date.visibility == View.GONE) null
         else converters.convertStringToLongDate(binding.date.text.toString())
@@ -153,19 +148,14 @@ class ItemFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             itemViewModel.getSelectedItem().collect { item ->
                 val creationDate = System.currentTimeMillis()
+                val id = item?.id ?: UUID.randomUUID().toString()
+                val savingItem = ToDoItem(
+                    id, text, importance,
+                    deadline, isDone, null, item?.createdAt ?: creationDate, changeDate, getDeviceId()
+                )
                 if (item == null) {
-                    val id = UUID.randomUUID().toString()
-                    val addingItem = ToDoItem(
-                        id, text, importance,
-                        deadline, isDone, null, creationDate, creationDate, getDeviceId()
-                    )
-                    itemViewModel.addItem(addingItem)
+                    itemViewModel.addItem(savingItem)
                 } else {
-                    val id = item.id
-                    val savingItem = ToDoItem(
-                        id, text, importance,
-                        deadline, isDone, null, item.createdAt, changeDate, getDeviceId()
-                    )
                     itemViewModel.updateItem(savingItem)
                 }
             }
