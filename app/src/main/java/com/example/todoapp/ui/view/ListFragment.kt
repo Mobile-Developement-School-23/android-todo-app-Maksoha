@@ -20,7 +20,7 @@ import com.example.todoapp.ui.MainActivity
 import com.example.todoapp.R
 import com.example.todoapp.ToDoListApplication
 import com.example.todoapp.data.models.ToDoItem
-import com.example.todoapp.databinding.FragmentMyToDoListBinding
+import com.example.todoapp.databinding.FragmentListBinding
 import com.example.todoapp.ui.adapters.ToDoListAdapter
 import com.example.todoapp.ui.viewModels.ItemViewModel
 import com.example.todoapp.ui.viewModels.ListViewModel
@@ -36,7 +36,7 @@ import javax.inject.Inject
 class ListFragment : Fragment() {
     private lateinit var adapter: ToDoListAdapter
     private val converters = Converters()
-    private lateinit var binding: FragmentMyToDoListBinding
+    private lateinit var binding: FragmentListBinding
     private lateinit var itemClickListener: ToDoListAdapter.OnItemClickListener
 
     private val itemViewModel: ItemViewModel by activityViewModels {
@@ -49,16 +49,14 @@ class ListFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        binding = FragmentMyToDoListBinding.inflate(layoutInflater, container, false)
+        binding = FragmentListBinding.inflate(layoutInflater, container, false)
         itemClickListener = createItemClickListener()
         binding.recyclerView.itemAnimator = null
 
-        (requireActivity().application as ToDoListApplication)
-            .appComponent
-            .activityComponent()
-            .create(requireActivity())
+        (activity as MainActivity)
+            .activityComponent
             .listFragmentComponent()
-            .create(this)
+            .create()
 
         setRecyclerView()
         observeData()

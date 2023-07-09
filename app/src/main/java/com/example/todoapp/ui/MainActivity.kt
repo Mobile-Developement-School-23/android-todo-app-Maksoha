@@ -10,6 +10,7 @@ import com.example.todoapp.R
 import com.example.todoapp.ToDoListApplication
 import com.example.todoapp.data.repositories.ToDoRepository
 import com.example.todoapp.databinding.ActivityMainBinding
+import com.example.todoapp.di.activity.ActivityComponent
 import com.example.todoapp.ui.viewModels.ViewModelFactory
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
@@ -23,6 +24,8 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
+    lateinit var activityComponent: ActivityComponent
+
     private lateinit var binding : ActivityMainBinding
 
     private lateinit var connectivityManager : ConnectivityManager
@@ -33,12 +36,12 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val activityComponent = (applicationContext as ToDoListApplication)
+        activityComponent = (applicationContext as ToDoListApplication)
             .appComponent
             .activityComponent()
             .create(this)
-        activityComponent.inject(this)
 
+        activityComponent.inject(this)
         checkInternetConnection()
     }
 

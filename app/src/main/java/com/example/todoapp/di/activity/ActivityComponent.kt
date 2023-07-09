@@ -1,6 +1,7 @@
 package com.example.todoapp.di.activity
 
 import android.app.Activity
+import android.content.Context
 import com.example.todoapp.ui.MainActivity
 import com.example.todoapp.di.ActivityScope
 import com.example.todoapp.di.fragments.ItemFragmentComponent
@@ -13,7 +14,7 @@ import dagger.Subcomponent
 interface ActivityComponent {
     @Subcomponent.Factory
     interface Factory {
-        fun create (@BindsInstance activity: Activity) : ActivityComponent
+        fun create (@BindsInstance context: Context) : ActivityComponent
     }
     fun inject(activity: MainActivity)
 

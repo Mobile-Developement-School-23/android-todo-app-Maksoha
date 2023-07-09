@@ -1,5 +1,6 @@
 package com.example.todoapp.ui.view
 
+import android.app.Activity
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -15,7 +16,7 @@ import com.example.todoapp.R
 import com.example.todoapp.ToDoListApplication
 import com.example.todoapp.data.models.Importance
 import com.example.todoapp.data.models.ToDoItem
-import com.example.todoapp.databinding.FragmentToDoItemBinding
+import com.example.todoapp.databinding.FragmentItemBinding
 import com.example.todoapp.ui.viewModels.ItemViewModel
 import com.example.todoapp.ui.viewModels.ListViewModel
 import com.example.todoapp.utils.Converters
@@ -30,7 +31,7 @@ import java.util.UUID
 
 class ItemFragment : Fragment() {
     private val converters = Converters()
-    private lateinit var binding: FragmentToDoItemBinding
+    private lateinit var binding: FragmentItemBinding
     private lateinit var datePicker: MaterialDatePicker<Long>
 
     private val itemViewModel: ItemViewModel by activityViewModels {
@@ -45,25 +46,29 @@ class ItemFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-       (requireActivity().application as ToDoListApplication)
-           .appComponent
-           .activityComponent()
-           .create(requireActivity())
-           .itemFragmentComponent()
-           .create(this)
-        binding = FragmentToDoItemBinding.inflate(layoutInflater, container, false)
+        (activity as MainActivity)
+            .activityComponent
+            .itemFragmentComponent()
+            .create()
+
+        binding = FragmentItemBinding.inflate(layoutInflater, container, false)
         setDatePicker()
         displaySnackbar()
         initData()
         binding.btnClose.setOnClickListener {
             closeFragment()
         }
-        binding.btnSwitcher.setOnClickListener {
-            updateDatePicker(binding.btnSwitcher.isChecked)
-            if (!binding.btnSwitcher.isChecked) {
-                resetDate()
-            }
+
+        binding.btnDelete.setOnClickListener {
+            deleteItem()
         }
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         binding.btnSave.setOnClickListener {
             if (!binding.text.text.isNullOrEmpty()) {
                 saveData()
@@ -72,17 +77,26 @@ class ItemFragment : Fragment() {
                 binding.text.error = getString(R.string.error_input_task_text)
             }
         }
-        binding.btnDelete.setOnClickListener {
-            viewLifecycleOwner.lifecycleScope.launch {
-                itemViewModel.getSelectedItem().collect { item ->
-                    if (item != null) {
-                        itemViewModel.deleteItem(item)
-                        closeFragment()
-                    }
+
+        binding.btnSwitcher.setOnClickListener {
+            updateDatePicker(binding.btnSwitcher.isChecked)
+            if (!binding.btnSwitcher.isChecked) {
+                resetDate()
+            }
+        }
+    }
+
+
+
+    private fun deleteItem() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            itemViewModel.getSelectedItem().collect { item ->
+                if (item != null) {
+                    itemViewModel.deleteItem(item)
+                    closeFragment()
                 }
             }
         }
-        return binding.root
     }
 
     private fun initData() {
