@@ -20,7 +20,8 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var repository: ToDoRepository
+    lateinit var repository : ToDoRepository
+
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -36,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        activityComponent = (applicationContext as ToDoListApplication)
+        activityComponent = (application as ToDoListApplication)
             .appComponent
             .activityComponent()
             .create(this)

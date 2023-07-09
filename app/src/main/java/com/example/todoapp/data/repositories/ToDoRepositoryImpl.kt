@@ -8,7 +8,7 @@ import com.example.todoapp.utils.Constants
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class ToDoRepositoryImpl (
+class ToDoRepositoryImpl @Inject constructor(
     private val localDataSource: LocalDataSource,
     private val remoteDataSource: RemoteDataSource
 ) : ToDoRepository {
