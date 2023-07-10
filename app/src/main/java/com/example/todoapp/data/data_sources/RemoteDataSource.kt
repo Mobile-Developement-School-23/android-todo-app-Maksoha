@@ -1,18 +1,17 @@
 package com.example.todoapp.data.data_sources
 
 import android.util.Log
+import com.example.todoapp.data.data_sources.networks.ToDoApi
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.data.models.ToDoItemRequest
+import com.example.todoapp.data.models.ToDoItemResponse
 import com.example.todoapp.data.models.ToDoListRequest
 import com.example.todoapp.data.models.ToDoListResponse
-import com.example.todoapp.data.data_sources.networks.ToDoApi
-import com.example.todoapp.data.models.ToDoItemResponse
 import com.example.todoapp.utils.Constants
-import kotlinx.coroutines.delay
 import retrofit2.Response
 import javax.inject.Inject
 
-class RemoteDataSource @Inject constructor (private val api: ToDoApi) {
+class RemoteDataSource @Inject constructor(private val api: ToDoApi) {
     private var lastKnownRevision: Int = 0
     suspend fun getItem(id: String): Response<ToDoItemResponse> {
         return try {

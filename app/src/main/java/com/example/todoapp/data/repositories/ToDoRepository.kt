@@ -7,19 +7,19 @@ interface ToDoRepository {
 
     fun getItems(): Flow<List<ToDoItem>>
 
-    suspend fun refreshData() : Int
+    suspend fun refreshData(): Int
 
     fun getUndoneItems(): Flow<List<ToDoItem>>
 
     fun getItemById(itemId: String): ToDoItem
 
-    suspend fun updateItems() : Int
+    suspend fun updateItems(): Int
 
-    suspend fun addItem(newItem: ToDoItem) : Int
+    suspend fun addItem(newItem: ToDoItem): Int
 
-    suspend fun updateItem(updatedItem: ToDoItem) : Int
+    suspend fun updateItem(updatedItem: ToDoItem): Int
 
-    suspend fun deleteItem(itemId: String) : Int
+    suspend fun deleteItem(itemId: String): Int
 
     suspend fun getNumberOfItems(): Flow<Int>
     suspend fun getNumberOfDoneItems(): Flow<Int>

@@ -1,6 +1,5 @@
 package com.example.todoapp.di.app
 
-import android.app.Application
 import android.content.Context
 import com.example.todoapp.data.data_sources.room.dao.ToDoItemDao
 import com.example.todoapp.data.data_sources.room.root.AppDatabase

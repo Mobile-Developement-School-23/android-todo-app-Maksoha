@@ -12,8 +12,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 @Module
 class NetworkModule {
     @Provides
-    fun provideOkHttpClient() : OkHttpClient {
-        return OkHttpClient.Builder().addInterceptor {chain ->
+    fun provideOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder().addInterceptor { chain ->
             val original = chain.request()
             val request = original.newBuilder()
                 .header("Authorization", "Bearer $TOKEN")
@@ -23,7 +23,7 @@ class NetworkModule {
     }
 
     @Provides
-    fun provideRetrofit(client: OkHttpClient) : Retrofit {
+    fun provideRetrofit(client: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .client(client)
             .baseUrl(BASE_URL)
@@ -32,7 +32,7 @@ class NetworkModule {
     }
 
     @Provides
-    fun provideToDoApi(retrofit: Retrofit) : ToDoApi {
+    fun provideToDoApi(retrofit: Retrofit): ToDoApi {
         return retrofit.create(ToDoApi::class.java)
     }
 

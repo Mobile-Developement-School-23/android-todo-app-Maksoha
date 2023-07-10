@@ -4,7 +4,6 @@ import com.example.todoapp.data.data_sources.room.entities.ToDoItemEntity
 import com.google.gson.annotations.SerializedName
 
 
-
 data class ToDoItem(
     val id: String,
     val text: String,
@@ -14,7 +13,7 @@ data class ToDoItem(
     val color: String?,
     @SerializedName("created_at") val createdAt: Long,
     @SerializedName("changed_at") val changedAt: Long,
-    @SerializedName("last_updated_by") val lastUpdatedBy : String
+    @SerializedName("last_updated_by") val lastUpdatedBy: String
 ) {
     fun toEntity(): ToDoItemEntity {
         return ToDoItemEntity(
@@ -30,8 +29,12 @@ data class ToDoItem(
         )
     }
 }
+
 enum class Importance {
-    @SerializedName("low") LOW,
-    @SerializedName("basic") COMMON,
-    @SerializedName("important") HIGH
+    @SerializedName("low")
+    LOW,
+    @SerializedName("basic")
+    COMMON,
+    @SerializedName("important")
+    HIGH
 }

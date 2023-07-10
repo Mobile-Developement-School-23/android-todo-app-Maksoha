@@ -11,7 +11,7 @@ import com.example.todoapp.R
 import com.example.todoapp.data.models.Importance
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.databinding.ItemTodoListBinding
-import com.example.todoapp.utils.Converters
+import com.example.todoapp.utils.convertToStringDate
 
 class ToDoListAdapter(
     private val itemClickListener: OnItemClickListener,
@@ -41,7 +41,6 @@ class ToDoListViewHolder(
 ) : RecyclerView.ViewHolder(binding.root), View.OnClickListener, View.OnLongClickListener {
 
     private lateinit var currentItem: ToDoItem
-    private val converter = Converters()
 
     init {
         itemView.setOnClickListener(this)
@@ -60,7 +59,7 @@ class ToDoListViewHolder(
         binding.checkbox.isChecked = item.done
 
         binding.date.visibility = if (item.deadline != null) View.VISIBLE else View.GONE
-        binding.date.text = item.deadline?.let { converter.convertLongToStringDate(it) }
+        binding.date.text = item.deadline?.convertToStringDate()
 
         binding.indicator.setBackgroundResource(
             if (item.importance == Importance.HIGH) R.color.md_theme_light_error
@@ -68,7 +67,8 @@ class ToDoListViewHolder(
         )
 
         val paintFlags = if (binding.checkbox.isChecked) Paint.STRIKE_THRU_TEXT_FLAG else 0
-        binding.text.paint.flags = binding.text.paint.flags and Paint.STRIKE_THRU_TEXT_FLAG.inv() or paintFlags
+        binding.text.paint.flags =
+            binding.text.paint.flags and Paint.STRIKE_THRU_TEXT_FLAG.inv() or paintFlags
     }
 
     companion object {
@@ -76,7 +76,8 @@ class ToDoListViewHolder(
             parent: ViewGroup,
             itemClickListener: ToDoListAdapter.OnItemClickListener
         ): ToDoListViewHolder {
-            val binding = ItemTodoListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            val binding =
+                ItemTodoListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             return ToDoListViewHolder(binding, itemClickListener)
         }
     }

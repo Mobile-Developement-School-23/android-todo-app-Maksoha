@@ -13,10 +13,12 @@ class ViewModelFactory @Inject constructor(private val repository: ToDoRepositor
                 @Suppress("UNCHECKED_CAST")
                 ListViewModel(repository) as T
             }
+
             modelClass.isAssignableFrom(ItemViewModel::class.java) -> {
                 @Suppress("UNCHECKED_CAST")
                 ItemViewModel(repository) as T
             }
+
             else -> throw IllegalArgumentException("Unknown ViewModel class")
         }
     }

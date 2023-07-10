@@ -1,8 +1,8 @@
 package com.example.todoapp.di.app
 
 import android.content.Context
-import com.example.todoapp.di.activity.ActivityComponent
 import com.example.todoapp.di.AppScope
+import com.example.todoapp.di.activity.ActivityComponent
 import dagger.BindsInstance
 import dagger.Component
 
@@ -14,6 +14,7 @@ interface AppComponent {
     interface Factory {
         fun create(@BindsInstance context: Context): AppComponent
     }
+
     fun activityComponent(): ActivityComponent.Factory
 
 }

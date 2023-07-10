@@ -20,17 +20,17 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var repository : ToDoRepository
+    lateinit var repository: ToDoRepository
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
     lateinit var activityComponent: ActivityComponent
 
-    private lateinit var binding : ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
 
-    private lateinit var connectivityManager : ConnectivityManager
-    private lateinit var networkCallback : ConnectivityManager.NetworkCallback
+    private lateinit var connectivityManager: ConnectivityManager
+    private lateinit var networkCallback: ConnectivityManager.NetworkCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +50,11 @@ class MainActivity : AppCompatActivity() {
         connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
-                Snackbar.make(binding.activityMain, getString(R.string.internet_is_connected), Snackbar.LENGTH_LONG)
+                Snackbar.make(
+                    binding.activityMain,
+                    getString(R.string.internet_is_connected),
+                    Snackbar.LENGTH_LONG
+                )
                     .show()
                 lifecycleScope.launch(Dispatchers.IO) {
                     repository.refreshData()
@@ -58,7 +62,11 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onLost(network: Network) {
-                Snackbar.make(binding.activityMain, getString(R.string.internet_is_not_connected), Snackbar.LENGTH_LONG)
+                Snackbar.make(
+                    binding.activityMain,
+                    getString(R.string.internet_is_not_connected),
+                    Snackbar.LENGTH_LONG
+                )
                     .show()
             }
         }

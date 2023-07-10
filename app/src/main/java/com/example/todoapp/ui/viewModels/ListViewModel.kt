@@ -2,7 +2,6 @@ package com.example.todoapp.ui.viewModels
 
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.data.repositories.ToDoRepository
@@ -11,10 +10,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 
-class ListViewModel (private val repository: ToDoRepository) : ViewModel() {
+class ListViewModel(private val repository: ToDoRepository) : ViewModel() {
     private val _visibility: MutableStateFlow<Boolean> = MutableStateFlow(true)
     val visibility: StateFlow<Boolean> = _visibility
 
@@ -27,7 +25,7 @@ class ListViewModel (private val repository: ToDoRepository) : ViewModel() {
     private val _items: MutableStateFlow<List<ToDoItem>> = MutableStateFlow(emptyList())
     val items: StateFlow<List<ToDoItem>> = _items
 
-    private val errorState : MutableStateFlow<Int> = MutableStateFlow(200)
+    private val errorState: MutableStateFlow<Int> = MutableStateFlow(200)
 
     init {
         observeItems()
@@ -37,7 +35,11 @@ class ListViewModel (private val repository: ToDoRepository) : ViewModel() {
 
     private fun observeItems() {
         viewModelScope.launch(Dispatchers.IO) {
-            combine(repository.getItems(), repository.getUndoneItems(), visibility) { items, undoneItems, isVisible ->
+            combine(
+                repository.getItems(),
+                repository.getUndoneItems(),
+                visibility
+            ) { items, undoneItems, isVisible ->
                 if (isVisible) {
                     items
                 } else {
@@ -83,7 +85,7 @@ class ListViewModel (private val repository: ToDoRepository) : ViewModel() {
         }
     }
 
-    fun getErrorState() : StateFlow<Int> = errorState
+    fun getErrorState(): StateFlow<Int> = errorState
 
     fun changeStateVisibility() {
         _visibility.value = !_visibility.value

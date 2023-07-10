@@ -5,7 +5,6 @@ import com.example.todoapp.data.data_sources.LocalDataSource
 import com.example.todoapp.data.data_sources.RemoteDataSource
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.utils.Constants
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -18,7 +17,7 @@ class ToDoRepositoryImpl @Inject constructor(
         return localDataSource.getFlowItems()
     }
 
-    override suspend fun refreshData() : Int {
+    override suspend fun refreshData(): Int {
         try {
             val response = remoteDataSource.getItems()
             if (response.isSuccess) {
@@ -46,7 +45,7 @@ class ToDoRepositoryImpl @Inject constructor(
     override fun getItemById(itemId: String): ToDoItem = localDataSource.getItemById(itemId)
 
 
-    override suspend fun updateItems() : Int {
+    override suspend fun updateItems(): Int {
         try {
             val updateItems = localDataSource.getItems()
             return remoteDataSource.updateItems(updateItems)
@@ -57,7 +56,7 @@ class ToDoRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun addItem(newItem: ToDoItem) : Int {
+    override suspend fun addItem(newItem: ToDoItem): Int {
         try {
             localDataSource.addItem(newItem)
             return remoteDataSource.addItem(newItem)
@@ -69,7 +68,7 @@ class ToDoRepositoryImpl @Inject constructor(
 
     }
 
-    override suspend fun updateItem(updatedItem: ToDoItem) : Int {
+    override suspend fun updateItem(updatedItem: ToDoItem): Int {
         try {
             localDataSource.updateItem(updatedItem)
             return remoteDataSource.updateItem(updatedItem)
@@ -79,7 +78,7 @@ class ToDoRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteItem(itemId: String) : Int {
+    override suspend fun deleteItem(itemId: String): Int {
         try {
             localDataSource.deleteItem(itemId)
             return remoteDataSource.deleteItem(itemId)

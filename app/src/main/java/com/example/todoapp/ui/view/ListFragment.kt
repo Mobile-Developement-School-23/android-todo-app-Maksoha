@@ -11,31 +11,27 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.todoapp.ui.MainActivity
 import com.example.todoapp.R
-import com.example.todoapp.ToDoListApplication
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.databinding.FragmentListBinding
+import com.example.todoapp.ui.MainActivity
 import com.example.todoapp.ui.adapters.ToDoListAdapter
 import com.example.todoapp.ui.viewModels.ItemViewModel
 import com.example.todoapp.ui.viewModels.ListViewModel
-import com.example.todoapp.ui.viewModels.ViewModelFactory
-import com.example.todoapp.utils.Converters
 import com.example.todoapp.utils.ItemTouchHelperCallback
 import com.example.todoapp.utils.SnackbarHelper
+import com.example.todoapp.utils.convertToString
+import com.example.todoapp.utils.convertToStringDate
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 class ListFragment : Fragment() {
     private lateinit var adapter: ToDoListAdapter
-    private val converters = Converters()
     private lateinit var binding: FragmentListBinding
     private lateinit var itemClickListener: ToDoListAdapter.OnItemClickListener
 
@@ -55,12 +51,15 @@ class ListFragment : Fragment() {
                 itemViewModel.selectItem(item.id)
                 findNavController().navigate(R.id.action_myToDoListFragment_to_addToDoItemFragment)
             }
+
             override fun onCheckboxClick(item: ToDoItem, isChecked: Boolean) {
                 listViewModel.updateItem(item.copy(done = isChecked))
             }
+
             override fun onButtonInfoClick(item: ToDoItem) {
                 displayInformation(item)
             }
+
             override fun onItemLongClick(v: View?, item: ToDoItem) {
                 displayMenu(v, item)
             }
@@ -163,14 +162,14 @@ class ListFragment : Fragment() {
     }
 
     private fun displayInformation(item: ToDoItem) {
-        val deadline = item.deadline?.let { converters.convertLongToStringDate(it) } ?: getString(R.string.no_text)
+        val deadline = item.deadline?.convertToStringDate() ?: getString(R.string.no_text)
         val isDone = getString(if (item.done) R.string.yes_text else R.string.no_text)
-        val createdAt = converters.convertLongToStringDate(item.createdAt)
-        val changedAt = converters.convertLongToStringDate(item.changedAt)
+        val createdAt = item.createdAt.convertToStringDate()
+        val changedAt = item.changedAt.convertToStringDate()
 
         val itemDetails = getString(
             R.string.item_details, item.text,
-            converters.convertImportanceToString(item.importance, requireContext()),
+            item.importance.convertToString(requireContext()),
             deadline, isDone, createdAt, changedAt
         )
 
@@ -189,15 +188,18 @@ class ListFragment : Fragment() {
                     displayInformation(item)
                     true
                 }
+
                 R.id.action_edit -> {
                     itemViewModel.selectItem(item.id)
                     findNavController().navigate(R.id.action_myToDoListFragment_to_addToDoItemFragment)
                     true
                 }
+
                 R.id.action_delete -> {
                     listViewModel.deleteItem(item)
                     true
                 }
+
                 else -> false
             }
         }
