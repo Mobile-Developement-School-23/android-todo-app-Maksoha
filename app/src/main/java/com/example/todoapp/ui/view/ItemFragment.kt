@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.todoapp.R
 import com.example.todoapp.data.models.Importance
@@ -29,17 +28,17 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
+import javax.inject.Inject
 
 class ItemFragment : Fragment() {
     private lateinit var binding: FragmentItemBinding
     private lateinit var datePicker: MaterialDatePicker<Long>
 
-    private val itemViewModel: ItemViewModel by activityViewModels {
-        (requireActivity() as MainActivity).viewModelFactory
-    }
-    private val listViewModel: ListViewModel by activityViewModels {
-        (requireActivity() as MainActivity).viewModelFactory
-    }
+    @Inject
+    lateinit var itemViewModel: ItemViewModel
+
+    @Inject
+    lateinit var listViewModel: ListViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,6 +48,7 @@ class ItemFragment : Fragment() {
             .activityComponent
             .itemFragmentComponent()
             .create()
+            .inject(this)
         binding = FragmentItemBinding.inflate(layoutInflater, container, false)
         setDatePicker()
         displaySnackbar()

@@ -4,7 +4,7 @@ import com.example.todoapp.di.ListFragmentScope
 import com.example.todoapp.ui.view.ListFragment
 import dagger.Subcomponent
 
-@Subcomponent
+@Subcomponent(modules = [ListViewModelModule::class])
 @ListFragmentScope
 interface ListFragmentComponent {
 

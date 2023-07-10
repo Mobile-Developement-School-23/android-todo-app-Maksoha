@@ -10,9 +10,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
-class ListViewModel(private val repository: ToDoRepository) : ViewModel() {
+class ListViewModel @Inject constructor(private val repository: ToDoRepository) : ViewModel() {
     private val _visibility: MutableStateFlow<Boolean> = MutableStateFlow(true)
     val visibility: StateFlow<Boolean> = _visibility
 

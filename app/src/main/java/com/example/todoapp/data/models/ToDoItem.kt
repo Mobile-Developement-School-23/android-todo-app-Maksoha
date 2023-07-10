@@ -33,8 +33,10 @@ data class ToDoItem(
 enum class Importance {
     @SerializedName("low")
     LOW,
+
     @SerializedName("basic")
     COMMON,
+
     @SerializedName("important")
     HIGH
 }
