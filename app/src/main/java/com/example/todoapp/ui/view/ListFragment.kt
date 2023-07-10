@@ -10,6 +10,7 @@ import android.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -35,11 +36,12 @@ class ListFragment : Fragment() {
     private lateinit var binding: FragmentListBinding
     private lateinit var itemClickListener: ToDoListAdapter.OnItemClickListener
 
-    @Inject
-    lateinit var itemViewModel: ItemViewModel
-
-    @Inject
-    lateinit var listViewModel: ListViewModel
+    private val itemViewModel: ItemViewModel by activityViewModels {
+        (requireActivity() as MainActivity).viewModelFactory
+    }
+    private val listViewModel: ListViewModel by activityViewModels {
+        (requireActivity() as MainActivity).viewModelFactory
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?

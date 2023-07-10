@@ -5,7 +5,7 @@ import com.example.todoapp.ui.view.ItemFragment
 import dagger.Subcomponent
 
 
-@Subcomponent(modules = [ItemViewModelModule::class])
+@Subcomponent
 @ItemFragmentScope
 interface ItemFragmentComponent {
 
