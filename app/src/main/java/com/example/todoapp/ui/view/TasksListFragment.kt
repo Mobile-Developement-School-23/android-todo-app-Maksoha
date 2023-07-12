@@ -17,29 +17,28 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todoapp.R
 import com.example.todoapp.data.models.ToDoItem
+import com.example.todoapp.data.models.toString
 import com.example.todoapp.databinding.FragmentListBinding
 import com.example.todoapp.ui.MainActivity
 import com.example.todoapp.ui.adapters.ToDoListAdapter
-import com.example.todoapp.ui.viewModels.ItemViewModel
-import com.example.todoapp.ui.viewModels.ListViewModel
+import com.example.todoapp.ui.viewModels.TaskEditViewModel
+import com.example.todoapp.ui.viewModels.TasksListViewModel
 import com.example.todoapp.utils.ItemTouchHelperCallback
 import com.example.todoapp.utils.SnackbarHelper
-import com.example.todoapp.utils.convertToString
-import com.example.todoapp.utils.convertToStringDate
+import com.example.todoapp.utils.toString
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-class ListFragment : Fragment() {
+class TasksListFragment : Fragment() {
     private lateinit var adapter: ToDoListAdapter
     private lateinit var binding: FragmentListBinding
     private lateinit var itemClickListener: ToDoListAdapter.OnItemClickListener
 
-    private val itemViewModel: ItemViewModel by activityViewModels {
+    private val taskEditViewModel: TaskEditViewModel by activityViewModels {
         (requireActivity() as MainActivity).viewModelFactory
     }
-    private val listViewModel: ListViewModel by activityViewModels {
+    private val tasksListViewModel: TasksListViewModel by activityViewModels {
         (requireActivity() as MainActivity).viewModelFactory
     }
 
@@ -49,12 +48,12 @@ class ListFragment : Fragment() {
         binding = FragmentListBinding.inflate(layoutInflater, container, false)
         itemClickListener = object : ToDoListAdapter.OnItemClickListener {
             override fun onItemClick(item: ToDoItem) {
-                itemViewModel.selectItem(item.id)
+                taskEditViewModel.selectItem(item.id)
                 findNavController().navigate(R.id.action_myToDoListFragment_to_addToDoItemFragment)
             }
 
             override fun onCheckboxClick(item: ToDoItem, isChecked: Boolean) {
-                listViewModel.updateItem(item.copy(done = isChecked))
+                tasksListViewModel.updateItem(item.copy(done = isChecked))
             }
 
             override fun onButtonInfoClick(item: ToDoItem) {
@@ -69,7 +68,6 @@ class ListFragment : Fragment() {
             .activityComponent
             .listFragmentComponent()
             .create()
-            .inject(this)
         return binding.root
     }
 
@@ -77,16 +75,16 @@ class ListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.swipeRefreshLayout.setOnRefreshListener {
             viewLifecycleOwner.lifecycleScope.launch {
-                listViewModel.refreshData()
+                tasksListViewModel.refreshData()
             }
             binding.swipeRefreshLayout.isRefreshing = false
         }
         binding.btnAddItem.setOnClickListener {
-            itemViewModel.selectItem(null)
+            taskEditViewModel.selectItem(null)
             findNavController().navigate(R.id.action_myToDoListFragment_to_addToDoItemFragment)
         }
         binding.btnVisibility.setOnClickListener {
-            listViewModel.changeStateVisibility()
+            tasksListViewModel.changeStateVisibility()
         }
         binding.recyclerView.itemAnimator = null
         changeVisibility()
@@ -99,11 +97,11 @@ class ListFragment : Fragment() {
 
     private fun displaySnackbar() {
         viewLifecycleOwner.lifecycleScope.launch {
-            listViewModel.getErrorState().collect { errorState ->
+            tasksListViewModel.getErrorState().collect { errorState ->
                 SnackbarHelper(
                     requireActivity().findViewById(R.id.activityMain),
                     errorState,
-                    listViewModel.refreshData()
+                    tasksListViewModel.refreshData()
                 ).showSnackbarWithAction()
             }
         }
@@ -111,7 +109,7 @@ class ListFragment : Fragment() {
 
     private fun observeData() {
         viewLifecycleOwner.lifecycleScope.launch {
-            listViewModel.items.collect { items ->
+            tasksListViewModel.items.collect { items ->
                 adapter.submitList(items)
                 binding.noTaskText.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
             }
@@ -120,7 +118,7 @@ class ListFragment : Fragment() {
 
     private fun changeVisibility() {
         viewLifecycleOwner.lifecycleScope.launch {
-            listViewModel.visibility.collect { visibility ->
+            tasksListViewModel.visibility.collect { visibility ->
                 binding.btnVisibility.setIconResource(
                     if (!visibility) R.drawable.outline_visibility_off_24
                     else R.drawable.outline_visibility_24
@@ -143,7 +141,7 @@ class ListFragment : Fragment() {
         }
         val background = ColorDrawable(Color.RED)
         val itemTouchCallback = ItemTouchHelperCallback({ position ->
-            listViewModel.deleteItem(adapter.currentList[position])
+            tasksListViewModel.deleteItem(adapter.currentList[position])
         }, icon, background)
 
         val itemTouchHelper = ItemTouchHelper(itemTouchCallback)
@@ -152,7 +150,7 @@ class ListFragment : Fragment() {
 
     private fun updateProgressIndicator() {
         viewLifecycleOwner.lifecycleScope.launch {
-            combine(listViewModel.itemsSize, listViewModel.doneItemsSize)
+            combine(tasksListViewModel.itemsSize, tasksListViewModel.doneItemsSize)
             { itemsSize, doneItemsSize ->
                 Pair(itemsSize, doneItemsSize)
             }.collect { (itemsSize, doneItemsSize) ->
@@ -164,19 +162,19 @@ class ListFragment : Fragment() {
     }
 
     private fun displayInformation(item: ToDoItem) {
-        val deadline = item.deadline?.convertToStringDate() ?: getString(R.string.no_text)
-        val isDone = getString(if (item.done) R.string.yes_text else R.string.no_text)
-        val createdAt = item.createdAt.convertToStringDate()
-        val changedAt = item.changedAt.convertToStringDate()
+        val deadline = item.deadline?.toString() ?: getString(R.string.no)
+        val isDone = getString(if (item.done) R.string.yes else R.string.no)
+        val createdAt = item.createdAt.toString()
+        val changedAt = item.changedAt.toString()
 
         val itemDetails = getString(
             R.string.item_details, item.text,
-            item.importance.convertToString(requireContext()),
+            item.importance.toString(requireContext()),
             deadline, isDone, createdAt, changedAt
         )
 
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle(getString(R.string.information_text))
+            .setTitle(getString(R.string.information))
             .setMessage(itemDetails)
             .show()
     }
@@ -192,13 +190,13 @@ class ListFragment : Fragment() {
                 }
 
                 R.id.action_edit -> {
-                    itemViewModel.selectItem(item.id)
+                    taskEditViewModel.selectItem(item.id)
                     findNavController().navigate(R.id.action_myToDoListFragment_to_addToDoItemFragment)
                     true
                 }
 
                 R.id.action_delete -> {
-                    listViewModel.deleteItem(item)
+                    tasksListViewModel.deleteItem(item)
                     true
                 }
 

@@ -55,8 +55,8 @@ dependencies {
     implementation 'androidx.work:work-runtime-ktx:2.8.1'
 
     // Dagger
-    implementation 'com.google.dagger:dagger:2.28.3'
-    kapt 'com.google.dagger:dagger-compiler:2.28.3'
+    implementation 'com.google.dagger:dagger:2.44.2'
+    kapt 'com.google.dagger:dagger-compiler:2.44.2'
 
     // Room
     implementation "androidx.room:room-runtime:2.5.2"
@@ -71,12 +71,25 @@ dependencies {
     //SwipeRefreshLayout
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
+    //Compose
+    // Compose UI
+    implementation "androidx.compose.ui:ui:1.4.3"
+    // Compose Material Design
+    implementation "androidx.compose.material:material:1.4.3"
+    // Compose Tooling (for preview in Android Studio)
+    implementation "androidx.compose.ui:ui-tooling:1.4.3"
+    // Integration with Activity or Fragment
+    implementation 'androidx.activity:activity-compose:1.7.2'
+
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1"
+    implementation platform('androidx.compose:compose-bom:2023.06.01')
+
+
     implementation 'androidx.compose.material:material:1.4.3'
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
-    implementation 'androidx.activity:activity-compose:1.7.2'
-    implementation platform('androidx.compose:compose-bom:2023.06.01')
+
     implementation 'androidx.compose.ui:ui'
     implementation 'androidx.compose.ui:ui-graphics'
     implementation 'androidx.compose.ui:ui-tooling-preview'

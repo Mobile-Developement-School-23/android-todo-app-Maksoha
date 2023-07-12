@@ -9,5 +9,4 @@ import dagger.Module
 interface RepositoryModule {
     @Binds
     fun bindToDoRepository(toDoRepositoryImpl: ToDoRepositoryImpl): ToDoRepository
-
 }

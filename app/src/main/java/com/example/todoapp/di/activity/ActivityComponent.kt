@@ -2,8 +2,8 @@ package com.example.todoapp.di.activity
 
 import android.content.Context
 import com.example.todoapp.di.ActivityScope
-import com.example.todoapp.di.fragments.ItemFragmentComponent
-import com.example.todoapp.di.fragments.ListFragmentComponent
+import com.example.todoapp.di.fragments.TaskEditFragmentComponent
+import com.example.todoapp.di.fragments.TasksListFragmentComponent
 import com.example.todoapp.ui.MainActivity
 import dagger.BindsInstance
 import dagger.Subcomponent
@@ -18,7 +18,7 @@ interface ActivityComponent {
 
     fun inject(activity: MainActivity)
 
-    fun listFragmentComponent(): ListFragmentComponent.Factory
+    fun listFragmentComponent(): TasksListFragmentComponent.Factory
 
-    fun itemFragmentComponent(): ItemFragmentComponent.Factory
+    fun itemFragmentComponent(): TaskEditFragmentComponent.Factory
 }

@@ -11,7 +11,6 @@ import com.example.todoapp.R
 import com.example.todoapp.data.models.Importance
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.databinding.ItemTodoListBinding
-import com.example.todoapp.utils.convertToStringDate
 
 class ToDoListAdapter(
     private val itemClickListener: OnItemClickListener,
@@ -59,7 +58,7 @@ class ToDoListViewHolder(
         binding.checkbox.isChecked = item.done
 
         binding.date.visibility = if (item.deadline != null) View.VISIBLE else View.GONE
-        binding.date.text = item.deadline?.convertToStringDate()
+        binding.date.text = item.deadline?.toString()
 
         binding.indicator.setBackgroundResource(
             if (item.importance == Importance.HIGH) R.color.md_theme_light_error

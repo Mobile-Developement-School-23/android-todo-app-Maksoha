@@ -4,13 +4,16 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
 import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.example.compose.AppTheme
 import com.example.todoapp.R
 import com.example.todoapp.ToDoListApplication
 import com.example.todoapp.data.repositories.ToDoRepository
 import com.example.todoapp.databinding.ActivityMainBinding
 import com.example.todoapp.di.activity.ActivityComponent
+import com.example.todoapp.ui.screens.taskEdit_screen.TaskEditScreen
 import com.example.todoapp.ui.viewModels.ViewModelFactory
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
@@ -36,6 +39,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
 
         activityComponent = (application as ToDoListApplication)
             .appComponent

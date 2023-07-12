@@ -1,5 +1,9 @@
 package com.example.todoapp.data.models
 
+import android.content.Context
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.example.todoapp.R
 import com.example.todoapp.data.data_sources.room.entities.ToDoItemEntity
 import com.google.gson.annotations.SerializedName
 
@@ -37,4 +41,21 @@ enum class Importance {
     COMMON,
     @SerializedName("important")
     HIGH
+}
+
+@Composable
+fun Importance.convertToString(): String {
+    return when (this) {
+        Importance.LOW -> stringResource(R.string.low)
+        Importance.COMMON -> stringResource(R.string.common)
+        Importance.HIGH -> stringResource(R.string.high)
+    }
+}
+
+fun Importance.toString(context: Context): String {
+    return when (this) {
+        Importance.LOW -> context.getString(R.string.low)
+        Importance.COMMON -> context.getString(R.string.common)
+        Importance.HIGH -> context.getString(R.string.high)
+    }
 }
