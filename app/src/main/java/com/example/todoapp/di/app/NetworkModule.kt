@@ -1,6 +1,7 @@
 package com.example.todoapp.di.app
 
 import com.example.todoapp.data.data_sources.networks.ToDoApi
+import com.example.todoapp.di.AppScope
 import com.example.todoapp.utils.Constants.Companion.BASE_URL
 import com.example.todoapp.utils.Constants.Companion.TOKEN
 import dagger.Module
@@ -10,7 +11,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 @Module
-class NetworkModule {
+interface NetworkModule {
+    @AppScope
     @Provides
     fun provideOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder().addInterceptor { chain ->
@@ -22,6 +24,7 @@ class NetworkModule {
         }.build()
     }
 
+    @AppScope
     @Provides
     fun provideRetrofit(client: OkHttpClient): Retrofit {
         return Retrofit.Builder()
@@ -31,6 +34,7 @@ class NetworkModule {
             .build()
     }
 
+    @AppScope
     @Provides
     fun provideToDoApi(retrofit: Retrofit): ToDoApi {
         return retrofit.create(ToDoApi::class.java)

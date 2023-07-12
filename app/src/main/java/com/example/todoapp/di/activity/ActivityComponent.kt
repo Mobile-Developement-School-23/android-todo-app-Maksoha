@@ -20,5 +20,4 @@ interface ActivityComponent {
 
     fun listFragmentComponent(): TasksListFragmentComponent.Factory
 
-    fun itemFragmentComponent(): TaskEditFragmentComponent.Factory
 }

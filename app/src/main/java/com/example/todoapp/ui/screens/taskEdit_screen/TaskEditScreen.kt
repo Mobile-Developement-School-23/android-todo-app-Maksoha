@@ -42,18 +42,23 @@ import com.example.todoapp.utils.toStringDate
 
 @Composable
 private fun TaskEditTopAppBar(
-    onAction: (TaskEditAction) -> Unit,
-    fragmentManager: FragmentManager
+    onAction: (TaskEditAction) -> Unit, fragmentManager: FragmentManager
 ) {
     Row(
         Modifier
             .fillMaxWidth()
             .padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        IconButton(onClick = {
-            fragmentManager.popBackStack()
-        }) {
-            Icon(imageVector = Icons.Rounded.Close, contentDescription = "Close")
+        IconButton(
+            onClick = {
+                fragmentManager.popBackStack()
+            },
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Close,
+                contentDescription = "Close",
+                tint = MaterialTheme.colorScheme.onPrimaryContainer
+            )
         }
         Button(onClick = {
             onAction(TaskEditAction.SaveTask)
@@ -102,19 +107,19 @@ private fun TaskEditImportanceField(
     content: @Composable (PaddingValues) -> Unit
 ) {
     var selectedImportance by remember { mutableStateOf(importance) }
-    Text(
-        text = stringResource(id = R.string.importance),
-        Modifier.padding(16.dp, 8.dp),
-        style = MaterialTheme.typography.titleMedium
-    )
-    TaskEditBottomSheet(
-        selectedImportance = selectedImportance,
-        onImportanceSelected = {
-            selectedImportance = it
-        },
-        onAction,
-        content
-    )
+    Column() {
+        Text(
+            text = stringResource(id = R.string.importance),
+            Modifier.padding(16.dp, 8.dp),
+            style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onBackground)
+        )
+        TaskEditBottomSheet(
+            selectedImportance = selectedImportance, onImportanceSelected = {
+                selectedImportance = it
+            }, onAction, content
+        )
+    }
+
 }
 
 @Composable
@@ -161,8 +166,7 @@ fun TaskEditScreen(taskEditViewModel: TaskEditViewModel, fragmentManager: Fragme
                 Divider(Modifier.padding(16.dp, 16.dp, 16.dp, 12.dp))
                 ButtonDelete(uiState, taskEditViewModel::onAction)
             }
-        }
-        )
+        })
     }
 
 }

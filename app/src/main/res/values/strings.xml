@@ -24,5 +24,10 @@
     <string name="cancel">Отмена</string>
     <string name="settings">Настройки</string>
     <string name="add_task">Add task</string>
+    <string name="theme">Тема</string>
+    <string name="light_theme">Всегда светлая</string>
+    <string name="dark_theme">Всегда тёмная</string>
+    <string name="system_theme">Как в системе</string>
+
 
 </resources>
