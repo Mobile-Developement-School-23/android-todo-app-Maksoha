@@ -21,6 +21,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,47 +31,56 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentManager
 import com.example.todoapp.R
 import com.example.todoapp.data.models.Importance
-import java.time.LocalDate
+import com.example.todoapp.ui.model.TaskEditAction
+import com.example.todoapp.ui.model.TaskEditUiState
+import com.example.todoapp.utils.toStringDate
 
 
 @Composable
-private fun TaskEditTopAppBar() {
+private fun TaskEditTopAppBar(
+    onAction: (TaskEditAction) -> Unit,
+    fragmentManager: FragmentManager
+) {
     Row(
         Modifier
             .fillMaxWidth()
             .padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        IconButton(onClick = { /*TODO*/ }) {
+        IconButton(onClick = {
+            fragmentManager.popBackStack()
+        }) {
             Icon(imageVector = Icons.Rounded.Close, contentDescription = "Close")
         }
-        Button(onClick = { /*TODO*/ }) {
+        Button(onClick = {
+            onAction(TaskEditAction.SaveTask)
+            fragmentManager.popBackStack()
+        }) {
             Text(text = stringResource(id = R.string.save))
         }
     }
 }
 
 @Composable
-private fun TaskEditTextField() {
+private fun TaskEditTextField(description: String, onAction: (TaskEditAction) -> Unit) {
     ElevatedCard(
         Modifier
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-        val text = remember { mutableStateOf("") }
         BasicTextField(
-            value = text.value,
-            onValueChange = { text.value = it },
+            value = description,
+            onValueChange = { onAction(TaskEditAction.UpdateDescription(it)) },
             Modifier
                 .fillMaxWidth()
                 .padding(24.dp),
             textStyle = MaterialTheme.typography.bodyLarge,
             decorationBox = { innerTextField ->
                 Box(contentAlignment = Alignment.CenterStart) {
-                    if (text.value.isEmpty()) {
+                    if (description.isEmpty()) {
                         Text(
                             text = stringResource(id = R.string.task_hint),
                             style = MaterialTheme.typography.bodyLarge.copy(Color.Gray)
@@ -86,32 +97,34 @@ private fun TaskEditTextField() {
 
 @Composable
 private fun TaskEditImportanceField(
+    importance: Importance,
+    onAction: (TaskEditAction) -> Unit,
     content: @Composable (PaddingValues) -> Unit
 ) {
-    var selectedImportance by remember { mutableStateOf(Importance.COMMON) }
+    var selectedImportance by remember { mutableStateOf(importance) }
     Text(
         text = stringResource(id = R.string.importance),
-        Modifier
-            .fillMaxWidth()
-            .padding(16.dp, 16.dp, 16.dp, 0.dp),
+        Modifier.padding(16.dp, 8.dp),
         style = MaterialTheme.typography.titleMedium
     )
     TaskEditBottomSheet(
         selectedImportance = selectedImportance,
-        onImportanceSelected = { importance ->
-            selectedImportance = importance
+        onImportanceSelected = {
+            selectedImportance = it
         },
+        onAction,
         content
     )
 }
 
 @Composable
-private fun TaskEditDateField() {
+private fun TaskEditDateField(uiState: TaskEditUiState, onAction: (TaskEditAction) -> Unit) {
     val showDialog = remember { mutableStateOf(false) }
-    val selectedDate = remember { mutableStateOf<LocalDate?>(null) }
-    val switchChecked = remember { mutableStateOf(false) }
+    val switchChecked by remember(uiState) {
+        derivedStateOf { uiState.deadline != null }
+    }
     Row(
-        Modifier
+        modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp, 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -123,36 +136,33 @@ private fun TaskEditDateField() {
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
-                text = selectedDate.value?.toString() ?: "",
+                text = uiState.deadline?.toStringDate() ?: "",
                 Modifier.padding(top = 6.dp),
                 style = MaterialTheme.typography.bodyMedium,
             )
         }
-        Switcher(showDialog, switchChecked)
-        Calendar(showDialog, selectedDate)
+        Switcher(showDialog, switchChecked, onAction)
+        Calendar(showDialog, onAction)
     }
 
 
 }
 
-
-
-
-
-@Preview
 @Composable
-fun TaskEditScreen(/*taskEditViewModel : TaskEditViewModel = viewModel()*/) {
-    Column() {
-        TaskEditTopAppBar()
-        TaskEditTextField()
-        TaskEditImportanceField {
+fun TaskEditScreen(taskEditViewModel: TaskEditViewModel, fragmentManager: FragmentManager) {
+    val uiState by taskEditViewModel.uiState.collectAsState()
+    Column {
+        TaskEditTopAppBar(taskEditViewModel::onAction, fragmentManager)
+        TaskEditTextField(uiState.description, taskEditViewModel::onAction)
+        TaskEditImportanceField(uiState.importance, taskEditViewModel::onAction, content = {
             Column {
                 Divider(Modifier.padding(16.dp, 16.dp, 16.dp, 12.dp))
-                TaskEditDateField()
+                TaskEditDateField(uiState, taskEditViewModel::onAction)
                 Divider(Modifier.padding(16.dp, 16.dp, 16.dp, 12.dp))
-                ButtonDelete()
+                ButtonDelete(uiState, taskEditViewModel::onAction)
             }
         }
+        )
     }
 
 }

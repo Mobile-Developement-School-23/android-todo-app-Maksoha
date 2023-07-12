@@ -21,11 +21,10 @@ import com.example.todoapp.data.models.toString
 import com.example.todoapp.databinding.FragmentListBinding
 import com.example.todoapp.ui.MainActivity
 import com.example.todoapp.ui.adapters.ToDoListAdapter
-import com.example.todoapp.ui.viewModels.TaskEditViewModel
+import com.example.todoapp.ui.screens.taskEdit_screen.TaskEditViewModel
 import com.example.todoapp.ui.viewModels.TasksListViewModel
 import com.example.todoapp.utils.ItemTouchHelperCallback
 import com.example.todoapp.utils.SnackbarHelper
-import com.example.todoapp.utils.toString
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch

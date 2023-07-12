@@ -1,7 +1,6 @@
 package com.example.todoapp.ui.screens.taskEdit_screen
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -31,7 +30,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -39,14 +37,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.todoapp.R
 import com.example.todoapp.data.models.Importance
 import com.example.todoapp.data.models.convertToString
-import com.example.todoapp.utils.toLocalDate
+import com.example.todoapp.ui.model.TaskEditAction
+import com.example.todoapp.ui.model.TaskEditUiState
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 
 @Composable
@@ -71,6 +68,7 @@ fun ImportanceItemRow(
 fun TaskEditBottomSheet(
     selectedImportance: Importance,
     onImportanceSelected: (Importance) -> Unit,
+    onAction: (TaskEditAction) -> Unit,
     content: @Composable (PaddingValues) -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -96,7 +94,10 @@ fun TaskEditBottomSheet(
                         importance = item,
                         onClick = {
                             onImportanceSelected(item)
-                            scope.launch { scaffoldState.bottomSheetState.show() }
+                            scope.launch {
+                                scaffoldState.bottomSheetState.show()
+                            }
+                            onAction(TaskEditAction.UpdateImportance(item))
                         },
                     )
                     Divider()
@@ -116,7 +117,7 @@ fun TaskEditBottomSheet(
                 Modifier
                     .clip(RoundedCornerShape(16.dp))
                     .clickable { scope.launch { scaffoldState.bottomSheetState.expand() } }
-                    .padding(16.dp, 8.dp),
+                    .padding(16.dp, 0.dp),
                 style = MaterialTheme.typography.bodyMedium
             )
             content(innerPadding)
@@ -124,11 +125,21 @@ fun TaskEditBottomSheet(
     }
 }
 
+
 @Composable
-fun Switcher(showDialog : MutableState<Boolean>, switchChecked : MutableState<Boolean>) {
+fun Switcher(
+    showDialog: MutableState<Boolean>,
+    switchChecked: Boolean,
+    onAction: (TaskEditAction) -> Unit,
+) {
     Switch(
-        checked = switchChecked.value,
-        onCheckedChange = { showDialog.value = it; switchChecked.value = it },
+        checked = switchChecked,
+        onCheckedChange = {
+            showDialog.value = it; if (!it) onAction(TaskEditAction.UpdateDeadline(null))
+            if (switchChecked) {
+                onAction(TaskEditAction.UpdateDeadline(null))
+            }
+        },
         modifier = Modifier.padding(16.dp, 0.dp)
     )
 }
@@ -136,19 +147,25 @@ fun Switcher(showDialog : MutableState<Boolean>, switchChecked : MutableState<Bo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Calendar(showDialog: MutableState<Boolean>, selectedDate: MutableState<LocalDate?>) {
+fun Calendar(
+    showDialog: MutableState<Boolean>,
+    onAction: (TaskEditAction) -> Unit
+) {
     if (showDialog.value) {
         val datePickerState = rememberDatePickerState()
         val confirmEnabled by remember(datePickerState.selectedDateMillis) {
             derivedStateOf { datePickerState.selectedDateMillis != null }
         }
         DatePickerDialog(
-            onDismissRequest = { showDialog.value = false },
+            onDismissRequest = {
+                showDialog.value = false
+                onAction(TaskEditAction.UpdateDeadline(null))
+            },
             confirmButton = {
                 TextButton(
                     onClick = {
                         datePickerState.selectedDateMillis?.let {
-                            selectedDate.value = it.toLocalDate()
+                            onAction(TaskEditAction.UpdateDeadline(it))
                         }
                         showDialog.value = false
                     },
@@ -160,7 +177,10 @@ fun Calendar(showDialog: MutableState<Boolean>, selectedDate: MutableState<Local
             },
             dismissButton = {
                 TextButton(
-                    onClick = { showDialog.value = false }
+                    onClick = {
+                        showDialog.value = false
+                        onAction(TaskEditAction.UpdateDeadline(null))
+                    }
                 ) {
                     Text(stringResource(id = R.string.cancel))
                 }
@@ -173,13 +193,14 @@ fun Calendar(showDialog: MutableState<Boolean>, selectedDate: MutableState<Local
 
 
 @Composable
-fun ButtonDelete() {
+fun ButtonDelete(uiState: TaskEditUiState, onAction: (TaskEditAction) -> Unit) {
     Button(
-        onClick = { },
+        onClick = { onAction(TaskEditAction.DeleteTask) },
         Modifier
             .padding(16.dp)
             .width(192.dp)
-            .height(48.dp)
+            .height(48.dp),
+        enabled = uiState.isEditing
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

@@ -1,37 +1,20 @@
 package com.example.todoapp.ui.view
 
 import android.os.Bundle
-import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import com.example.compose.AppTheme
 import com.example.todoapp.R
-import com.example.todoapp.data.models.Importance
-import com.example.todoapp.data.models.ToDoItem
-import com.example.todoapp.data.models.toString
 import com.example.todoapp.databinding.FragmentItemBinding
 import com.example.todoapp.ui.MainActivity
 import com.example.todoapp.ui.screens.taskEdit_screen.TaskEditScreen
-import com.example.todoapp.ui.viewModels.TaskEditViewModel
+import com.example.todoapp.ui.screens.taskEdit_screen.TaskEditViewModel
 import com.example.todoapp.ui.viewModels.TasksListViewModel
-import com.example.todoapp.utils.MaterialDatePickerHelper
-import com.example.todoapp.utils.SnackbarHelper
-import com.example.todoapp.utils.toImportance
-import com.example.todoapp.utils.toLong
-import com.example.todoapp.utils.toString
 import com.google.android.material.datepicker.MaterialDatePicker
-import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.UUID
 
 class TaskEditFragment : Fragment() {
     private lateinit var binding: FragmentItemBinding
@@ -52,7 +35,7 @@ class TaskEditFragment : Fragment() {
 //            .activityComponent
 //            .itemFragmentComponent()
 //            .create()
-//        binding = FragmentItemBinding.inflate(layoutInflater, container, false)
+        binding = FragmentItemBinding.inflate(layoutInflater, container, false)
 //        setDatePicker()
 //        displaySnackbar()
 //        initData()
@@ -63,14 +46,18 @@ class TaskEditFragment : Fragment() {
 //        binding.btnDelete.setOnClickListener {
 //            deleteItem()
 //        }
-//        return binding.root
-        return ComposeView(requireContext()).apply {
-            setContent {
-                AppTheme() {
-                    TaskEditScreen()
+        val view = binding.root
+        binding.composeView.apply {
+            binding.composeView.setContent {
+                setContent {
+                    AppTheme() {
+                        TaskEditScreen(taskEditViewModel, parentFragmentManager)
+                    }
                 }
             }
         }
+        return view
+
     }
 
 //    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -15,7 +15,7 @@ import java.time.format.FormatStyle
 import java.util.Date
 import java.util.Locale
 
-fun Long.toString(): String {
+fun Long.toStringDate(): String {
     val date = Date(this)
     val format = SimpleDateFormat("dd MMMM yyyy", Locale("ru"))
     return format.format(date)
