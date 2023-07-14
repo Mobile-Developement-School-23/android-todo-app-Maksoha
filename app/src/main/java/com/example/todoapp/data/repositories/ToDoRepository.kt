@@ -24,5 +24,7 @@ interface ToDoRepository {
     suspend fun getNumberOfItems(): Flow<Int>
     suspend fun getNumberOfDoneItems(): Flow<Int>
 
+    fun getDeadlineItems(time : Long) : List<ToDoItem>
+
 
 }

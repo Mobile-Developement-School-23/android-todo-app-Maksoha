@@ -51,6 +51,10 @@ class LocalDataSource @Inject constructor(private val toDoItemDao: ToDoItemDao) 
         toDoItemDao.deleteItemById(itemId)
     }
 
+    fun getDeadlineItems(time : Long) : List<ToDoItem> {
+        return toDoItemDao.getDeadlineItems(time).map(ToDoItemEntity::toDomainModel)
+    }
+
 
 }
 

@@ -81,7 +81,7 @@ private fun TaskEditTextField(description: String, onAction: (TaskEditAction) ->
             Modifier
                 .fillMaxWidth()
                 .padding(24.dp),
-            textStyle = MaterialTheme.typography.bodyLarge,
+            textStyle = MaterialTheme.typography.bodyLarge.copy(MaterialTheme.colorScheme.onBackground),
             decorationBox = { innerTextField ->
                 Box(contentAlignment = Alignment.CenterStart) {
                     if (description.isEmpty()) {

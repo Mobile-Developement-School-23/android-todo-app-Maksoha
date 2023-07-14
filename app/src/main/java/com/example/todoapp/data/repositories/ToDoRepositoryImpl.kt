@@ -91,8 +91,8 @@ class ToDoRepositoryImpl @Inject constructor(
 
     override suspend fun getNumberOfItems(): Flow<Int> = localDataSource.getNumberOfItems()
     override suspend fun getNumberOfDoneItems(): Flow<Int> = localDataSource.getNumberOfDoneItems()
-
-
+    override fun getDeadlineItems(time: Long): List<ToDoItem> =
+        localDataSource.getDeadlineItems(time)
 }
 
 

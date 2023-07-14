@@ -14,8 +14,8 @@ import dagger.Provides
 class AppModule {
 
     @Provides
-    fun provideSharedPreferences(application: Application): SharedPreferences {
-        return application.getSharedPreferences("your_shared_prefs_name", Context.MODE_PRIVATE)
+    fun provideSharedPreferences(context: Context): SharedPreferences {
+        return context.getSharedPreferences("your_shared_prefs_name", Context.MODE_PRIVATE)
     }
 
     @Provides
