@@ -18,7 +18,7 @@ class NotificationService @Inject constructor(
     private val context: Context
 ) {
     fun startService(
-        time: String = "21:02",
+        time: String = "00:00",
         id: Int = REMINDER_NOTIFICATION_REQUEST_CODE
     ) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
