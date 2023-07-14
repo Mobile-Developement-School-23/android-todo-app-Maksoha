@@ -3,6 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/composeView"
-    tools:context=".ui.screens.taskEdit_screen.TaskEditFragment">
+    tools:context=".ui.screens.setting_screen.SettingsFragment">
+
 </androidx.compose.ui.platform.ComposeView>

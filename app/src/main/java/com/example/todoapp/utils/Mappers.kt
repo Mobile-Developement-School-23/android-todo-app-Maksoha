@@ -8,6 +8,7 @@ import com.example.todoapp.data.models.Importance
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -36,7 +37,8 @@ fun String.toImportance(context: Context): Importance {
     }
 }
 
-
+fun getCurrentTime () : Long =
+    LocalDateTime.now().toEpochSecond(ZoneOffset.UTC) * 1000
 
 fun LocalDate.toLong() : Long {
     val zoneId = ZoneOffset.UTC

@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -23,22 +24,26 @@ import com.example.todoapp.ui.MainActivity
 import com.example.todoapp.ui.adapters.ToDoListAdapter
 import com.example.todoapp.ui.screens.taskEdit_screen.TaskEditViewModel
 import com.example.todoapp.ui.viewModels.TasksListViewModel
+import com.example.todoapp.ui.viewModels.ViewModelFactory
 import com.example.todoapp.utils.ItemTouchHelperCallback
 import com.example.todoapp.utils.SnackbarHelper
+import com.example.todoapp.utils.toStringDate
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class TasksListFragment : Fragment() {
     private lateinit var adapter: ToDoListAdapter
     private lateinit var binding: FragmentListBinding
     private lateinit var itemClickListener: ToDoListAdapter.OnItemClickListener
-
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
     private val taskEditViewModel: TaskEditViewModel by activityViewModels {
-        (requireActivity() as MainActivity).viewModelFactory
+        viewModelFactory
     }
     private val tasksListViewModel: TasksListViewModel by activityViewModels {
-        (requireActivity() as MainActivity).viewModelFactory
+        viewModelFactory
     }
 
     override fun onCreateView(
@@ -65,8 +70,9 @@ class TasksListFragment : Fragment() {
         }
         (activity as MainActivity)
             .activityComponent
-            .listFragmentComponent()
+            .taskListFragmentComponent()
             .create()
+            .inject(this)
         return binding.root
     }
 
@@ -84,6 +90,9 @@ class TasksListFragment : Fragment() {
         }
         binding.btnVisibility.setOnClickListener {
             tasksListViewModel.changeStateVisibility()
+        }
+        binding.btnSetting.setOnClickListener {
+            findNavController().navigate(R.id.action_myToDoListFragment_to_settingsFragment)
         }
         binding.recyclerView.itemAnimator = null
         changeVisibility()
@@ -161,10 +170,10 @@ class TasksListFragment : Fragment() {
     }
 
     private fun displayInformation(item: ToDoItem) {
-        val deadline = item.deadline?.toString() ?: getString(R.string.no)
+        val deadline = item.deadline?.toStringDate() ?: getString(R.string.no)
         val isDone = getString(if (item.done) R.string.yes else R.string.no)
-        val createdAt = item.createdAt.toString()
-        val changedAt = item.changedAt.toString()
+        val createdAt = item.createdAt.toStringDate()
+        val changedAt = item.changedAt.toStringDate()
 
         val itemDetails = getString(
             R.string.item_details, item.text,

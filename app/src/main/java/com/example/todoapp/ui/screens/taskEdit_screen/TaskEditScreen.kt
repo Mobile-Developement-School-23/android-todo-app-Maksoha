@@ -42,8 +42,7 @@ import com.example.todoapp.utils.toStringDate
 
 @Composable
 private fun TaskEditTopAppBar(
-    onAction: (TaskEditAction) -> Unit, fragmentManager: FragmentManager
-) {
+    onAction: (TaskEditAction) -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -51,7 +50,7 @@ private fun TaskEditTopAppBar(
     ) {
         IconButton(
             onClick = {
-                fragmentManager.popBackStack()
+                onAction(TaskEditAction.Navigate)
             },
         ) {
             Icon(
@@ -62,7 +61,7 @@ private fun TaskEditTopAppBar(
         }
         Button(onClick = {
             onAction(TaskEditAction.SaveTask)
-            fragmentManager.popBackStack()
+            onAction(TaskEditAction.Navigate)
         }) {
             Text(text = stringResource(id = R.string.save))
         }
@@ -154,10 +153,10 @@ private fun TaskEditDateField(uiState: TaskEditUiState, onAction: (TaskEditActio
 }
 
 @Composable
-fun TaskEditScreen(taskEditViewModel: TaskEditViewModel, fragmentManager: FragmentManager) {
+fun TaskEditScreen(taskEditViewModel: TaskEditViewModel) {
     val uiState by taskEditViewModel.uiState.collectAsState()
     Column {
-        TaskEditTopAppBar(taskEditViewModel::onAction, fragmentManager)
+        TaskEditTopAppBar(taskEditViewModel::onAction)
         TaskEditTextField(uiState.description, taskEditViewModel::onAction)
         TaskEditImportanceField(uiState.importance, taskEditViewModel::onAction, content = {
             Column {

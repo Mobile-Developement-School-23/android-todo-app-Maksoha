@@ -47,7 +47,7 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun ImportanceItemRow(
+fun ImportanceItem(
     importance: Importance,
     onClick: () -> Unit
 ) {
@@ -90,7 +90,7 @@ fun TaskEditBottomSheet(
         sheetContent = {
             Column(Modifier.fillMaxWidth()) {
                 importanceItems.forEach { item ->
-                    ImportanceItemRow(
+                    ImportanceItem(
                         importance = item,
                         onClick = {
                             onImportanceSelected(item)
@@ -195,7 +195,8 @@ fun Calendar(
 @Composable
 fun ButtonDelete(uiState: TaskEditUiState, onAction: (TaskEditAction) -> Unit) {
     Button(
-        onClick = { onAction(TaskEditAction.DeleteTask) },
+        onClick = { onAction(TaskEditAction.DeleteTask)
+                    onAction(TaskEditAction.Navigate)},
         Modifier
             .padding(16.dp)
             .width(192.dp)

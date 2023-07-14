@@ -1,15 +1,15 @@
 package com.example.todoapp.di.app
 
+import android.app.Application
 import android.content.Context
 import androidx.room.Room
-import com.example.todoapp.data.data_sources.room.dao.ToDoItemDao
-import com.example.todoapp.data.data_sources.room.root.AppDatabase
-import com.example.todoapp.di.AppScope
+import com.example.todoapp.data.data_sources.local.room.dao.ToDoItemDao
+import com.example.todoapp.data.data_sources.local.room.root.AppDatabase
 import dagger.Module
 import dagger.Provides
 
 @Module
-interface DatabaseModule {
+object DatabaseModule {
 
     @AppScope
     @Provides
@@ -19,10 +19,10 @@ interface DatabaseModule {
 
     @AppScope
     @Provides
-    fun provideDatabase(context: Context): AppDatabase {
+    fun provideDatabase(application: Application): AppDatabase {
 
         return Room.databaseBuilder(
-            context.applicationContext,
+            application,
             AppDatabase::class.java,
             "app_database"
         )

@@ -9,5 +9,6 @@ sealed class TaskEditAction {
 
     object SaveTask : TaskEditAction()
     object DeleteTask : TaskEditAction()
+    object Navigate : TaskEditAction()
 
 }

@@ -28,6 +28,8 @@
     <string name="light_theme">Всегда светлая</string>
     <string name="dark_theme">Всегда тёмная</string>
     <string name="system_theme">Как в системе</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

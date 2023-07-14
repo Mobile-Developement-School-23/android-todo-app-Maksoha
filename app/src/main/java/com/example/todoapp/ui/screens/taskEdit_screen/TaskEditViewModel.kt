@@ -1,30 +1,37 @@
 package com.example.todoapp.ui.screens.taskEdit_screen
 
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todoapp.data.models.Importance
 import com.example.todoapp.data.models.ToDoItem
 import com.example.todoapp.data.repositories.ToDoRepository
+import com.example.todoapp.ui.model.SettingAction
 import com.example.todoapp.ui.model.TaskEditAction
 import com.example.todoapp.ui.model.TaskEditUiState
+import com.example.todoapp.utils.getCurrentTime
 import com.example.todoapp.utils.toLocalDate
 import com.example.todoapp.utils.toLong
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.UUID
 import javax.inject.Inject
 
 class TaskEditViewModel @Inject constructor(private val repository: ToDoRepository) : ViewModel() {
     private val _uiState = MutableStateFlow(TaskEditUiState())
     val uiState = _uiState
-
-
     //    private val errorState: MutableStateFlow<Int> = MutableStateFlow(200)
     private val selectedItem: MutableStateFlow<ToDoItem?> = MutableStateFlow(null)
 
+    private val _action = Channel<TaskEditAction>()
+    val action = _action.receiveAsFlow()
 
     fun onAction(action: TaskEditAction) {
         when (action) {
@@ -44,6 +51,10 @@ class TaskEditViewModel @Inject constructor(private val repository: ToDoReposito
             TaskEditAction.SaveTask ->
                 if (selectedItem.value == null) addItem()
                 else updateItem()
+
+            TaskEditAction.Navigate -> viewModelScope.launch {
+                _action.send(TaskEditAction.Navigate)
+            }
         }
     }
 
@@ -59,11 +70,6 @@ class TaskEditViewModel @Inject constructor(private val repository: ToDoReposito
         }
     }
 
-    fun getSelectedItem(): StateFlow<ToDoItem?> {
-        return selectedItem
-    }
-
-
     private fun addItem() {
         viewModelScope.launch(Dispatchers.IO) {
             repository.addItem(
@@ -74,8 +80,8 @@ class TaskEditViewModel @Inject constructor(private val repository: ToDoReposito
                     deadline = _uiState.value.deadline?.toLong(),
                     done = false,
                     color = null,
-                    createdAt = System.currentTimeMillis(),
-                    changedAt = System.currentTimeMillis(),
+                    createdAt = getCurrentTime(),
+                    changedAt = getCurrentTime(),
                     lastUpdatedBy = ""
                 )
             )
@@ -96,7 +102,7 @@ class TaskEditViewModel @Inject constructor(private val repository: ToDoReposito
                         text = _uiState.value.description,
                         importance = uiState.value.importance,
                         deadline = uiState.value.deadline?.toLong(),
-                        changedAt = System.currentTimeMillis()
+                        changedAt = getCurrentTime()
                     )
                 )
             }

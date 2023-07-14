@@ -1,15 +1,21 @@
 package com.example.todoapp.di.fragments
 
-import com.example.todoapp.di.ListFragmentScope
+import com.example.todoapp.ui.view.TasksListFragment
 import dagger.Subcomponent
+import javax.inject.Scope
+
+@Scope
+annotation class TaskListFragmentScope
 
 @Subcomponent
-@ListFragmentScope
+@TaskListFragmentScope
 interface TasksListFragmentComponent {
 
     @Subcomponent.Factory
     interface Factory {
         fun create(): TasksListFragmentComponent
     }
+
+    fun inject(fragment: TasksListFragment)
 
 }

@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.example.todoapp.R
-import com.example.todoapp.data.data_sources.room.entities.ToDoItemEntity
+import com.example.todoapp.data.data_sources.local.room.entities.ToDoItemEntity
 import com.google.gson.annotations.SerializedName
 
 

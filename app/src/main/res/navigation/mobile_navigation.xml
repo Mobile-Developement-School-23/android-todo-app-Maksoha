@@ -13,14 +13,18 @@
         <action
             android:id="@+id/action_myToDoListFragment_to_addToDoItemFragment"
             app:destination="@id/addToDoItemFragment" />
+        <action
+            android:id="@+id/action_myToDoListFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/addToDoItemFragment"
-        android:name="com.example.todoapp.ui.view.TaskEditFragment"
+        android:name="com.example.todoapp.ui.screens.taskEdit_screen.TaskEditFragment"
         android:label="fragment_add_to_do_item"
-        tools:layout="@layout/fragment_item">
-        <action
-            android:id="@+id/action_addToDoItemFragment_to_myToDoListFragment"
-            app:destination="@id/myToDoListFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_item"/>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.todoapp.ui.screens.setting_screen.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
 </navigation>
