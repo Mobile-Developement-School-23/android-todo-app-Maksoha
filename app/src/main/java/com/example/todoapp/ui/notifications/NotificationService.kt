@@ -53,18 +53,18 @@ class NotificationService @Inject constructor(
         )
     }
 
-    fun stopService(
-        reminderId: Int = REMINDER_NOTIFICATION_REQUEST_CODE
-    ) {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(context, NotificationReceiver::class.java).let { intent ->
-            PendingIntent.getBroadcast(
-                context,
-                reminderId,
-                intent,
-                PendingIntent.FLAG_MUTABLE
-            )
-        }
-        alarmManager.cancel(intent)
-    }
+//    fun stopService(
+//        reminderId: Int = REMINDER_NOTIFICATION_REQUEST_CODE
+//    ) {
+//        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+//        val intent = Intent(context, NotificationReceiver::class.java).let { intent ->
+//            PendingIntent.getBroadcast(
+//                context,
+//                reminderId,
+//                intent,
+//                PendingIntent.FLAG_MUTABLE
+//            )
+//        }
+//        alarmManager.cancel(intent)
+//    }
 }

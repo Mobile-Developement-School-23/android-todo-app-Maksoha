@@ -12,16 +12,24 @@
         tools:layout="@layout/fragment_list">
         <action
             android:id="@+id/action_myToDoListFragment_to_addToDoItemFragment"
-            app:destination="@id/addToDoItemFragment" />
+            app:destination="@id/addToDoItemFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out"/>
         <action
             android:id="@+id/action_myToDoListFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
+            app:destination="@id/settingsFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out"/>
     </fragment>
     <fragment
         android:id="@+id/addToDoItemFragment"
         android:name="com.example.todoapp.ui.screens.taskEdit_screen.TaskEditFragment"
         android:label="fragment_add_to_do_item"
-        tools:layout="@layout/fragment_item"/>
+        tools:layout="@layout/fragment_item" />
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.example.todoapp.ui.screens.setting_screen.SettingsFragment"
