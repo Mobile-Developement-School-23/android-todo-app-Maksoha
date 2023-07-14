@@ -196,7 +196,7 @@ fun Calendar(
 fun ButtonDelete(uiState: TaskEditUiState, onAction: (TaskEditAction) -> Unit) {
     Button(
         onClick = { onAction(TaskEditAction.DeleteTask)
-                    onAction(TaskEditAction.Navigate)},
+            onAction(TaskEditAction.Navigate)},
         Modifier
             .padding(16.dp)
             .width(192.dp)
@@ -216,5 +216,3 @@ fun ButtonDelete(uiState: TaskEditUiState, onAction: (TaskEditAction) -> Unit) {
         }
     }
 }
-
-
