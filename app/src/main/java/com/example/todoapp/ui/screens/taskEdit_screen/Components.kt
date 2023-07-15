@@ -5,14 +5,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -28,6 +32,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -43,6 +48,7 @@ import com.example.todoapp.data.models.Importance
 import com.example.todoapp.data.models.convertToString
 import com.example.todoapp.ui.model.TaskEditAction
 import com.example.todoapp.ui.model.TaskEditUiState
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
@@ -65,16 +71,13 @@ fun ImportanceItem(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskEditBottomSheet(
-    selectedImportance: Importance,
-    onImportanceSelected: (Importance) -> Unit,
+fun TaskEditBottomSheet1(
+    scaffoldState: BottomSheetScaffoldState,
+    scope: CoroutineScope,
     onAction: (TaskEditAction) -> Unit,
     content: @Composable (PaddingValues) -> Unit
 ) {
-    val scope = rememberCoroutineScope()
-    val scaffoldState = rememberBottomSheetScaffoldState()
     val importanceItems = listOf(Importance.LOW, Importance.COMMON, Importance.HIGH)
-
     LaunchedEffect(scaffoldState.bottomSheetState) {
         if (scaffoldState.bottomSheetState.isVisible) {
             scaffoldState.bottomSheetState.show()
@@ -82,8 +85,6 @@ fun TaskEditBottomSheet(
             scaffoldState.bottomSheetState.hide()
         }
     }
-
-
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
         sheetPeekHeight = 0.dp,
@@ -93,7 +94,6 @@ fun TaskEditBottomSheet(
                     ImportanceItem(
                         importance = item,
                         onClick = {
-                            onImportanceSelected(item)
                             scope.launch {
                                 scaffoldState.bottomSheetState.show()
                             }
@@ -109,20 +109,8 @@ fun TaskEditBottomSheet(
                 )
             }
         },
+        content = content
     )
-    { innerPadding ->
-        Column(Modifier.padding(innerPadding)) {
-            Text(
-                text = selectedImportance.convertToString(),
-                Modifier
-                    .clip(RoundedCornerShape(16.dp))
-                    .clickable { scope.launch { scaffoldState.bottomSheetState.expand() } }
-                    .padding(16.dp, 0.dp),
-                style = MaterialTheme.typography.bodyMedium
-            )
-            content(innerPadding)
-        }
-    }
 }
 
 
@@ -195,8 +183,10 @@ fun Calendar(
 @Composable
 fun ButtonDelete(uiState: TaskEditUiState, onAction: (TaskEditAction) -> Unit) {
     Button(
-        onClick = { onAction(TaskEditAction.DeleteTask)
-            onAction(TaskEditAction.Navigate)},
+        onClick = {
+            onAction(TaskEditAction.DeleteTask)
+            onAction(TaskEditAction.Navigate)
+        },
         Modifier
             .padding(16.dp)
             .width(192.dp)
@@ -216,3 +206,5 @@ fun ButtonDelete(uiState: TaskEditUiState, onAction: (TaskEditAction) -> Unit) {
         }
     }
 }
+
+
