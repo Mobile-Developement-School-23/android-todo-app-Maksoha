@@ -1,6 +1,9 @@
 package com.example.todoapp.ui.screens.taskEdit_screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -40,6 +43,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -68,16 +73,16 @@ fun ImportanceItem(
     )
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskEditBottomSheet1(
+fun TaskEditBottomSheet(
     scaffoldState: BottomSheetScaffoldState,
     scope: CoroutineScope,
     onAction: (TaskEditAction) -> Unit,
     content: @Composable (PaddingValues) -> Unit
 ) {
     val importanceItems = listOf(Importance.LOW, Importance.COMMON, Importance.HIGH)
+
     LaunchedEffect(scaffoldState.bottomSheetState) {
         if (scaffoldState.bottomSheetState.isVisible) {
             scaffoldState.bottomSheetState.show()
@@ -85,6 +90,7 @@ fun TaskEditBottomSheet1(
             scaffoldState.bottomSheetState.hide()
         }
     }
+
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
         sheetPeekHeight = 0.dp,
@@ -112,6 +118,7 @@ fun TaskEditBottomSheet1(
         content = content
     )
 }
+
 
 
 @Composable

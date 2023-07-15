@@ -175,7 +175,7 @@ fun TaskEditScreen(taskEditViewModel: TaskEditViewModel) {
     val uiState by taskEditViewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
-    TaskEditBottomSheet1(
+    TaskEditBottomSheet(
         scaffoldState = scaffoldState,
         scope = scope,
         onAction = taskEditViewModel::onAction
@@ -208,7 +208,7 @@ fun TaskEditPreviewScreen() {
             val scrollState = rememberLazyListState()
             val scope = rememberCoroutineScope()
             val scaffoldState = rememberBottomSheetScaffoldState()
-            TaskEditBottomSheet1(
+            TaskEditBottomSheet(
                 scaffoldState = scaffoldState,
                 scope = scope,
                 onAction = {}
