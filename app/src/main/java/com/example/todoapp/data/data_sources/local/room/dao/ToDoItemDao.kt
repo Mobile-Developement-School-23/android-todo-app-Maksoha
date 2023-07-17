@@ -44,7 +44,7 @@ interface ToDoItemDao {
     @Query("DELETE FROM ToDoItemEntity WHERE id = :itemId")
     suspend fun deleteItemById(itemId: String)
 
-    @Query("SELECT * FROM ToDoItemEntity WHERE deadline = :time")
+    @Query("SELECT * FROM ToDoItemEntity WHERE deadline = :time AND done = 0")
     fun getDeadlineItems(time : Long) : List<ToDoItemEntity>
 
 }
