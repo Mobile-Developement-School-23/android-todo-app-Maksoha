@@ -178,14 +178,14 @@ fun TaskEditScreen(taskEditViewModel: TaskEditViewModel) {
     TaskEditBottomSheet(
         scaffoldState = scaffoldState,
         scope = scope,
-        onAction = taskEditViewModel::onAction
+        onAction = taskEditViewModel::onAction,
+        topBar = { TaskEditTopAppBar(taskEditViewModel::onAction) }
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             state = scrollState
         ) {
             item {
-                TaskEditTopAppBar(taskEditViewModel::onAction)
                 TaskEditTextField(uiState.description, taskEditViewModel::onAction)
                 TaskEditImportanceField(scope = scope, scaffoldState = scaffoldState,
                     uiState = uiState
@@ -211,14 +211,14 @@ fun TaskEditPreviewScreen() {
             TaskEditBottomSheet(
                 scaffoldState = scaffoldState,
                 scope = scope,
-                onAction = {}
+                onAction = {},
+                topBar = {TaskEditTopAppBar({})}
             ) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     state = scrollState
                 ) {
                     item {
-                        TaskEditTopAppBar({})
                         TaskEditTextField("", {})
                         TaskEditImportanceField(scope = scope, scaffoldState = scaffoldState,
                             uiState = TaskEditUiState()

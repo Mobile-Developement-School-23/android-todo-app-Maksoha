@@ -66,6 +66,7 @@ fun TaskEditBottomSheet(
     scaffoldState: BottomSheetScaffoldState,
     scope: CoroutineScope,
     onAction: (TaskEditAction) -> Unit,
+    topBar :  @Composable (() -> Unit),
     content: @Composable (PaddingValues) -> Unit
 ) {
     val importanceItems = listOf(Importance.LOW, Importance.COMMON, Importance.HIGH)
@@ -80,6 +81,7 @@ fun TaskEditBottomSheet(
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
+        topBar = topBar,
         sheetPeekHeight = 0.dp,
         sheetContent = {
             Column(Modifier.fillMaxWidth()) {
