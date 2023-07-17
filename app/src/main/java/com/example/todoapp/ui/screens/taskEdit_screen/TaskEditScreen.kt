@@ -58,27 +58,29 @@ import kotlinx.coroutines.launch
 @Composable
 fun TaskEditTopAppBar(
     onAction: (TaskEditAction) -> Unit) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        IconButton(
-            onClick = {
-                onAction(TaskEditAction.Navigate)
-            },
+    Surface(shadowElevation = 2.dp) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(16.dp), horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Icon(
-                imageVector = Icons.Rounded.Close,
-                contentDescription = "Close",
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-        }
-        Button(onClick = {
-            onAction(TaskEditAction.SaveTask)
-            onAction(TaskEditAction.Navigate)
-        }) {
-            Text(text = stringResource(id = R.string.save))
+            IconButton(
+                onClick = {
+                    onAction(TaskEditAction.Navigate)
+                },
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Close,
+                    contentDescription = "Close",
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+            Button(onClick = {
+                onAction(TaskEditAction.SaveTask)
+                onAction(TaskEditAction.Navigate)
+            }) {
+                Text(text = stringResource(id = R.string.save))
+            }
         }
     }
 }
