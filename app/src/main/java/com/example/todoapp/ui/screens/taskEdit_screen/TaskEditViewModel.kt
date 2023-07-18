@@ -63,9 +63,12 @@ class TaskEditViewModel @Inject constructor(private val repository: ToDoReposito
         viewModelScope.launch(Dispatchers.IO) {
             if (id == null) {
                 setDefaultValue()
+                selectedItem.value = null
+
             } else {
                 val item = repository.getItemById(id)
                 setItemValue(item)
+                selectedItem.value = item
             }
         }
     }
