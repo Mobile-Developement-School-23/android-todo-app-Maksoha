@@ -1,7 +1,7 @@
 package com.example.todoapp.data.data_sources
 
-import com.example.todoapp.data.data_sources.room.dao.ToDoItemDao
-import com.example.todoapp.data.data_sources.room.entities.ToDoItemEntity
+import com.example.todoapp.data.data_sources.local.room.dao.ToDoItemDao
+import com.example.todoapp.data.data_sources.local.room.entities.ToDoItemEntity
 import com.example.todoapp.data.models.ToDoItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -49,6 +49,10 @@ class LocalDataSource @Inject constructor(private val toDoItemDao: ToDoItemDao) 
 
     suspend fun deleteItem(itemId: String) {
         toDoItemDao.deleteItemById(itemId)
+    }
+
+    fun getDeadlineItems(time : Long) : List<ToDoItem> {
+        return toDoItemDao.getDeadlineItems(time).map(ToDoItemEntity::toDomainModel)
     }
 
 

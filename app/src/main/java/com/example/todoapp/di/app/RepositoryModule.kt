@@ -1,4 +1,4 @@
-package com.example.todoapp.di.activity
+package com.example.todoapp.di.app
 
 import com.example.todoapp.data.repositories.ToDoRepository
 import com.example.todoapp.data.repositories.ToDoRepositoryImpl
@@ -9,5 +9,4 @@ import dagger.Module
 interface RepositoryModule {
     @Binds
     fun bindToDoRepository(toDoRepositoryImpl: ToDoRepositoryImpl): ToDoRepository
-
 }

@@ -1,25 +1,35 @@
 <resources>
     <string name="app_name">ToDo App</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="my_tasks_text">Мои дела</string>
-    <string name="no_tasks_text">Нет задач</string>
-    <string name="adding_tasks_text">Adding tasks</string>
-    <string name="task_text">Что надо сделать…</string>
-    <string name="importance_text">Важность</string>
-    <string name="deadline_text">Сделать до</string>
-    <string name="delete_text">Удалить</string>
-    <string name="save_text">Сохранить</string>
-    <string name="date_text">Дата</string>
-    <string name="low_text">Низкая</string>
-    <string name="common_text">Обычная</string>
-    <string name="high_text">Высокая</string>
+    <string name="my_tasks">Мои дела</string>
+    <string name="no_tasks">Нет задач</string>
+    <string name="task_hint">Что надо сделать…</string>
+    <string name="importance">Важность</string>
+    <string name="deadline">Сделать до</string>
+    <string name="delete">Удалить</string>
+    <string name="save">Сохранить</string>
+    <string name="date">Дата</string>
+    <string name="low">Низкая</string>
+    <string name="common">Обычная</string>
+    <string name="high">Высокая</string>
     <string name="item_details">%1$s\nВажность: %2$s\nДедлайн: %3$s\nВыполнено: %4$s\nДата создания: %5$s\nДата изменения: %6$s</string>
-    <string name="yes_text">Да</string>
-    <string name="no_text">Нет</string>
-    <string name="information_text">Информация</string>
-    <string name="error_input_task_text">Введите задачу</string>
-    <string name="select_date_text">Выберите дату</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="information">Информация</string>
+    <string name="error_input_task">Введите задачу</string>
+    <string name="select_date">Выберите дату</string>
     <string name="internet_is_connected">Интернет подключен. Данные синхронизируются.</string>
     <string name="internet_is_not_connected">Нет подключения к интернету</string>
+    <string name="ok">ОК</string>
+    <string name="cancel">Отмена</string>
+    <string name="settings">Настройки</string>
+    <string name="add_task">Add task</string>
+    <string name="theme">Тема</string>
+    <string name="light_theme">Всегда светлая</string>
+    <string name="dark_theme">Всегда тёмная</string>
+    <string name="system_theme">Как в системе</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
 </resources>

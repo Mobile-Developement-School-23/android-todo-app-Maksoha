@@ -12,7 +12,7 @@ class SnackbarHelper(private val view: View, private val errorCode: Int, private
         snackbar.setAction("Обновить") {
             action
         }
-        if (errorCode != 200) {
+        if (errorCode != 200 && errorCode != -1) {
             snackbar.show()
 
         }

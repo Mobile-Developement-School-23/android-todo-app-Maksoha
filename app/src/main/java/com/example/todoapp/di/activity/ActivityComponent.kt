@@ -1,24 +1,30 @@
 package com.example.todoapp.di.activity
 
-import android.content.Context
-import com.example.todoapp.di.ActivityScope
-import com.example.todoapp.di.fragments.ItemFragmentComponent
-import com.example.todoapp.di.fragments.ListFragmentComponent
+import com.example.todoapp.di.fragments.SettingFragmentComponent
+import com.example.todoapp.di.fragments.TaskEditFragmentComponent
+import com.example.todoapp.di.fragments.TasksListFragmentComponent
 import com.example.todoapp.ui.MainActivity
-import dagger.BindsInstance
 import dagger.Subcomponent
+import javax.inject.Scope
 
-@Subcomponent(modules = [RepositoryModule::class])
+@Scope
+annotation class ActivityScope
+
+@Subcomponent
 @ActivityScope
 interface ActivityComponent {
     @Subcomponent.Factory
     interface Factory {
-        fun create(@BindsInstance context: Context): ActivityComponent
+        fun create(): ActivityComponent
     }
 
     fun inject(activity: MainActivity)
 
-    fun listFragmentComponent(): ListFragmentComponent.Factory
+    fun taskListFragmentComponent(): TasksListFragmentComponent.Factory
 
-    fun itemFragmentComponent(): ItemFragmentComponent.Factory
+    fun taskEditFragmentComponent(): TaskEditFragmentComponent.Factory
+
+    fun settingFragmentComponent(): SettingFragmentComponent.Factory
+
+
 }

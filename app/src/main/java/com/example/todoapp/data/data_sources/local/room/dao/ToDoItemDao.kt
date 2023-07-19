@@ -1,11 +1,11 @@
-package com.example.todoapp.data.data_sources.room.dao
+package com.example.todoapp.data.data_sources.local.room.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.example.todoapp.data.data_sources.room.entities.ToDoItemEntity
+import com.example.todoapp.data.data_sources.local.room.entities.ToDoItemEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -43,5 +43,8 @@ interface ToDoItemDao {
 
     @Query("DELETE FROM ToDoItemEntity WHERE id = :itemId")
     suspend fun deleteItemById(itemId: String)
+
+    @Query("SELECT * FROM ToDoItemEntity WHERE deadline = :time AND done = 0")
+    fun getDeadlineItems(time : Long) : List<ToDoItemEntity>
 
 }

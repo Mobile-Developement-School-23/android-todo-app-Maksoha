@@ -1,22 +1,33 @@
 package com.example.todoapp.di.app
 
+import android.app.Application
 import android.content.Context
-import com.example.todoapp.data.data_sources.room.dao.ToDoItemDao
-import com.example.todoapp.data.data_sources.room.root.AppDatabase
+import androidx.room.Room
+import com.example.todoapp.data.data_sources.local.room.dao.ToDoItemDao
+import com.example.todoapp.data.data_sources.local.room.root.AppDatabase
 import dagger.Module
 import dagger.Provides
 
 @Module
-class DatabaseModule {
+object DatabaseModule {
 
-    @Provides
-    fun provideAppDatabase(context: Context): AppDatabase {
-        return AppDatabase.getDatabase(context)
-    }
-
+    @AppScope
     @Provides
     fun provideToDoItemDao(database: AppDatabase): ToDoItemDao {
         return database.toDoItemDao()
+    }
+
+    @AppScope
+    @Provides
+    fun provideDatabase(context: Context): AppDatabase {
+
+        return Room.databaseBuilder(
+            context,
+            AppDatabase::class.java,
+            "app_database"
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
 }

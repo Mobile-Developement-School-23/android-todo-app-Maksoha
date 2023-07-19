@@ -1,4 +1,4 @@
-package com.example.todoapp.data.data_sources.room.entities
+package com.example.todoapp.data.data_sources.local.room.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
